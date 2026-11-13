@@ -39,7 +39,12 @@ module.exports = {
       from: { path: "^src/modules/([^/]+)/application/" },
       to: {
         path: "^src/",
-        pathNot: ["^src/modules/$1/(domain|application)/", "^src/shared/"],
+        // Otro módulo solo por su API pública (p. ej. social → pets, §4.2).
+        pathNot: [
+          "^src/modules/$1/(domain|application)/",
+          "^src/modules/[^/]+/index[.]ts$",
+          "^src/shared/",
+        ],
       },
     },
     {
@@ -56,7 +61,7 @@ module.exports = {
       from: { path: "^src/modules/([^/]+)/" },
       to: {
         path: "^src/modules/[^/]+/",
-        pathNot: ["^src/modules/$1/", "^src/modules/[^/]+/index\.ts$"],
+        pathNot: ["^src/modules/$1/", "^src/modules/[^/]+/index[.]ts$"],
       },
     },
     {
@@ -70,8 +75,8 @@ module.exports = {
       name: "composicion-solo-en-el-borde",
       severity: "error",
       comment: "Solo los entrypoints conocen el wiring concreto.",
-      from: { path: "^src/", pathNot: ["^src/composition/", "^src/main\.[^/]+\.ts$"] },
-      to: { path: "^src/(composition/|main\.)" },
+      from: { path: "^src/", pathNot: ["^src/composition/", "^src/main[.][^/]+[.]ts$"] },
+      to: { path: "^src/(composition/|main[.])" },
     },
     {
       name: "contracts-autonomo",
@@ -84,7 +89,7 @@ module.exports = {
       name: "sin-dev-deps-en-produccion",
       severity: "error",
       comment: "El código que se despliega no puede usar dependencias de desarrollo.",
-      from: { path: "^src/", pathNot: "\.test\.ts$" },
+      from: { path: "^src/", pathNot: "[.]test[.]ts$" },
       to: { dependencyTypes: ["npm-dev"], dependencyTypesNot: ["type-only"] },
     },
     {
