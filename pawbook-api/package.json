@@ -1,0 +1,40 @@
+{
+  "name": "pawbook-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "contracts"
+  ],
+  "scripts": {
+    "dev": "bun --watch src/main.api.ts",
+    "start": "bun src/main.api.ts",
+    "start:node": "node dist/main.api.js",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "db:up": "docker compose -f docker/docker-compose.yml up -d --wait",
+    "db:down": "docker compose -f docker/docker-compose.yml down",
+    "build": "bun build src/main.api.ts --target=node --outdir dist",
+    "depcruise": "depcruise src contracts/src"
+  },
+  "packageManager": "bun@1.4.2",
+  "dependencies": {
+    "@hono/node-server": "^2.1.8",
+    "@hono/zod-openapi": "^1.6.3",
+    "@pawbook/contracts": "workspace:*",
+    "hono": "^4.13.18",
+    "ioredis": "^6.0.0",
+    "pino": "^10.4.0",
+    "postgres": "^4.1.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.7",
+    "@types/bun": "^1.4.4",
+    "@types/node": "22",
+    "dependency-cruiser": "^18.7.2",
+    "typescript": "^5"
+  }
+}

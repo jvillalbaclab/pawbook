@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "pawbook",
+      "credentials": [{ "accessKey": "pawbook", "secretKey": "pawbook-secret" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

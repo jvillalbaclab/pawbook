@@ -1,0 +1,67 @@
+# Infraestructura local de PawBook (T-M0.13). Levantar con `bun run db:up`.
+# Los puertos se publican solo en 127.0.0.1 y evitan los valores por defecto para no
+# chocar con otros proyectos locales; se pueden cambiar con variables de entorno.
+name: pawbook
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_USER: pawbook
+      POSTGRES_PASSWORD: pawbook
+      POSTGRES_DB: pawbook
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5435}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/10-extensions.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pawbook -d pawbook"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    ports:
+      - "127.0.0.1:${VALKEY_PORT:-6380}:6379"
+    volumes:
+      - valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Almacenamiento compatible con S3. MinIO dejó de publicar imágenes comunitarias en
+  # Docker Hub; SeaweedFS cubre el mismo papel en local (buckets y URLs prefirmadas).
+  s3:
+    image: chrislusf/seaweedfs:4.53
+    command: >
+      server -dir=/data -ip=s3 -ip.bind=0.0.0.0 -master.volumeSizeLimitMB=1024
+      -volume.max=0 -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    ports:
+      - "127.0.0.1:${S3_PORT:-9010}:8333"
+    volumes:
+      - s3-data:/data
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # Crea el bucket de medios una sola vez y termina.
+  s3-init:
+    image: chrislusf/seaweedfs:4.53
+    depends_on:
+      s3:
+        condition: service_healthy
+    entrypoint:
+      ["/bin/sh", "-c", "echo 's3.bucket.create -name pawbook-media' | weed shell -master=s3:9333"]
+    restart: "no"
+
+volumes:
+  postgres-data:
+  valkey-data:
+  s3-data:

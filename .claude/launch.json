@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pawbook-web",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd=pawbook-web", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "pawbook-api",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd=pawbook-api", "dev"],
+      "port": 3001
+    }
+  ]
+}

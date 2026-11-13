@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de PawBook. Cada color existe una vez como variable y cambia con el tema:
+ * los componentes usan las clases de Tailwind (bg-surface, text-ink...) y nunca un hex.
+ * El tema lo fija un script en <head> antes del primer pintado (ver theme-script.ts).
+ */
+
+:root {
+  --canvas: #faf9f6;
+  --surface: #ffffff;
+  --surface-2: #f3f1ec;
+  --skeleton: #edeae4;
+  --line: #e7e5e4;
+  --line-soft: #f0eeea;
+  --line-strong: #d6d3d1;
+  --ink: #1c1917;
+  --ink-2: #44403c;
+  --muted: #57534e;
+  --brand: #ff5a36;
+  --primary: #d63a1a;
+  --primary-hover: #b8301a;
+  --primary-ink: #b4361a;
+  --primary-tint: #fff1ec;
+  --primary-line: #ffc9b8;
+  --inverse: #1c1917;
+  --on-inverse: #ffffff;
+  --success: #047857;
+  --success-ink: #065f46;
+  --success-tint: #ecfdf5;
+  --ai-ink: #5b21b6;
+  --ai-tint: #f5f3ff;
+  --ai-line: #ddd6fe;
+  --warn-ink: #78350f;
+  --warn-tint: #fffbeb;
+  --warn-line: #fcd34d;
+  --danger-ink: #991b1b;
+  --danger-tint: #fef2f2;
+  --danger-line: #fecaca;
+  --photo-filter: none;
+  color-scheme: light;
+}
+
+/* Valores oscuros: se repiten para el atributo y para la preferencia del sistema sin JS. */
+:root[data-theme="dark"] {
+  --canvas: #151311;
+  --surface: #1f1c1a;
+  --surface-2: #2a2623;
+  --skeleton: #2e2a27;
+  --line: #36312d;
+  --line-soft: #2e2a27;
+  --line-strong: #4a443f;
+  --ink: #f5f2ee;
+  --ink-2: #d6d3d1;
+  --muted: #a8a29e;
+  --primary-ink: #ff9a7e;
+  --primary-tint: #3a2620;
+  --primary-line: #6b3a2c;
+  --inverse: #f5f2ee;
+  --on-inverse: #1c1917;
+  --success-ink: #6ee7b7;
+  --success-tint: #12302a;
+  --ai-ink: #c4b5fd;
+  --ai-tint: #2a2340;
+  --ai-line: #4c3d78;
+  --warn-ink: #fcd34d;
+  --warn-tint: #33280f;
+  --warn-line: #7a5b13;
+  --danger-ink: #fca5a5;
+  --danger-tint: #3b1a1a;
+  --danger-line: #6b2a2a;
+  --photo-filter: brightness(0.8);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --canvas: #151311;
+    --surface: #1f1c1a;
+    --surface-2: #2a2623;
+    --skeleton: #2e2a27;
+    --line: #36312d;
+    --line-soft: #2e2a27;
+    --line-strong: #4a443f;
+    --ink: #f5f2ee;
+    --ink-2: #d6d3d1;
+    --muted: #a8a29e;
+    --primary-ink: #ff9a7e;
+    --primary-tint: #3a2620;
+    --primary-line: #6b3a2c;
+    --inverse: #f5f2ee;
+    --on-inverse: #1c1917;
+    --success-ink: #6ee7b7;
+    --success-tint: #12302a;
+    --ai-ink: #c4b5fd;
+    --ai-tint: #2a2340;
+    --ai-line: #4c3d78;
+    --warn-ink: #fcd34d;
+    --warn-tint: #33280f;
+    --warn-line: #7a5b13;
+    --danger-ink: #fca5a5;
+    --danger-tint: #3b1a1a;
+    --danger-line: #6b2a2a;
+    --photo-filter: brightness(0.8);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-skeleton: var(--skeleton);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-tint: var(--primary-tint);
+  --color-primary-line: var(--primary-line);
+  --color-inverse: var(--inverse);
+  --color-on-inverse: var(--on-inverse);
+  --color-success: var(--success);
+  --color-success-ink: var(--success-ink);
+  --color-success-tint: var(--success-tint);
+  --color-ai-ink: var(--ai-ink);
+  --color-ai-tint: var(--ai-tint);
+  --color-ai-line: var(--ai-line);
+  --color-warn-ink: var(--warn-ink);
+  --color-warn-tint: var(--warn-tint);
+  --color-warn-line: var(--warn-line);
+  --color-danger-ink: var(--danger-ink);
+  --color-danger-tint: var(--danger-tint);
+  --color-danger-line: var(--danger-line);
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), system-ui, sans-serif;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Fotos de ejemplo: algo más apagadas en oscuro para no deslumbrar. */
+.photo {
+  filter: var(--photo-filter);
+}
+
+/* Evita el zoom de iOS Safari al enfocar campos. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

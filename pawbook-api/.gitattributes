@@ -1,0 +1,2 @@
+# LF en todo el repo: Biome lo exige y los scripts montados en contenedores Linux fallan con CRLF.
+* text=auto eol=lf

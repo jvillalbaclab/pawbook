@@ -1,0 +1,45 @@
+/* PawBook · modo oscuro. Se activa con la clase .pb-dark en la raíz de cada pantalla. */
+:is(.pb-dark,.pb-dark *)[style*="background: #FAF9F6"]{background:#151311!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FFFFFF"]{background:#1F1C1A!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #F3F1EC"]{background:#2A2623!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #EDEAE4"]{background:#2E2A27!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #E7E5E4"]{background:#36312D!important}
+:is(.pb-dark,.pb-dark *)[style*="#E7E5E4"]{border-color:#36312D!important}
+:is(.pb-dark,.pb-dark *)[style*="#F0EEEA"]{border-color:#2E2A27!important}
+:is(.pb-dark,.pb-dark *)[style*="#D6D3D1"]{border-color:#4A443F!important}
+:is(.pb-dark,.pb-dark *)[style*="solid #FAF9F6"]{border-color:#151311!important}
+:is(.pb-dark,.pb-dark *)[style*="solid #FFFFFF"]{border-color:#1F1C1A!important}
+:is(.pb-dark,.pb-dark *)[style*="solid #1C1917"]{border-color:#F5F2EE!important}
+
+:is(.pb-dark,.pb-dark *)[style*="color: #1C1917"]{color:#F5F2EE!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #292524"]{color:#E7E5E4!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #44403C"]{color:#D6D3D1!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #57534E"]{color:#A8A29E!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #B4361A"]{color:#FF9A7E!important}
+.pb-dark a{color:#FF9A7E}
+
+/* Botones y burbujas oscuros pasan a claros (excepto el panel de marca del registro) */
+:is(.pb-dark,.pb-dark *)[style*="background: #1C1917"]:not(section){background:#F5F2EE!important;color:#1C1917!important}
+.pb-dark [style*="background: #1C1917"]:not(section) [style*="color: #D6D3D1"]{color:#57534E!important}
+.pb-dark [style*="background: #1C1917"]:not(section) [style*="color: #FFB4A0"]{color:#B4361A!important}
+
+/* Tintes de marca */
+:is(.pb-dark,.pb-dark *)[style*="background: #FFF1EC"]{background:#3A2620!important}
+:is(.pb-dark,.pb-dark *)[style*="#FFC9B8"]{border-color:#6B3A2C!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #8A2912"]{color:#FFB4A0!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #ECFDF5"]{background:#12302A!important;color:#6EE7B7!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #065F46"]:not([style*="background: #"]){color:#6EE7B7!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #F5F3FF"]{background:#2A2340!important;color:#C4B5FD!important}
+:is(.pb-dark,.pb-dark *)[style*="#DDD6FE"]{border-color:#4C3D78!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FFFBEB"]{background:#33280F!important}
+:is(.pb-dark,.pb-dark *)[style*="#FCD34D"]{border-color:#7A5B13!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #78350F"]:not([style*="background: #"]){color:#FCD34D!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FEF2F2"]{background:#3B1A1A!important}
+:is(.pb-dark,.pb-dark *)[style*="#FECACA"]{border-color:#6B2A2A!important}
+:is(.pb-dark,.pb-dark *)[style*="color: #991B1B"]{color:#FCA5A5!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FFFFFF"][style*="color: #9A3412"]{color:#FDBA9F!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FFF1EC"][style*="color: #9A3412"]{color:#FDBA9F!important}
+:is(.pb-dark,.pb-dark *)[style*="background: #FFFFFF"][style*="color: #44403C"]{color:#D6D3D1!important}
+.pb-dark svg[stroke="#92400E"]{stroke:#FCD34D}
+/* Fotos de ejemplo algo más apagadas para no deslumbrar */
+.pb-dark div[role="img"]{filter:brightness(.8)}

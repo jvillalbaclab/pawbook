@@ -1,0 +1,6 @@
+{
+  "name": "PawBook - Red Social de Perros y Gatos",
+  "description": "La red social definitiva para perros y gatos. Comparte fotos, encuentra amigos de juego, adopta y traduce maullidos y ladridos con IA.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

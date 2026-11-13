@@ -1,0 +1,418 @@
+<title>Tablero PawBook MVP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<style>
+/* Layout: cabecera con avance global, franja de hitos fija, lista de tareas agrupada por hito y sección */
+:root {
+  --bg: #FAF9F6;
+  --surface: #FFFFFF;
+  --sunken: #F3F1EC;
+  --line: #E6E2DA;
+  --fg: #1C1917;
+  --muted: #6B645C;
+  --faint: #A39C93;
+  --accent: #FF5A36;
+  --accent-ink: #C2381A;
+  --accent-soft: #FFE9E2;
+  --done: #0F7A55;
+  --done-soft: #DDF3EA;
+  --warn: #9A6200;
+  --warn-soft: #FDF0D5;
+  --repo-api: #3B5BDB; --repo-api-bg: #E7ECFF;
+  --repo-web: #0C7C8C; --repo-web-bg: #DDF4F6;
+  --repo-ops: #7048C2; --repo-ops-bg: #EFE8FC;
+  --repo-docs: #5E6B2A; --repo-docs-bg: #EEF2DC;
+  --repo-socios: #B4471E; --repo-socios-bg: #FCE9DF;
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15120F; --surface: #1E1A16; --sunken: #26211C; --line: #352E27;
+    --fg: #F3EFE9; --muted: #B2A99E; --faint: #7D746A;
+    --accent: #FF6E4D; --accent-ink: #FF9A82; --accent-soft: #3A1E16;
+    --done: #4CC796; --done-soft: #11301F; --warn: #F0B54A; --warn-soft: #33270F;
+    --repo-api: #9DB0FF; --repo-api-bg: #1D2547;
+    --repo-web: #6FD3E0; --repo-web-bg: #0E2E33;
+    --repo-ops: #C4A8FF; --repo-ops-bg: #2A1F45;
+    --repo-docs: #C7D58A; --repo-docs-bg: #262B14;
+    --repo-socios: #FFAE8A; --repo-socios-bg: #3A2016;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15120F; --surface: #1E1A16; --sunken: #26211C; --line: #352E27;
+  --fg: #F3EFE9; --muted: #B2A99E; --faint: #7D746A;
+  --accent: #FF6E4D; --accent-ink: #FF9A82; --accent-soft: #3A1E16;
+  --done: #4CC796; --done-soft: #11301F; --warn: #F0B54A; --warn-soft: #33270F;
+  --repo-api: #9DB0FF; --repo-api-bg: #1D2547;
+  --repo-web: #6FD3E0; --repo-web-bg: #0E2E33;
+  --repo-ops: #C4A8FF; --repo-ops-bg: #2A1F45;
+  --repo-docs: #C7D58A; --repo-docs-bg: #262B14;
+  --repo-socios: #FFAE8A; --repo-socios-bg: #3A2016;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* Cabecera */
+.head { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 800; letter-spacing: -.02em; margin-top: 4px; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
+.overall { text-align: right; min-width: 0; }
+.overall .pct { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+.overall .pct small { font-size: 20px; color: var(--muted); font-weight: 700; }
+.overall .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.status { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+.status[data-state="live"] .dot { background: var(--done); }
+.status[data-state="warn"] .dot { background: var(--warn); }
+.status[data-state="off"] .dot { background: var(--accent); }
+
+/* Franja de hitos */
+.strip {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); padding-block: 10px; margin-block: -10px;
+  display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px;
+}
+.ms-chip {
+  display: flex; flex-direction: column; gap: 6px; text-align: left;
+  padding: 10px 10px 9px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface); cursor: pointer; min-width: 0; text-decoration: none; color: inherit;
+}
+.ms-chip:hover { border-color: var(--faint); }
+.ms-chip .k { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+.ms-chip .code { font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+.ms-chip .n { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ms-chip .name { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar { height: 5px; border-radius: 99px; background: var(--sunken); overflow: hidden; }
+.bar > span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .3s ease; }
+.ms-chip[data-complete="true"] .bar > span { background: var(--done); }
+.ms-chip[data-complete="true"] .code { color: var(--done); }
+.ms-chip[data-gate="true"] { border-color: var(--done); }
+
+/* Filtros */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters .search { flex: 1 1 220px; min-width: 0; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+.pill-btn { padding: 7px 11px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 13px; }
+.pill-btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+/* Hito */
+.milestone { scroll-margin-top: 110px; display: flex; flex-direction: column; gap: 14px; }
+.ms-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.ms-head h2 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+.ms-head .weeks { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.ms-head .goal { color: var(--muted); margin: 4px 0 0; max-width: 70ch; }
+.ms-head .tally { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.section h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 6px 0 6px; }
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.item { display: grid; grid-template-columns: auto auto 1fr; gap: 4px 12px; align-items: start; padding: 11px 14px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item[data-done="true"] .text { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+.check {
+  appearance: none; width: 20px; height: 20px; margin: 1px 0 0; border-radius: 6px;
+  border: 1.5px solid var(--faint); background: var(--surface); cursor: pointer; display: grid; place-items: center;
+}
+.check:checked { background: var(--done); border-color: var(--done); }
+.check:checked::after { content: ""; width: 10px; height: 6px; border-left: 2px solid var(--surface); border-bottom: 2px solid var(--surface); transform: rotate(-45deg) translate(1px, -1px); }
+.check:disabled { cursor: not-allowed; opacity: .55; }
+.tid { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
+.body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.text { overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.repo { font-family: var(--font-mono); font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 6px; }
+.repo.api { color: var(--repo-api); background: var(--repo-api-bg); }
+.repo.web { color: var(--repo-web); background: var(--repo-web-bg); }
+.repo.ops { color: var(--repo-ops); background: var(--repo-ops-bg); }
+.repo.docs { color: var(--repo-docs); background: var(--repo-docs-bg); }
+.repo.socios { color: var(--repo-socios); background: var(--repo-socios-bg); }
+.refs { font-family: var(--font-mono); font-size: 11px; color: var(--faint); overflow-wrap: anywhere; }
+.who { display: inline-flex; align-items: center; gap: 5px; color: var(--done); }
+.who img { width: 16px; height: 16px; border-radius: 50%; }
+
+/* Puerta de salida */
+.gate { border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 12px 14px 6px; background: var(--sunken); }
+.gate[data-open="true"] { border-style: solid; border-color: var(--done); background: var(--done-soft); }
+.gate h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.gate .list { background: transparent; border: 0; }
+.gate .item { padding: 8px 0; grid-template-columns: auto 1fr; border-top-color: var(--line); }
+.gate .lock { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--muted); }
+.gate[data-open="true"] .lock { color: var(--done); }
+
+.empty { padding: 18px; color: var(--muted); text-align: center; }
+.note { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 10px 14px; font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); align-items: center; }
+
+@media (max-width: 860px) {
+  .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .head { grid-template-columns: 1fr; }
+  .overall { text-align: left; }
+}
+@media (max-width: 480px) {
+  .item { grid-template-columns: auto 1fr; }
+  .tid { grid-column: 2; grid-row: 1; }
+  .item .body { grid-column: 2; }
+  .ms-chip .name { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <div class="eyebrow">Plan de construcción · MVP Fase 1</div>
+      <h1>Tablero PawBook MVP</h1>
+      <p class="sub">Marca cada tarea cuando cumpla la definición de terminado. Lo que marques lo ve todo el equipo al instante. Un hito empieza cuando se supera la puerta de salida del anterior.</p>
+      <div class="status" id="status" data-state="wait"><span class="dot"></span><span id="status-text">Conectando con el estado compartido…</span></div>
+    </div>
+    <div class="overall">
+      <div class="pct" id="pct">0<small>%</small></div>
+      <div class="count" id="count">0 de 0 tareas</div>
+    </div>
+  </header>
+
+  <nav class="strip" id="strip" aria-label="Hitos"></nav>
+
+  <div class="filters" role="group" aria-label="Filtros">
+    <input class="search" id="search" type="search" placeholder="Buscar por texto, ID o requisito (p. ej. FR-PM)" aria-label="Buscar tareas">
+    <button class="pill-btn" id="f-pending" type="button" aria-pressed="false">Solo pendientes</button>
+    <span id="repo-filters" style="display:contents"></span>
+  </div>
+
+  <div id="note" class="note" hidden></div>
+  <main id="board"></main>
+</div>
+
+<script id="plan-data" type="application/json">[{"id":"f0","title":"F0 — Decisiones y validación","weeks":"Semana 1","goal":"cerrar las preguntas que cambian requisitos y confirmar que el problema existe.","sections":[{"title":"Decisiones de los socios","tasks":[{"id":"T-F0.01","repos":["socios"],"text":"Elegir mercado inicial: España o Colombia (PRD Q1). Fija idioma, moneda, ley de datos y región de la nube.","refs":""},{"id":"T-F0.02","repos":["socios"],"text":"Fijar la edad mínima de registro (PRD Q2) [FR-AUTH-001].","refs":""},{"id":"T-F0.03","repos":["socios"],"text":"Decidir si una mascota puede tener co-propietarios (PRD Q5) [FR-PET-007].","refs":""},{"id":"T-F0.04","repos":["socios"],"text":"Definir el presupuesto mensual de infraestructura y el tope para GetStream (PRD Q4).","refs":""},{"id":"T-F0.05","repos":["socios"],"text":"Elegir la tecnología de la app móvil de la Fase 2 (Expo, Flutter o nativa). Afecta cómo se consume el contrato (§7.2).","refs":""},{"id":"T-F0.06","repos":["socios"],"text":"Elegir la ciudad de la beta cerrada.","refs":""}]},{"title":"Validación del problema","tasks":[{"id":"T-F0.07","repos":["socios"],"text":"Preparar el guion de entrevistas (técnica Mom Test) para dueños y refugios.","refs":""},{"id":"T-F0.08","repos":["socios"],"text":"Entrevistar a 15 dueños de perros o gatos.","refs":""},{"id":"T-F0.09","repos":["socios"],"text":"Entrevistar a 5 refugios o fundaciones; identificar 3 dispuestos a participar en la beta.","refs":""},{"id":"T-F0.10","repos":["socios"],"text":"Resumir los hallazgos y confirmar o descartar las hipótesis H1-H3 del PRD.","refs":""}]},{"title":"Legal y cuentas","tasks":[{"id":"T-F0.11","repos":["socios"],"text":"Contratar asesoría legal para términos, privacidad, cookies y normas de comunidad [OR-LEG-001].","refs":""},{"id":"T-F0.12","repos":["ops"],"text":"Crear la organización de GitHub y activar autenticación de dos factores obligatoria.","refs":""},{"id":"T-F0.13","repos":["ops"],"text":"Crear la cuenta de GetStream y solicitar el plan para startups.","refs":""},{"id":"T-F0.14","repos":["ops"],"text":"Crear el proyecto de Google Cloud con la API de Gemini y alertas de presupuesto.","refs":""},{"id":"T-F0.15","repos":["ops"],"text":"Registrar el dominio y configurar el correo del equipo.","refs":""}]}],"gates":[{"id":"G-F0.1","text":"Q1, Q2, Q4 y Q5 respondidas y reflejadas en el PRD y el SRS."},{"id":"G-F0.2","text":"Hallazgos de entrevistas documentados en `pawbook-docs`."},{"id":"G-F0.3","text":"Al menos 3 refugios comprometidos con la beta."}]},{"id":"sp","title":"Spike técnico","weeks":"Semana 2","goal":"reducir la incertidumbre de GetStream y del stack antes de escribir código de producción (§13 de la arquitectura). El código del spike se descarta.","sections":[{"title":"Tareas","tasks":[{"id":"T-SP.01","repos":["api"],"text":"Crear las apps de GetStream `pawbook-dev`, `pawbook-staging` y `pawbook-prod`.","refs":""},{"id":"T-SP.02","repos":["api"],"text":"Probar con `@stream-io/node-sdk` los grupos de feed `pet`, `timeline`, `notification` y `foryou` (§3.2).","refs":""},{"id":"T-SP.03","repos":["api"],"text":"Verificar que las reacciones son únicas por usuario de Stream (ADR-002) y que se pueden reemplazar.","refs":""},{"id":"T-SP.04","repos":["api"],"text":"Verificar las notificaciones agregadas (\"Luna y 12 más\") [FR-NOT-002].","refs":""},{"id":"T-SP.05","repos":["api"],"text":"Configurar los permisos de Stream: Feeds solo lectura para clientes (§3.3, NFR-SEC-006).","refs":""},{"id":"T-SP.06","repos":["api"],"text":"Crear un canal de chat desde el servidor y conectar dos usuarios desde un cliente de prueba.","refs":""},{"id":"T-SP.07","repos":["api"],"text":"Probar GetStream Moderation con 50 textos en español y 50 fotos de mascotas; medir los falsos positivos.","refs":""},{"id":"T-SP.08","repos":["api"],"text":"Decidir la implementación del feed \"Para ti\": selectores o ranking de Stream frente a un job propio.","refs":""},{"id":"T-SP.09","repos":["api"],"text":"Verificar la firma de webhooks de Stream con Hono.","refs":""},{"id":"T-SP.10","repos":["api"],"text":"Arrancar Hono + Drizzle + Better Auth en Bun y ejecutar el mismo build en Node 22 (CON-TECH-002).","refs":""},{"id":"T-SP.11","repos":["web"],"text":"Probar el SDK React de Feeds y `stream-chat-react` en Next.js; medir el impacto en el bundle (NFR-PERF-005).","refs":""},{"id":"T-SP.12","repos":["socios"],"text":"Estimar el coste mensual de GetStream con 10.000 usuarios y 13.000 mascotas.","refs":""}]}],"gates":[{"id":"G-SP.1","text":"ADR-002 confirmada o modificada en `pawbook-docs`."},{"id":"G-SP.2","text":"Coste de GetStream dentro del presupuesto de T-F0.04."},{"id":"G-SP.3","text":"Decisión documentada sobre el feed \"Para ti\"."},{"id":"G-SP.4","text":"Sin bloqueos técnicos abiertos en Bun."}]},{"id":"m0","title":"M0 — Fundaciones","weeks":"Semanas 3-4","goal":"un usuario crea su cuenta y su mascota en staging, y la web se conecta a GetStream.","sections":[{"title":"Repositorios y herramientas","tasks":[{"id":"T-M0.01","repos":["docs"],"text":"Crear `pawbook-docs` y mover allí PRD, SRS, arquitectura, este plan y los ADR.","refs":""},{"id":"T-M0.02","repos":["api"],"text":"Crear `pawbook-api` con TypeScript `strict`, Biome, `bun test` y la estructura de §7.1.","refs":""},{"id":"T-M0.03","repos":["web"],"text":"Crear `pawbook-web` con Next.js, TypeScript `strict`, Biome y Tailwind 4.","refs":""},{"id":"T-M0.04","repos":["ops"],"text":"Crear un repositorio plantilla con la configuración común (tsconfig, Biome, workflows de CI).","refs":""},{"id":"T-M0.05","repos":["ops"],"text":"Proteger la rama `main` en todos los repos: PR obligatorio, 1 aprobación, CI en verde.","refs":""},{"id":"T-M0.06","repos":["ops"],"text":"Configurar Renovate o Dependabot en todos los repos.","refs":""},{"id":"T-M0.07","repos":["ops"],"text":"Configurar GitHub Packages y el `bunfig.toml` con el scope `@pawbook` (§7.2).","refs":""}]},{"title":"Integración continua","tasks":[{"id":"T-M0.08","repos":["api"],"text":"CI con formato, lint, tipos, tests, build e imagen OCI [NFR-MAINT-003].","refs":""},{"id":"T-M0.09","repos":["api"],"text":"Añadir `dependency-cruiser` con las reglas de fronteras entre módulos [NFR-MAINT-002].","refs":""},{"id":"T-M0.10","repos":["api"],"text":"Generar `openapi.json` en el build y verificar compatibilidad con `oasdiff` [CON-DES-004].","refs":""},{"id":"T-M0.11","repos":["api"],"text":"Publicar `@pawbook/contracts` y el `openapi.json` al crear un tag semver.","refs":""},{"id":"T-M0.12","repos":["web"],"text":"CI con formato, lint, tipos, tests y build.","refs":""}]},{"title":"Infraestructura","tasks":[{"id":"T-M0.13","repos":["api"],"text":"`docker-compose` local con Postgres 16 + PostGIS, Valkey y MinIO.","refs":""},{"id":"T-M0.14","repos":["ops"],"text":"Aprovisionar staging: contenedores, Postgres gestionado con PostGIS, Valkey, almacenamiento S3 y CDN.","refs":""},{"id":"T-M0.15","repos":["ops"],"text":"Configurar el gestor de secretos y cargar las credenciales de staging [NFR-SEC-007].","refs":""},{"id":"T-M0.16","repos":["ops"],"text":"Despliegue automático a staging al mergear en `main`.","refs":""},{"id":"T-M0.17","repos":["ops"],"text":"Configurar Sentry, logs estructurados y trazas OpenTelemetry en staging [NFR-OBS-001].","refs":""}]},{"title":"Base de la API","tasks":[{"id":"T-M0.18","repos":["api"],"text":"Kernel compartido: UUIDv7, errores RFC 9457, `Result`, reloj inyectable [COM-003, OR-DB-002].","refs":""},{"id":"T-M0.19","repos":["api"],"text":"App Hono con middlewares: `requestId`, logger, CORS, cabeceras de seguridad, manejo de errores [NFR-SEC-008].","refs":""},{"id":"T-M0.20","repos":["api"],"text":"Rate limiting con Valkey por IP y por usuario [NFR-SEC-004].","refs":""},{"id":"T-M0.21","repos":["api"],"text":"Paginación por cursor reutilizable [COM-004].","refs":""},{"id":"T-M0.22","repos":["api"],"text":"Soporte de `Idempotency-Key` [NFR-REL-001].","refs":""},{"id":"T-M0.23","repos":["api"],"text":"Tabla outbox + worker con pg-boss + tabla inbox (§8).","refs":""},{"id":"T-M0.24","repos":["api"],"text":"`GET /v1/health`, `GET /v1/ready` y `GET /v1/openapi.json`.","refs":""}]},{"title":"Módulo `identity`","tasks":[{"id":"T-M0.25","repos":["api"],"text":"Registro con correo, contraseña y fecha de nacimiento [FR-AUTH-001].","refs":""},{"id":"T-M0.26","repos":["api"],"text":"Verificación de correo y proveedor de correo transaccional [FR-AUTH-002].","refs":""},{"id":"T-M0.27","repos":["api"],"text":"Login con Google (OIDC) [FR-AUTH-003].","refs":""},{"id":"T-M0.28","repos":["api"],"text":"Access token de 15 min y refresh rotatorio con detección de reutilización [FR-AUTH-004].","refs":""},{"id":"T-M0.29","repos":["api"],"text":"Recuperación de contraseña con respuesta uniforme [FR-AUTH-005].","refs":""},{"id":"T-M0.30","repos":["api"],"text":"Bloqueo de acciones sociales sin correo verificado [FR-AUTH-006].","refs":""},{"id":"T-M0.31","repos":["api"],"text":"Registrar la aceptación de términos con versión y fecha [OR-LEG-001].","refs":""}]},{"title":"Módulo `pets`","tasks":[{"id":"T-M0.32","repos":["api"],"text":"Crear, editar y archivar mascotas, con un máximo de 10 por usuario [FR-PET-001, 004, 006].","refs":""},{"id":"T-M0.33","repos":["api"],"text":"`@handle` único con cambio limitado a uno cada 30 días [FR-PET-002].","refs":""},{"id":"T-M0.34","repos":["api"],"text":"Middleware `activePet` con cabecera `X-Pet-Id` y caché de propiedad [FR-PET-005].","refs":""},{"id":"T-M0.35","repos":["api"],"text":"Sincronizar la mascota con su usuario de Stream (`pet_<id>`) al crearla o editarla.","refs":""}]},{"title":"Tokens de Stream","tasks":[{"id":"T-M0.36","repos":["api"],"text":"`POST /v1/stream/token` con token de Feeds por mascota y de Chat por usuario [FR-AUTH-010].","refs":""}]},{"title":"Base de la web","tasks":[{"id":"T-M0.37","repos":["web"],"text":"Portar los tokens de diseño del demo: colores, tipografías, radios, sombras.","refs":""},{"id":"T-M0.38","repos":["web"],"text":"Layout de 3 columnas con barra lateral y navegación inferior en móvil [UI-002].","refs":""},{"id":"T-M0.39","repos":["web"],"text":"Cliente de API desde `@pawbook/contracts`, TanStack Query y renovación de tokens.","refs":""},{"id":"T-M0.40","repos":["web"],"text":"Pantallas de registro, login, Google, verificación y recuperación de contraseña.","refs":""},{"id":"T-M0.41","repos":["web"],"text":"Onboarding: crear la primera mascota.","refs":""},{"id":"T-M0.42","repos":["web"],"text":"Selector de mascota activa (Zustand) y reconexión a Stream al cambiarla [UI-003].","refs":""},{"id":"T-M0.43","repos":["web"],"text":"Estados de carga, vacío y error reutilizables [UI-004].","refs":""},{"id":"T-M0.44","repos":["web"],"text":"Configurar `next-intl` con catálogo en español [OR-I18N-001].","refs":""}]}],"gates":[{"id":"G-M0.1","text":"En staging, un usuario nuevo se registra, verifica su correo, crea una mascota y la web se conecta a Stream."},{"id":"G-M0.2","text":"`@pawbook/contracts` 0.x publicado y consumido por la web."},{"id":"G-M0.3","text":"CI en verde en ambos repos con todas las verificaciones activas."}]},{"id":"m1","title":"M1 — Núcleo social","weeks":"Semanas 5-7","goal":"publicar, reaccionar, comentar, seguir y recibir notificaciones en tiempo real.","sections":[{"title":"Módulo `media`","tasks":[{"id":"T-M1.01","repos":["api"],"text":"`POST /v1/media/uploads` con URL prefirmada que fija tipo y tamaño [SW-005].","refs":""},{"id":"T-M1.02","repos":["api"],"text":"Job de procesado con sharp: quitar EXIF y generar variantes de 320, 640 y 1.080 px [FR-FEED-002].","refs":""},{"id":"T-M1.03","repos":["api"],"text":"Moderación automática de la imagen antes de marcarla como lista [FR-MOD-005].","refs":""},{"id":"T-M1.04","repos":["api"],"text":"Limpiar los medios huérfanos tras 24 h.","refs":""}]},{"title":"Módulo `social`: publicaciones","tasks":[{"id":"T-M1.05","repos":["api"],"text":"Puerto `SocialFeedPort` con adaptador en memoria para tests y adaptador de Stream (§3.4).","refs":""},{"id":"T-M1.06","repos":["api"],"text":"Crear publicaciones con texto, hasta 10 imágenes, estado de ánimo y ubicación [FR-FEED-001, 003, 004].","refs":""},{"id":"T-M1.07","repos":["api"],"text":"Moderación del texto antes de publicar [FR-MOD-005].","refs":""},{"id":"T-M1.08","repos":["api"],"text":"Editar (con marca \"editado\") y eliminar publicaciones [FR-FEED-005].","refs":""},{"id":"T-M1.09","repos":["api"],"text":"Extraer hashtags y menciones; las menciones notifican [FR-FEED-009].","refs":""}]},{"title":"Módulo `social`: interacciones","tasks":[{"id":"T-M1.10","repos":["api"],"text":"Reacciones `paw`, `heart`, `bone` y `fish`: una por mascota, reemplazable [FR-FEED-006].","refs":""},{"id":"T-M1.11","repos":["api"],"text":"Comentarios con un nivel de respuestas y reglas de borrado [FR-FEED-007].","refs":""},{"id":"T-M1.12","repos":["api"],"text":"Guardar y quitar publicaciones guardadas [FR-FEED-008].","refs":""},{"id":"T-M1.13","repos":["api"],"text":"Seguir y dejar de seguir; listas de seguidores y seguidos [FR-SOC-001].","refs":""},{"id":"T-M1.14","repos":["api"],"text":"Feed \"Para ti\" según la decisión del spike [FR-SOC-003].","refs":""},{"id":"T-M1.15","repos":["api"],"text":"Sugerencias de mascotas por especie y ciudad [FR-SOC-004].","refs":""},{"id":"T-M1.16","repos":["api"],"text":"Endpoint de webhooks de Stream con verificación de firma e inbox [SW-003].","refs":""}]},{"title":"Búsqueda","tasks":[{"id":"T-M1.17","repos":["api"],"text":"Índice `pg_trgm` + `unaccent` y `GET /v1/search/pets` [FR-SRCH-001].","refs":""},{"id":"T-M1.18","repos":["api"],"text":"`GET /v1/hashtags/{tag}` [FR-SRCH-002].","refs":""}]},{"title":"Web","tasks":[{"id":"T-M1.19","repos":["web"],"text":"Feed \"Siguiendo\" y \"Para ti\" con scroll infinito y actualizaciones en tiempo real [FR-SOC-002].","refs":""},{"id":"T-M1.20","repos":["web"],"text":"`PostCard` portado del demo y dividido en componentes de ≤ 250 líneas.","refs":""},{"id":"T-M1.21","repos":["web"],"text":"Crear publicación: subida directa, progreso, recorte y vista previa.","refs":""},{"id":"T-M1.22","repos":["web"],"text":"Reacciones con actualización optimista y animación del demo.","refs":""},{"id":"T-M1.23","repos":["web"],"text":"Comentarios y respuestas.","refs":""},{"id":"T-M1.24","repos":["web"],"text":"Perfil de mascota con publicaciones, seguidores y botón de seguir [FR-PET-003].","refs":""},{"id":"T-M1.25","repos":["web"],"text":"Centro de notificaciones con contador de no leídas en tiempo real [FR-NOT-001, 003].","refs":""},{"id":"T-M1.26","repos":["web"],"text":"Búsqueda y página de hashtag.","refs":""},{"id":"T-M1.27","repos":["web"],"text":"Colección de guardados.","refs":""},{"id":"T-M1.28","repos":["web"],"text":"Páginas públicas `/@handle` y `/p/{id}` renderizadas en servidor con Open Graph [FR-FEED-010, UI-005].","refs":""}]}],"gates":[{"id":"G-M1.1","text":"Prueba E2E: A publica, B (seguidor) lo ve en ≤ 5 s, reacciona y comenta, y A recibe la notificación [NFR-PERF-002]."},{"id":"G-M1.2","text":"Una publicación compartida por URL se ve sin sesión y muestra vista previa en mensajería."},{"id":"G-M1.3","text":"`@pawbook/contracts` 1.0.0 publicado."}]},{"id":"m2","title":"M2 — PawMates y adopción","weeks":"Semanas 8-10","goal":"dos dueños reales chatean tras un match, y un refugio recibe una solicitud de adopción.","sections":[{"title":"Módulo `pawmates`","tasks":[{"id":"T-M2.01","repos":["api"],"text":"Perfil de juego: tamaño, energía, actividad y radio de 1 a 25 km [FR-PM-001].","refs":""},{"id":"T-M2.02","repos":["api"],"text":"Guardar la ubicación reducida a una celda de ~1 km con PostGIS [FR-PM-002].","refs":""},{"id":"T-M2.03","repos":["api"],"text":"Candidatos por distancia y compatibilidad, excluyendo bloqueados y ya evaluados [FR-PM-003].","refs":""},{"id":"T-M2.04","repos":["api"],"text":"Swipes y creación de match con outbox en la misma transacción [FR-PM-004].","refs":""},{"id":"T-M2.05","repos":["api"],"text":"Puerto `ChatPort` y adaptador de Stream Chat (§3.4).","refs":""},{"id":"T-M2.06","repos":["api"],"text":"Al hacer match, crear el canal 1:1 y notificar a ambos [FR-PM-005].","refs":""},{"id":"T-M2.07","repos":["api"],"text":"Deshacer un match y archivar el canal [FR-PM-007].","refs":""},{"id":"T-M2.08","repos":["api"],"text":"Configurar en Stream la moderación del chat, los adjuntos de imagen y las confirmaciones de lectura [FR-PM-006].","refs":""}]},{"title":"Módulos `organizations` y `adoption`","tasks":[{"id":"T-M2.09","repos":["api"],"text":"Solicitud de organización con documento acreditativo [FR-ORG-001].","refs":""},{"id":"T-M2.10","repos":["api"],"text":"Aprobación y rechazo por un administrador, con insignia \"Verificada\" [FR-ORG-002].","refs":""},{"id":"T-M2.11","repos":["api"],"text":"Invitar gestores a la organización [FR-ORG-003].","refs":""},{"id":"T-M2.12","repos":["api"],"text":"Fichas de adopción con máquina de estados [FR-ADO-001, 002].","refs":""},{"id":"T-M2.13","repos":["api"],"text":"Listado con filtros por especie, ciudad, edad y urgencia [FR-ADO-003].","refs":""},{"id":"T-M2.14","repos":["api"],"text":"Solicitud de adopción con cuestionario, canal de chat y correo a los gestores [FR-ADO-004].","refs":""}]},{"title":"Web","tasks":[{"id":"T-M2.15","repos":["web"],"text":"Activación de PawMates con explicación previa al permiso de ubicación [HW-002].","refs":""},{"id":"T-M2.16","repos":["web"],"text":"Descubrimiento de candidatos con distancias redondeadas y nunca exactas.","refs":""},{"id":"T-M2.17","repos":["web"],"text":"Pantalla de match y lista de matches.","refs":""},{"id":"T-M2.18","repos":["web"],"text":"Bandeja de mensajes y conversación con `stream-chat-react` y el tema de PawBook.","refs":""},{"id":"T-M2.19","repos":["web"],"text":"Listado y ficha de adopción con renderizado en servidor.","refs":""},{"id":"T-M2.20","repos":["web"],"text":"Formulario de solicitud de adopción.","refs":""},{"id":"T-M2.21","repos":["web"],"text":"Panel de organización: solicitud de verificación, gestores, fichas y solicitudes recibidas.","refs":""}]}],"gates":[{"id":"G-M2.1","text":"Prueba E2E: dos usuarios hacen match y se envían mensajes en ≤ 1 s [NFR-PERF-003]."},{"id":"G-M2.2","text":"Prueba de privacidad: ninguna respuesta de la API ni de Stream contiene coordenadas exactas."},{"id":"G-M2.3","text":"Prueba E2E: refugio verificado publica una ficha y recibe una solicitud por chat y correo."}]},{"id":"m3","title":"M3 — Confianza y cierre","weeks":"Semanas 11-12","goal":"la plataforma es segura, moderable y cumple la ley antes de abrirla a usuarios reales.","sections":[{"title":"Moderación","tasks":[{"id":"T-M3.01","repos":["api"],"text":"Denuncias sobre publicaciones, comentarios, mensajes, mascotas y organizaciones [FR-MOD-001].","refs":""},{"id":"T-M3.02","repos":["api"],"text":"Bloqueos mutuos que ocultan contenido y cierran canales [FR-MOD-003].","refs":""},{"id":"T-M3.03","repos":["api"],"text":"Cola de moderación que une denuncias y marcas automáticas, priorizada por gravedad [FR-MOD-002].","refs":""},{"id":"T-M3.04","repos":["api"],"text":"Acciones de moderador (ocultar, eliminar, advertir, suspender, expulsar) con log de auditoría inmutable [FR-MOD-004].","refs":""},{"id":"T-M3.05","repos":["web"],"text":"Menú de denunciar y bloquear en publicaciones, comentarios, perfiles y chat.","refs":""},{"id":"T-M3.06","repos":["web"],"text":"Panel interno de moderación y verificación de organizaciones.","refs":""}]},{"title":"Cuenta y privacidad","tasks":[{"id":"T-M3.07","repos":["api"],"text":"Eliminación de cuenta en PostgreSQL, almacenamiento y Stream en ≤ 30 días [FR-AUTH-008].","refs":""},{"id":"T-M3.08","repos":["api"],"text":"Exportación de datos en JSON [FR-AUTH-009].","refs":""},{"id":"T-M3.09","repos":["api"],"text":"Listar y cerrar sesiones [FR-AUTH-007].","refs":""},{"id":"T-M3.10","repos":["web"],"text":"Pantallas de ajustes de cuenta, sesiones, exportación y eliminación.","refs":""},{"id":"T-M3.11","repos":["web"],"text":"Publicar términos, privacidad, cookies y normas de comunidad; banner de cookies con rechazo por defecto [OR-LEG-001].","refs":""}]},{"title":"IA","tasks":[{"id":"T-M3.12","repos":["api"],"text":"Puerto `AiProvider` con adaptador de Gemini y modelo configurable [SW-004].","refs":""},{"id":"T-M3.13","repos":["api"],"text":"`POST /v1/ai/captions` con entrada delimitada, salida validada y moderada [FR-AI-001, 003].","refs":""},{"id":"T-M3.14","repos":["api"],"text":"Cuota de 20 solicitudes de IA al día por usuario y circuit breaker [FR-AI-002, NFR-REL-002].","refs":""},{"id":"T-M3.15","repos":["web"],"text":"Botón \"Sugerir pie de foto\" con etiqueta de contenido generado por IA [CON-REG-002].","refs":""}]},{"title":"Calidad","tasks":[{"id":"T-M3.16","repos":["api"],"text":"Cobertura ≥ 80 % en dominio y casos de uso [NFR-MAINT-001].","refs":""},{"id":"T-M3.17","repos":["api"],"text":"Revisión contra la checklist de OWASP ASVS nivel 2 y corrección de hallazgos [NFR-SEC-001].","refs":""},{"id":"T-M3.18","repos":["api"],"text":"Timeouts y circuit breakers en todos los proveedores externos [NFR-REL-002].","refs":""},{"id":"T-M3.19","repos":["web"],"text":"Auditoría WCAG 2.2 AA con herramientas automáticas y revisión manual con teclado y lector de pantalla [NFR-USA-001].","refs":""},{"id":"T-M3.20","repos":["web"],"text":"LCP ≤ 2,5 s en 4G y JavaScript inicial ≤ 250 KB [NFR-PERF-004, 005].","refs":""}]},{"title":"Producción","tasks":[{"id":"T-M3.21","repos":["ops"],"text":"Aprovisionar producción en la región del mercado elegido, con la misma configuración que staging.","refs":""},{"id":"T-M3.22","repos":["ops"],"text":"Backups con PITR y un ensayo de restauración documentado [NFR-REL-003].","refs":""},{"id":"T-M3.23","repos":["ops"],"text":"Alertas de errores 5xx > 1 %, p95 > 500 ms y fallos de webhooks [NFR-OBS-003].","refs":""},{"id":"T-M3.24","repos":["ops"],"text":"Runbook de incidentes: caída de Stream, de Gemini y de la base de datos.","refs":""}]}],"gates":[{"id":"G-M3.1","text":"Checklist de seguridad aprobada sin hallazgos críticos ni altos abiertos."},{"id":"G-M3.2","text":"Revisión legal de textos y flujos de datos aprobada."},{"id":"G-M3.3","text":"Prueba de borrado: una cuenta eliminada no deja datos en Stream ni en el almacenamiento."},{"id":"G-M3.4","text":"Restauración de backup probada."}]},{"id":"b","title":"Beta cerrada","weeks":"Semanas 13-16","goal":"medir las métricas del PRD con 200 usuarios reales de una ciudad.","sections":[{"title":"Preparación","tasks":[{"id":"T-B.01","repos":["api"],"text":"Prueba de carga: 200 solicitudes/s con p95 ≤ 300 ms y 1.000 conexiones concurrentes [NFR-PERF-001, 007].","refs":""},{"id":"T-B.02","repos":["ops"],"text":"Pentest externo o revisión de seguridad independiente.","refs":""},{"id":"T-B.03","repos":["web"],"text":"Analítica de producto respetuosa con la privacidad: eventos de activación, retención, publicaciones, matches y adopciones.","refs":""},{"id":"T-B.04","repos":["web"],"text":"Sistema de invitaciones o lista de espera.","refs":""},{"id":"T-B.05","repos":["socios"],"text":"Sembrar contenido con los 3+ refugios comprometidos y 10 cuentas creadoras de contenido de mascotas.","refs":""},{"id":"T-B.06","repos":["socios"],"text":"Formar al equipo de moderación y definir turnos para responder en < 24 h.","refs":""}]},{"title":"Durante la beta","tasks":[{"id":"T-B.07","repos":["socios"],"text":"Invitar a 200 usuarios en tandas de 50 por semana.","refs":""},{"id":"T-B.08","repos":["socios"],"text":"Revisión semanal de métricas: activación, D7, publicaciones por usuario, matches con ≥ 3 mensajes.","refs":""},{"id":"T-B.09","repos":["socios"],"text":"Canal de feedback y 5 entrevistas de seguimiento por semana.","refs":""},{"id":"T-B.10","repos":["api","web"],"text":"Corregir errores priorizados cada semana.","refs":""},{"id":"T-B.11","repos":["socios"],"text":"Prueba de usabilidad con 5 usuarios: registro, mascota y publicación en ≤ 3 min [NFR-USA-002].","refs":""}]}],"gates":[{"id":"G-B.1","text":"Activación ≥ 30 % (registro → mascota → publicación en 24 h)."},{"id":"G-B.2","text":"Disponibilidad ≥ 99,5 % durante la beta [NFR-AVA-001]."},{"id":"G-B.3","text":"95 % de las denuncias resueltas en < 24 h."},{"id":"G-B.4","text":"Sin errores críticos abiertos."},{"id":"G-B.5","text":"Coste real de GetStream y Gemini por usuario activo dentro del presupuesto."}]},{"id":"l","title":"Lanzamiento público","weeks":"","goal":"","sections":[{"title":"Tareas","tasks":[{"id":"T-L.01","repos":["web"],"text":"Abrir el registro y retirar la lista de espera.","refs":""},{"id":"T-L.02","repos":["socios"],"text":"Página de aterrizaje y plan de comunicación local.","refs":""},{"id":"T-L.03","repos":["ops"],"text":"Escalar réplicas de la API y revisar los límites del plan de GetStream.","refs":""},{"id":"T-L.04","repos":["socios"],"text":"Retrospectiva del MVP y priorización de la Fase 2.","refs":""}]}],"gates":[]}]</script>
+<script>
+(function () {
+  "use strict";
+  const PLAN = JSON.parse(document.getElementById("plan-data").textContent);
+  const REPOS = ["api", "web", "ops", "docs", "socios"];
+  const SHORT = { f0: "F0", sp: "Spike", m0: "M0", m1: "M1", m2: "M2", m3: "M3", b: "Beta", l: "Lanz." };
+
+  const state = {};            // id -> {done, by, at}
+  const ui = { pending: false, repos: new Set(), q: "" };
+  let db = null, user = null, canWrite = false, myId = null;
+  const saving = new Set();
+
+  const allTasks = [];
+  PLAN.forEach(m => m.sections.forEach(s => s.tasks.forEach(t => allTasks.push(Object.assign({ ms: m.id }, t)))));
+
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const isDone = id => !!(state[id] && state[id].done);
+
+  function setStatus(kind, text) { $("status").dataset.state = kind; $("status-text").textContent = text; }
+
+  // Filtros
+  REPOS.forEach(r => {
+    const b = el("button", "pill-btn", r);
+    b.type = "button"; b.setAttribute("aria-pressed", "false"); b.dataset.repo = r;
+    b.addEventListener("click", () => {
+      ui.repos.has(r) ? ui.repos.delete(r) : ui.repos.add(r);
+      b.setAttribute("aria-pressed", String(ui.repos.has(r))); render();
+    });
+    $("repo-filters").appendChild(b);
+  });
+  $("f-pending").addEventListener("click", e => { ui.pending = !ui.pending; e.currentTarget.setAttribute("aria-pressed", String(ui.pending)); render(); });
+  $("search").addEventListener("input", e => { ui.q = e.target.value.trim().toLowerCase(); render(); });
+
+  function matches(t) {
+    if (ui.pending && isDone(t.id)) return false;
+    if (ui.repos.size && !t.repos.some(r => ui.repos.has(r))) return false;
+    if (ui.q) {
+      const hay = (t.id + " " + t.text + " " + t.refs + " " + t.repos.join(" ")).toLowerCase();
+      if (!hay.includes(ui.q)) return false;
+    }
+    return true;
+  }
+
+  function msStats(m) {
+    let total = 0, done = 0;
+    m.sections.forEach(s => s.tasks.forEach(t => { total++; if (isDone(t.id)) done++; }));
+    const gDone = m.gates.filter(g => isDone(g.id)).length;
+    return { total, done, gates: m.gates.length, gDone, gateOpen: m.gates.length > 0 && gDone === m.gates.length };
+  }
+
+  async function toggle(id, checked) {
+    if (!db || !canWrite || saving.has(id)) return;
+    saving.add(id);
+    const prev = state[id];
+    state[id] = checked ? { done: true, by: myId, at: new Date().toISOString() } : { done: false };
+    render();
+    try {
+      await db.collection("estado").doc(id).set(state[id]);
+    } catch (err) {
+      state[id] = prev; render();
+      if (err && err.code === "invalid_argument") { canWrite = false; showNote("No tienes permiso para marcar tareas en este tablero. Pide al propietario acceso de colaborador."); render(); }
+      else showNote("No se pudo guardar el cambio. Revisa tu conexión y vuelve a intentarlo.");
+    } finally { saving.delete(id); }
+  }
+
+  function showNote(text) { const n = $("note"); n.textContent = text; n.hidden = !text; }
+
+  function fmtDate(iso) {
+    try { return new Date(iso).toLocaleDateString("es", { day: "numeric", month: "short" }); } catch (e) { return ""; }
+  }
+
+  function row(item, opts, profiles) {
+    const li = el("li", "item");
+    li.dataset.done = String(isDone(item.id));
+    const cb = el("input", "check");
+    cb.type = "checkbox"; cb.id = "cb-" + item.id; cb.checked = isDone(item.id);
+    cb.disabled = !canWrite;
+    cb.setAttribute("aria-label", (opts.gate ? "Criterio de salida: " : item.id + ": ") + item.text);
+    cb.addEventListener("change", () => toggle(item.id, cb.checked));
+    li.appendChild(cb);
+    if (!opts.gate) li.appendChild(el("span", "tid", item.id));
+    const body = el("div", "body");
+    const label = el("label", "text", item.text); label.htmlFor = cb.id;
+    body.appendChild(label);
+    const meta = el("div", "meta");
+    (item.repos || []).forEach(r => meta.appendChild(el("span", "repo " + r, r)));
+    if (item.refs) meta.appendChild(el("span", "refs", item.refs));
+    const st = state[item.id];
+    if (st && st.done) {
+      const who = el("span", "who");
+      const p = st.by && profiles ? profiles[st.by] : null;
+      if (p && p.avatarUrl) { const img = el("img"); img.src = p.avatarUrl; img.alt = ""; who.appendChild(img); }
+      who.appendChild(el("span", null, "✓ " + ((p && p.name) || "Alguien del equipo") + (st.at ? " · " + fmtDate(st.at) : "")));
+      meta.appendChild(who);
+    }
+    if (meta.childNodes.length) body.appendChild(meta);
+    li.appendChild(body);
+    return li;
+  }
+
+  let renderSeq = 0;
+  async function render() {
+    const seq = ++renderSeq;
+    const ids = [...new Set(Object.values(state).filter(s => s && s.done && s.by).map(s => s.by))];
+    let profiles = null;
+    if (user && ids.length) { try { profiles = await user.profiles(ids); } catch (e) { profiles = null; } }
+    if (seq !== renderSeq) return;
+
+    // Totales
+    const total = allTasks.length, done = allTasks.filter(t => isDone(t.id)).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    $("pct").innerHTML = ""; $("pct").append(String(pct)); $("pct").appendChild(el("small", null, "%"));
+    $("count").textContent = done + " de " + total + " tareas";
+
+    // Franja
+    const strip = $("strip"); strip.innerHTML = "";
+    PLAN.forEach(m => {
+      const s = msStats(m);
+      const a = el("a", "ms-chip"); a.href = "#" + m.id;
+      a.dataset.complete = String(s.total > 0 && s.done === s.total);
+      a.dataset.gate = String(s.gateOpen);
+      const k = el("div", "k"); k.append(el("span", "code", SHORT[m.id] || m.id), el("span", "n", s.done + "/" + s.total));
+      const bar = el("div", "bar"); const fill = el("span"); fill.style.width = (s.total ? s.done / s.total * 100 : 0) + "%"; bar.appendChild(fill);
+      a.append(k, el("span", "name", m.title.replace(/^[A-Z0-9]+ — /, "")), bar);
+      a.title = m.title + (s.gates ? " · puerta " + s.gDone + "/" + s.gates : "");
+      strip.appendChild(a);
+    });
+
+    // Tablero
+    const board = $("board"); board.innerHTML = "";
+    const frag = document.createDocumentFragment();
+    let shown = 0;
+    PLAN.forEach(m => {
+      const s = msStats(m);
+      const sec = el("section", "milestone"); sec.id = m.id;
+      const head = el("div", "ms-head");
+      const left = el("div");
+      left.appendChild(el("div", "weeks", m.weeks || "Tras la beta"));
+      left.appendChild(el("h2", null, m.title));
+      if (m.goal) left.appendChild(el("p", "goal", m.goal));
+      head.append(left, el("div", "tally", s.done + " de " + s.total + " tareas" + (s.gates ? " · puerta " + s.gDone + "/" + s.gates : "")));
+      sec.appendChild(head);
+      let any = false;
+      m.sections.forEach(sct => {
+        const vis = sct.tasks.filter(matches);
+        if (!vis.length) return;
+        any = true; shown += vis.length;
+        const box = el("div", "section");
+        if (m.sections.length > 1 || sct.title !== "Tareas") box.appendChild(el("h3", null, sct.title));
+        const ul = el("ul", "list");
+        vis.forEach(t => ul.appendChild(row(t, {}, profiles)));
+        box.appendChild(ul); sec.appendChild(box);
+      });
+      const filtering = ui.pending || ui.repos.size || ui.q;
+      if (m.gates.length && !filtering) {
+        const g = el("div", "gate"); g.dataset.open = String(s.gateOpen);
+        const h = el("h3"); h.append(el("span", null, "Puerta de salida"), el("span", "lock", s.gateOpen ? "SUPERADA" : s.gDone + "/" + s.gates));
+        g.appendChild(h);
+        const ul = el("ul", "list");
+        m.gates.forEach(gt => ul.appendChild(row(gt, { gate: true }, profiles)));
+        g.appendChild(ul); sec.appendChild(g); any = true;
+      }
+      if (any) frag.appendChild(sec);
+    });
+    if (!shown && (ui.pending || ui.repos.size || ui.q)) frag.appendChild(el("p", "empty", "Ninguna tarea coincide con los filtros."));
+    board.appendChild(frag);
+  }
+
+  render();
+
+  // Conexión con el estado compartido
+  (async function connect() {
+    if (!window.claude || typeof window.claude.use !== "function") {
+      setStatus("off", "Vista de solo lectura: abre el tablero en Claude para marcar tareas.");
+      return;
+    }
+    try { user = await window.claude.use("user"); } catch (e) { user = null; }
+    try { db = await window.claude.use("db"); } catch (e) { db = null; }
+    if (!db) { setStatus("off", "Vista de solo lectura: inicia sesión para ver y marcar el avance del equipo."); return; }
+    if (user) {
+      try { myId = await user.id(); } catch (e) { myId = null; }
+      let w = null; try { w = await user.can("data.write"); } catch (e) { w = null; }
+      canWrite = w !== false;
+    } else { canWrite = true; }
+
+    let settled = false;
+    const timer = setTimeout(() => { if (!settled) setStatus("warn", "No se pudo cargar el estado compartido todavía. Lo que ves puede no estar al día."); }, 10000);
+    db.collection("estado").onSnapshot(snap => {
+      snap.docs.forEach(d => { if (!saving.has(d.id)) state[d.id] = d.data(); });
+      snap.docChanges().forEach(c => { if (c.type === "removed") delete state[c.doc.id]; });
+      if (!snap.metadata.fromCache) {
+        settled = true; clearTimeout(timer);
+        setStatus("live", canWrite ? "En vivo · los cambios se guardan para todo el equipo" : "En vivo · solo lectura para tu nivel de acceso");
+      }
+      render();
+    }, err => {
+      settled = true; clearTimeout(timer);
+      setStatus("off", "Se perdió la conexión con el estado compartido. Recarga la página para reconectar.");
+    });
+  })();
+
+  // Navegación por hash
+  function goHash() {
+    const id = location.hash.slice(1);
+    if (!id) return;
+    const t = document.getElementById(id);
+    if (t) t.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", goHash);
+  setTimeout(goHash, 0);
+})();
+</script>

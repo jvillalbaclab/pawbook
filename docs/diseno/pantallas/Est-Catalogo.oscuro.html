@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>PawBook — Catálogo de estados</title>
+
+<link rel="stylesheet" href="pb-dark.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#B4361A}a:hover{color:#8A2912}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div class="pb-dark" style="width: 100%; min-height: 900px; box-sizing: border-box; background: #FAF9F6; color: #1C1917; font-family: 'DM Sans', system-ui, sans-serif;">
+<div style="max-width: 1320px; margin: 0 auto; padding: 40px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
+
+  <div>
+    <h1 style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -0.02em;">Estados vacíos y de error</h1>
+    <p style="margin: 8px 0 0; font-size: 16px; color: #44403C; max-width: 720px; line-height: 1.5;">Cada estado explica qué pasa y ofrece una sola acción clara. Mismo patrón en web y móvil.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px;">
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F3F1EC; color: #44403C; font-size: 12px; font-weight: 700;">Vacío · Notificaciones</span>
+      <div aria-hidden="true" style="width: 72px; height: 72px; margin-top: 10px; border-radius: 36px; background: #FFF1EC; color: #D63A1A; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></div>
+      <h2 style="margin: 4px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Todo tranquilo por aquí</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Te avisaremos cuando alguien reaccione, comente o siga a Luna.</p>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F3F1EC; color: #44403C; font-size: 12px; font-weight: 700;">Vacío · Mensajes</span>
+      <div aria-hidden="true" style="width: 72px; height: 72px; margin-top: 10px; border-radius: 36px; background: #FFF1EC; color: #D63A1A; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></div>
+      <h2 style="margin: 4px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Aún no tienes matches</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Cuando otra mascota también marque interés, podréis chatear aquí.</p>
+      <a href="Mobile-PawMates.html" style="margin-top: 4px; height: 42px; padding: 0 18px; border-radius: 14px; background: #D63A1A; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 700; display: flex; align-items: center;">Ir a PawMates</a>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F3F1EC; color: #44403C; font-size: 12px; font-weight: 700;">Vacío · Búsqueda</span>
+      <label style="align-self: stretch; display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; margin-top: 6px; border-radius: 14px; border: 1px solid #E7E5E4; background: #FAF9F6; color: #57534E;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+        <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Buscar</span>
+        <input type="search" value="dálmata azul" style="flex-grow: 1; min-width: 0; border: none; outline: none; background: transparent; font-size: 14px; color: #1C1917;">
+      </label>
+      <h2 style="margin: 6px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Sin resultados para «dálmata azul»</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Prueba con el nombre, el @usuario o solo la raza.</p>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
+        <button style="height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid #E7E5E4; background: #FFFFFF; color: #44403C; font-size: 13px; font-weight: 600;">dálmata</button>
+        <button style="height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid #E7E5E4; background: #FFFFFF; color: #44403C; font-size: 13px; font-weight: 600;">#dalmatas</button>
+      </div>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F3F1EC; color: #44403C; font-size: 12px; font-weight: 700;">Vacío · Guardados</span>
+      <div aria-hidden="true" style="width: 72px; height: 72px; margin-top: 10px; border-radius: 36px; background: #FFF1EC; color: #D63A1A; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v16l-5-4-5 4z"/></svg></div>
+      <h2 style="margin: 4px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Nada guardado todavía</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Toca el marcador de una publicación para guardarla aquí. Solo tú ves esta colección.</p>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #FECACA; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #FEF2F2; color: #991B1B; font-size: 12px; font-weight: 700;">Error · Moderación</span>
+      <div aria-hidden="true" style="width: 72px; height: 72px; margin-top: 10px; border-radius: 36px; background: #FEF2F2; color: #B91C1C; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M12 8v5M12 16h.01"/></svg></div>
+      <h2 style="margin: 4px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">No pudimos publicar esta foto</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Parece que incumple las normas de la comunidad. El texto se ha conservado.</p>
+      <button style="margin-top: 4px; height: 42px; padding: 0 18px; border-radius: 14px; border: none; background: #1C1917; color: #FFFFFF; font-size: 14px; font-weight: 700;">Elegir otra foto</button>
+      <a href="#" style="font-size: 13px; font-weight: 700; text-decoration: none;">¿Es un error? Pedir revisión</a>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #FEF2F2; color: #991B1B; font-size: 12px; font-weight: 700;">Error · Subida de imagen</span>
+      <div style="margin-top: 6px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+        <div role="img" aria-label="Foto 1 lista" style="aspect-ratio: 1; border-radius: 12px; background: #E5DEFF;"></div>
+        <div role="img" aria-label="Foto 2 lista" style="aspect-ratio: 1; border-radius: 12px; background: #F4D9B8;"></div>
+        <div role="img" aria-label="Foto 3 con error" style="aspect-ratio: 1; border-radius: 12px; background: #FEF2F2; border: 2px solid #DC2626; display: flex; align-items: center; justify-content: center; color: #B91C1C;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg></div>
+      </div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #991B1B; font-weight: 600;">La foto 3 pesa 22 MB. El máximo es 15 MB.</p>
+      <p style="margin: 0; font-size: 13px; color: #44403C;">Formatos: JPEG, PNG, WebP o HEIC. Hasta 10 fotos.</p>
+      <div style="display: flex; gap: 8px;">
+        <button style="height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid #D6D3D1; background: #FFFFFF; color: #1C1917; font-size: 13px; font-weight: 700;">Quitar foto 3</button>
+        <button style="height: 40px; padding: 0 14px; border-radius: 12px; border: none; background: #1C1917; color: #FFFFFF; font-size: 13px; font-weight: 700;">Reemplazar</button>
+      </div>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F3F1EC; color: #44403C; font-size: 12px; font-weight: 700;">No encontrado · Perfil</span>
+      <div style="margin-top: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 52px; letter-spacing: -0.04em; color: #D6D3D1;" aria-hidden="true">404</div>
+      <h2 style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Esta mascota no está por aquí</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">El perfil no existe o su responsable lo ha archivado.</p>
+      <a href="Desktop-Feed.html" style="margin-top: 4px; height: 42px; padding: 0 18px; border-radius: 14px; background: #1C1917; color: #FFFFFF; text-decoration: none; font-size: 14px; font-weight: 700; display: flex; align-items: center;">Volver al inicio</a>
+    </article>
+
+    <article style="padding: 22px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E7E5E4; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+      <span style="align-self: flex-start; padding: 3px 10px; border-radius: 9px; background: #F5F3FF; color: #5B21B6; font-size: 12px; font-weight: 700;">Límite · Pies de foto con IA</span>
+      <div aria-hidden="true" style="width: 72px; height: 72px; margin-top: 10px; border-radius: 36px; background: #F5F3FF; color: #6D28D9; display: flex; align-items: center; justify-content: center;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.6 4.4L18 10l-4.4 1.6L12 16l-1.6-4.4L6 10l4.4-1.6z"/><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></div>
+      <h2 style="margin: 4px 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px;">Has usado tus 20 sugerencias de hoy</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #44403C;">Mañana tendrás nuevas. Mientras tanto, puedes escribir el pie tú mismo.</p>
+    </article>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.dark ? 'pb-dark' : '' };
+  }
+}
+</script>
+</body>
+</html>
