@@ -21,6 +21,12 @@
   "pets": {
     "publishingAs": "Publicando como",
     "activePetLabel": "Mascota activa: {name}. Cambiar mascota",
+    "switcherLabel": "Tus mascotas",
+    "addPet": "Añadir mascota",
+    "loading": "Cargando tus mascotas…",
+    "loadError": "No pudimos cargar tus mascotas",
+    "noPets": "Aún no tienes mascotas",
+    "createFirst": "Crea tu mascota",
     "species": {
       "dog": "Perro",
       "cat": "Gato"

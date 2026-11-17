@@ -1,7 +1,9 @@
 import type { AuthSession } from "@pawbook/contracts";
 import type { paths } from "@pawbook/contracts/openapi";
 import createClient from "openapi-fetch";
+import { activePetStore } from "@/stores/active-pet";
 import { useAuthStore } from "@/stores/auth";
+import { createActivePetFetch } from "./active-pet-header";
 import { createAuthFetch } from "./auth-fetch";
 import { networkError, toApiError } from "./problem";
 import { browserLock, createSessionController, type SessionController } from "./session";
@@ -46,11 +48,14 @@ export function createApiClient(options: {
   baseUrl: string;
   session: SessionController;
   fetch?: FetchLike;
+  /** Mascota activa para `X-Pet-Id` (ver active-pet-header.ts). Por defecto, ninguna. */
+  activePetId?: () => string | null;
 }) {
+  const authFetch = createAuthFetch(options.session, options.fetch ?? browserFetch);
   return createClient<paths>({
     baseUrl: options.baseUrl,
     credentials: "include",
-    fetch: createAuthFetch(options.session, options.fetch ?? browserFetch),
+    fetch: createActivePetFetch(options.activePetId ?? (() => null), authFetch),
   });
 }
 
@@ -77,4 +82,8 @@ export const session = createSessionController({
   onChange: (user) => useAuthStore.getState().setUser(user),
 });
 
-export const api = createApiClient({ baseUrl: API_URL, session });
+export const api = createApiClient({
+  baseUrl: API_URL,
+  session,
+  activePetId: () => activePetStore.getState().activePetId,
+});

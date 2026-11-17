@@ -13,7 +13,7 @@ import {
   viewStateOf,
 } from "@/design-system/states";
 import type { FeedTab } from "@/lib/types";
-import { useActivePet } from "@/stores/active-pet";
+import { useRequiredActivePet } from "@/stores/active-pet";
 import { useFeed, useReact, useToggleSave } from "../use-feed";
 import { Composer } from "./composer";
 import { PostCard } from "./post-card";
@@ -25,7 +25,7 @@ const TABS: { id: FeedTab; labelKey: "forYou" | "following" }[] = [
 
 export function FeedView() {
   const t = useTranslations("feed");
-  const activePet = useActivePet();
+  const activePet = useRequiredActivePet();
   const [tab, setTab] = useState<FeedTab>("for-you");
   const feed = useFeed(tab, activePet.id);
   const react = useReact();

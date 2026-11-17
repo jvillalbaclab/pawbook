@@ -15,12 +15,12 @@ import {
 } from "@/design-system/states";
 import { fmt } from "@/i18n/formatters";
 import { getCandidates } from "@/lib/api";
-import { useActivePet } from "@/stores/active-pet";
+import { useRequiredActivePet } from "@/stores/active-pet";
 import { decide, INITIAL_DECK } from "./deck";
 
 export function PawMatesView() {
   const t = useTranslations("pawmates");
-  const activePet = useActivePet();
+  const activePet = useRequiredActivePet();
   const candidates = useQuery({ queryKey: ["candidates"], queryFn: getCandidates });
   const [deck, setDeck] = useState(INITIAL_DECK);
 

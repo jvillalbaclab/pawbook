@@ -8,14 +8,14 @@ import { VerifiedBadge } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
 import { fmt } from "@/i18n/formatters";
 import { getCandidates, getSuggestedPets, listAdoptions } from "@/lib/api";
-import { useActivePet } from "@/stores/active-pet";
+import { useRequiredActivePet } from "@/stores/active-pet";
 
 /** Tercera columna (≥ 1.280 px): PawMates cerca, adopción destacada y sugerencias. */
 export function RightRail() {
   const t = useTranslations("rightRail");
   const tPawmates = useTranslations("pawmates");
   const tAdoption = useTranslations("adoption");
-  const activePet = useActivePet();
+  const activePet = useRequiredActivePet();
   const candidates = useQuery({ queryKey: ["candidates"], queryFn: getCandidates });
   const urgent = useQuery({
     queryKey: ["adoptions", "urgent"],

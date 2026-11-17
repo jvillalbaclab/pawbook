@@ -18,6 +18,7 @@ import { TimeLabel } from "@/design-system/time-label";
 import { fmt } from "@/i18n/formatters";
 import { getConversation } from "@/lib/api";
 import type { ChatMessage } from "@/lib/types";
+import { useRequiredActivePet } from "@/stores/active-pet";
 import { appendMessage, MAX_MESSAGE_LENGTH } from "./messages";
 
 /**
@@ -30,6 +31,8 @@ export function ChatView({ conversationId }: { conversationId: string }) {
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversation(conversationId),
   });
+  // TEMPORAL (datos de ejemplo): con Stream Chat, la mascota propia saldrá del canal.
+  const myPetName = useRequiredActivePet().name;
   const [sent, setSent] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const inputId = useId();
@@ -124,7 +127,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-canvas p-4 lg:p-6">
         {chat.kind === "pawmates" && (
           <p className="self-center rounded-control border border-primary-line bg-primary-tint px-4 py-2 text-center text-[13px] font-semibold text-primary-ink">
-            {t("matchBanner", { myPet: chat.myPetName, pet: chat.pet.name })}
+            {t("matchBanner", { myPet: myPetName, pet: chat.pet.name })}
           </p>
         )}
         {messages.map((message) => (
@@ -192,7 +195,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder={t("placeholder", { name: chat.myPetName })}
+          placeholder={t("placeholder", { name: myPetName })}
           className="h-11 min-w-0 flex-1 rounded-full border border-line bg-canvas px-4 text-[15px] text-ink outline-none placeholder:text-muted focus:border-line-strong"
         />
         <button

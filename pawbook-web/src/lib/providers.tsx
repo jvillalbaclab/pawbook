@@ -1,10 +1,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { SessionBootstrap } from "@/features/auth/session-bootstrap";
+import { ActivePetSync } from "@/features/pets/active-pet-sync";
 import { BrowserTimeZoneProvider } from "@/i18n/browser-time-zone";
-import { useActivePetStore } from "@/stores/active-pet";
 import { isApiError } from "./api-client/problem";
 
 /** Reintentos de TanStack Query: solo fallos de red o del servidor, nunca un 4xx. */
@@ -22,14 +22,11 @@ export function Providers({ children }: { children: ReactNode }) {
       }),
   );
 
-  useEffect(() => {
-    void useActivePetStore.persist.rehydrate();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserTimeZoneProvider>
         <SessionBootstrap />
+        <ActivePetSync />
         {children}
       </BrowserTimeZoneProvider>
     </QueryClientProvider>
