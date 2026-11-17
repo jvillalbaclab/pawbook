@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "@hono/zod-openapi";
-import { ProblemSchema } from "@pawbook/contracts";
+import { PaginationQuerySchema, ProblemSchema, pageSchema } from "@pawbook/contracts";
 import pino from "pino";
 import { AppError } from "../shared/errors";
-import { isUuidV7 } from "../shared/ids";
+import { isUuidV7, uuidv7 } from "../shared/ids";
+import { decodeCursor, fetchSize, isAfterCursor, toPage } from "../shared/pagination";
 import { createApp } from "./app";
+import { MemoryIdempotencyStore } from "./idempotency/store";
+import { MemoryRateLimitStore } from "./rate-limit/store";
 import type { ReadinessCheck } from "./types";
 
 const silent = pino({ level: "silent" });
@@ -15,6 +18,9 @@ function buildApp(readinessChecks: ReadinessCheck[] = []) {
     version: "9.9.9",
     corsOrigins: ["http://localhost:3000"],
     readinessChecks,
+    trustedProxyHops: 0,
+    rateLimitStore: new MemoryRateLimitStore(),
+    idempotencyStore: new MemoryIdempotencyStore(),
   });
 }
 
@@ -170,5 +176,77 @@ describe("GET /v1/openapi.json", () => {
     const doc = (await res.json()) as { openapi: string; paths: Record<string, unknown> };
     expect(doc.openapi).toBe("3.1.0");
     expect(Object.keys(doc.paths)).toEqual(expect.arrayContaining(["/v1/health", "/v1/ready"]));
+  });
+});
+
+describe("paginación por cursor", () => {
+  // 45 mascotas ordenadas por id DESC, como haría el `ORDER BY` del repositorio. Se ordena
+  // explícitamente: dentro del mismo milisegundo los UUIDv7 no salen en orden de creación.
+  const pets = Array.from({ length: 45 }, (_, n) => ({ id: uuidv7(), name: `pet-${n}` })).sort(
+    (a, b) => (a.id < b.id ? 1 : -1),
+  );
+  const PetSchema = z.object({ id: z.string(), name: z.string() });
+
+  function buildPagedApp() {
+    const app = buildApp();
+    app.openapi(
+      {
+        method: "get",
+        path: "/v1/test/pets",
+        request: { query: PaginationQuerySchema },
+        responses: {
+          200: {
+            description: "Página",
+            content: { "application/json": { schema: pageSchema(PetSchema) } },
+          },
+        },
+      },
+      (c) => {
+        const { cursor, limit } = c.req.valid("query");
+        const after = cursor === undefined ? undefined : decodeCursor(cursor);
+        const rows = pets
+          .filter((pet) => after === undefined || isAfterCursor(pet, after))
+          .slice(0, fetchSize(limit));
+        return c.json(
+          toPage(rows, limit, (pet) => ({ id: pet.id })),
+          200,
+        );
+      },
+    );
+    return app;
+  }
+
+  test("limit 20 por defecto y nextCursor hasta la última página", async () => {
+    const app = buildPagedApp();
+    const names: string[] = [];
+    const sizes: number[] = [];
+    let cursor: string | null = null;
+    do {
+      const query: string = cursor === null ? "" : `?cursor=${cursor}`;
+      const res = await app.request(`/v1/test/pets${query}`);
+      expect(res.status).toBe(200);
+      const page = pageSchema(PetSchema).parse(await res.json());
+      sizes.push(page.items.length);
+      names.push(...page.items.map((pet) => pet.name));
+      cursor = page.nextCursor;
+    } while (cursor !== null);
+    expect(sizes).toEqual([20, 20, 5]);
+    expect(names).toEqual(pets.map((pet) => pet.name));
+  });
+
+  test("un cursor corrupto devuelve 400 problem+json, nunca 500", async () => {
+    const res = await buildPagedApp().request("/v1/test/pets?cursor=no-es-un-cursor");
+    expect(res.status).toBe(400);
+    expect(res.headers.get("content-type")).toContain("application/problem+json");
+    expect(ProblemSchema.parse(await res.json()).type).toBe(
+      "https://pawbook.app/problems/bad-request",
+    );
+  });
+
+  test("limit fuera de 1-50 devuelve 422", async () => {
+    const app = buildPagedApp();
+    expect((await app.request("/v1/test/pets?limit=51")).status).toBe(422);
+    expect((await app.request("/v1/test/pets?limit=0")).status).toBe(422);
+    expect((await app.request("/v1/test/pets?limit=50")).status).toBe(200);
   });
 });

@@ -19,6 +19,12 @@ const ConfigSchema = z.object({
         .map((origin) => origin.trim())
         .filter((origin) => origin.length > 0),
     ),
+  /*
+   * Proxies de confianza delante de la API (balanceador, CDN). Con 0 se ignora
+   * `X-Forwarded-For`, que el cliente puede falsificar; con N se toma la N-ésima IP desde la
+   * derecha. Solo debe subirse si la API no es accesible saltándose esos proxies.
+   */
+  TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

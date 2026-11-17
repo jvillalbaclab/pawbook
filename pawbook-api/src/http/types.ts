@@ -5,6 +5,13 @@ export type AppEnv = {
   Variables: {
     requestId: string;
     logger: Logger;
+    /** IP del cliente resuelta por `clientIp` (respeta la configuración de proxies de confianza). */
+    clientIp: string;
+    /**
+     * Usuario autenticado. Lo rellenará el middleware de auth (T-M0.25+), que debe ir antes
+     * de `rateLimit` e `idempotency` para que estos usen el usuario y no la IP como clave.
+     */
+    userId?: string;
   };
 };
 

@@ -12,6 +12,8 @@ describe("loadConfig", () => {
     expect(config.PORT).toBe(3001);
     expect(config.NODE_ENV).toBe("development");
     expect(config.CORS_ORIGINS).toEqual(["http://a.test", "http://b.test"]);
+    // Sin proxies de confianza declarados no se cree a X-Forwarded-For.
+    expect(config.TRUSTED_PROXY_HOPS).toBe(0);
   });
 
   test("falla nombrando la variable sin revelar su valor", () => {

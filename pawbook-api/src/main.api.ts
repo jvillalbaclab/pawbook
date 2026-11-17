@@ -2,6 +2,8 @@ import packageJson from "../package.json" with { type: "json" };
 import { loadConfig } from "./composition/config";
 import { createContainer } from "./composition/container";
 import { createApp } from "./http/app";
+import { ValkeyIdempotencyStore } from "./http/idempotency/valkey-store";
+import { ValkeyRateLimitStore } from "./http/rate-limit/valkey-store";
 
 /*
  * Entrypoint HTTP. Usa Bun.serve si corre en Bun y @hono/node-server en Node 22: el mismo
@@ -15,6 +17,9 @@ const app = createApp({
   version: packageJson.version,
   corsOrigins: config.CORS_ORIGINS,
   readinessChecks: container.readinessChecks,
+  trustedProxyHops: config.TRUSTED_PROXY_HOPS,
+  rateLimitStore: new ValkeyRateLimitStore(container.valkey),
+  idempotencyStore: new ValkeyIdempotencyStore(container.valkey),
 });
 
 type Stoppable = { stop(): Promise<void> };

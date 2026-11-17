@@ -5,8 +5,19 @@ import { secureHeaders } from "hono/secure-headers";
 import type { Logger } from "pino";
 import { AppError } from "../shared/errors";
 import { uuidv7 } from "../shared/ids";
+import { REPLAYED_HEADER } from "./idempotency/middleware";
+import type { IdempotencyStore } from "./idempotency/store";
+import { clientIp } from "./middleware/client-ip";
 import { handleError, handleNotFound } from "./middleware/errors";
 import { requestLogger } from "./middleware/request-logger";
+import { registerSharedComponents } from "./openapi-components";
+import {
+  RATE_LIMIT_EXPOSED_HEADERS,
+  RATE_LIMITS,
+  type RateLimitPolicy,
+  rateLimit,
+} from "./rate-limit/middleware";
+import type { RateLimitStore } from "./rate-limit/store";
 import { systemRoutes } from "./routes/system";
 import type { AppEnv, ReadinessCheck } from "./types";
 
@@ -15,6 +26,13 @@ export type AppDependencies = {
   version: string;
   corsOrigins: readonly string[];
   readinessChecks: readonly ReadinessCheck[];
+  /** Proxies de confianza delante de la API (ver `TRUSTED_PROXY_HOPS`). */
+  trustedProxyHops: number;
+  rateLimitStore: RateLimitStore;
+  /** Almacén de `Idempotency-Key` para las rutas de creación de los módulos. */
+  idempotencyStore: IdempotencyStore;
+  /** Límite global de /v1. Por defecto, 120 solicitudes/min (NFR-SEC-004). */
+  globalRateLimit?: RateLimitPolicy;
 };
 
 /** Cabeceras que los clientes envían además de las simples (§4.4, NFR-REL-001). */
@@ -25,6 +43,9 @@ const ALLOWED_HEADERS = [
   "X-Pet-Id",
   "X-Request-Id",
 ];
+
+/** Sondas del orquestador: se llaman cada pocos segundos y nunca deben recibir 429. */
+const RATE_LIMIT_EXEMPT_PATHS = new Set(["/v1/health", "/v1/ready"]);
 
 export function createApp(deps: AppDependencies) {
   const app = new OpenAPIHono<AppEnv>({
@@ -44,6 +65,7 @@ export function createApp(deps: AppDependencies) {
   // Acepta el X-Request-Id entrante (balanceador, web) o genera un UUIDv7.
   app.use(requestId({ generator: () => uuidv7() }));
   app.use(requestLogger(deps.logger));
+  app.use(clientIp({ trustedProxyHops: deps.trustedProxyHops }));
   app.use(
     secureHeaders({
       // Es una API JSON: no carga recursos ni debe incrustarse en ningún sitio.
@@ -56,13 +78,24 @@ export function createApp(deps: AppDependencies) {
       origin: [...deps.corsOrigins],
       credentials: true,
       allowHeaders: ALLOWED_HEADERS,
-      exposeHeaders: ["X-Request-Id"],
+      exposeHeaders: ["X-Request-Id", ...RATE_LIMIT_EXPOSED_HEADERS, REPLAYED_HEADER],
       maxAge: 600,
+    }),
+  );
+  // Va después de CORS para que un 429 lleve sus cabeceras y el navegador pueda leerlo.
+  // El middleware de auth, cuando exista, debe ir antes para que la clave sea el usuario.
+  app.use(
+    "/v1/*",
+    rateLimit({
+      ...(deps.globalRateLimit ?? RATE_LIMITS.default),
+      store: deps.rateLimitStore,
+      skip: (c) => RATE_LIMIT_EXEMPT_PATHS.has(c.req.path),
     }),
   );
 
   app.route("/v1", systemRoutes({ version: deps.version, checks: deps.readinessChecks }));
 
+  registerSharedComponents(app);
   app.doc31("/v1/openapi.json", {
     openapi: "3.1.0",
     info: { title: "PawBook API", version: deps.version },
