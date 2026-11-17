@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Avatar } from "@/design-system/avatar";
 import { BookmarkIcon, MessageIcon, MoreIcon } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
+import { TimeLabel } from "@/design-system/time-label";
+import { fmt } from "@/i18n/formatters";
 import type { Pet, Post, ReactionKind } from "@/lib/types";
 import { ReactionBar } from "./reaction-bar";
 
@@ -42,7 +44,7 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
             {author.name}
           </Link>
           <p className="truncate text-xs text-muted">
-            @{author.handle} · {post.timeLabel}
+            @{author.handle} · <TimeLabel date={post.createdAt} />
             {post.location ? ` · ${post.location}` : ""}
           </p>
         </div>
@@ -78,7 +80,7 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
           <span className="flex h-10 items-center gap-1 px-1.5 text-[13px] font-semibold text-ink-2">
             <MessageIcon size={20} />
             <span className="sr-only">Comentarios:</span>
-            {post.commentCount}
+            {fmt.compact(post.commentCount)}
           </span>
           <button
             type="button"
@@ -101,7 +103,7 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
               <Avatar name={comment.author.name} tone={comment.author.tone} size={30} />
               <p className="text-sm leading-snug text-ink">
                 <strong>{comment.author.name}</strong> {comment.text}
-                <span className="mt-0.5 block text-xs text-muted">{comment.timeLabel}</span>
+                <TimeLabel date={comment.createdAt} className="mt-0.5 block text-xs text-muted" />
               </p>
             </div>
           ))}

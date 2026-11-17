@@ -13,6 +13,8 @@ import {
   Skeleton,
   STATE_ACTION_CLASSES,
 } from "@/design-system/states";
+import { TimeLabel } from "@/design-system/time-label";
+import { fmt } from "@/i18n/formatters";
 import { getConversation } from "@/lib/api";
 import type { ChatMessage } from "@/lib/types";
 import { appendMessage, MAX_MESSAGE_LENGTH } from "./messages";
@@ -74,7 +76,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
   function send(event: FormEvent) {
     event.preventDefault();
-    const now = new Date().toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+    const now = new Date().toISOString();
     setSent((current) => {
       const next = appendMessage(
         [...chat.messages, ...current],
@@ -103,7 +105,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
             {chat.pet.name}{" "}
             <span className="font-sans text-[13px] font-medium text-muted">
               · {chat.pet.breed}
-              {chat.distanceLabel ? ` · ${chat.distanceLabel}` : ""}
+              {chat.distanceKm !== undefined ? ` · ${fmt.distanceKm(chat.distanceKm)}` : ""}
             </span>
           </p>
           <p className={`text-xs font-semibold ${chat.typing ? "text-success-ink" : "text-muted"}`}>
@@ -147,7 +149,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
               <p
                 className={`mt-1 text-[11px] ${message.fromMe ? "text-right opacity-75" : "text-muted"}`}
               >
-                {message.timeLabel}
+                <TimeLabel date={message.sentAt} variant="clock" />
                 {message.status ? ` · ${STATUS_LABEL[message.status]}` : ""}
               </p>
             </div>

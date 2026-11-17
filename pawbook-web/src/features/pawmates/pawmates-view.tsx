@@ -12,6 +12,7 @@ import {
   Skeleton,
   STATE_ACTION_CLASSES,
 } from "@/design-system/states";
+import { fmt } from "@/i18n/formatters";
 import { getCandidates } from "@/lib/api";
 import { useActivePet } from "@/stores/active-pet";
 import { decide, INITIAL_DECK } from "./deck";
@@ -79,7 +80,7 @@ export function PawMatesView() {
                 </span>
               )}
               <span className="absolute top-3.5 right-3.5 rounded-[14px] bg-white px-3 py-1.5 text-xs font-bold text-stone-900">
-                ≈ {current.distanceKm} km
+                {fmt.distanceKm(current.distanceKm)}
               </span>
             </Photo>
             <div className="flex flex-col gap-2.5 p-4">

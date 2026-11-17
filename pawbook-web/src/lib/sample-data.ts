@@ -10,6 +10,9 @@ import type { AdoptionListing, Conversation, PawMateCandidate, Pet, Post } from 
  * abierto (PRD Q1).
  */
 
+/** Marca de tiempo ISO relativa al arranque, para que los tiempos relativos tengan sentido. */
+const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
+
 export const MY_PETS: Pet[] = [
   {
     id: "pet-luna",
@@ -116,7 +119,7 @@ export const POSTS: Post[] = [
   {
     id: "post-1",
     author: toby,
-    timeLabel: "hace 2 h",
+    createdAt: minutesAgo(120),
     location: "Parque central",
     mood: "Feliz",
     text: "Primer día en el parque nuevo. Ya tiene tres amigos y cero ganas de volver a casa. #paseo #mestizos",
@@ -130,14 +133,14 @@ export const POSTS: Post[] = [
         id: "c-1",
         author: mishi,
         text: "Yo tampoco volvería. Bueno, yo no salgo, pero entiendo el sentimiento.",
-        timeLabel: "hace 1 h",
+        createdAt: minutesAgo(60),
       },
     ],
   },
   {
     id: "post-2",
     author: mishi,
-    timeLabel: "hace 4 h",
+    createdAt: minutesAgo(240),
     text: "La caja era para el regalo. Ahora es mía. #gatos",
     photo: { tone: "apricot", alt: "Mishi dormido dentro de una caja de cartón", count: 1 },
     reactions: { paw: 58, heart: 140, bone: 0, fish: 22 },
@@ -149,7 +152,7 @@ export const POSTS: Post[] = [
   {
     id: "post-3",
     author: MY_PETS[0],
-    timeLabel: "ayer",
+    createdAt: minutesAgo(26 * 60),
     mood: "Dormilona",
     text: "Sol de las 4 de la tarde, ventana, nada más que añadir.",
     photo: { tone: "lilac", alt: "Luna tumbada al sol junto a la ventana", count: 1 },
@@ -218,24 +221,24 @@ export const CONVERSATIONS: Conversation[] = [
     kind: "pawmates",
     pet: { name: "Kira", handle: "kira.collie", tone: "sky", breed: "Border collie" },
     myPetName: "Rocco",
-    distanceLabel: "≈ 1 km",
+    distanceKm: 1.2,
     online: true,
     typing: true,
     unread: false,
     lastMessage: "Perfecto. Llevamos su pelota favorita",
-    timeLabel: "10:41",
+    lastMessageAt: minutesAgo(19),
     messages: [
       {
         id: "m1",
         fromMe: false,
         text: "¡Hola Rocco! Kira está como loca por correr con alguien de su nivel.",
-        timeLabel: "10:31",
+        sentAt: minutesAgo(29),
       },
       {
         id: "m2",
         fromMe: true,
         text: "Rocco igual, no se cansa nunca. ¿Os viene bien el parque central?",
-        timeLabel: "10:33",
+        sentAt: minutesAgo(27),
         status: "read",
       },
       {
@@ -243,9 +246,15 @@ export const CONVERSATIONS: Conversation[] = [
         fromMe: false,
         text: "Perfecto. Llevamos su pelota favorita",
         photo: { tone: "sky", alt: "Kira con su pelota" },
-        timeLabel: "10:40",
+        sentAt: minutesAgo(20),
       },
-      { id: "m4", fromMe: true, text: "¿Mañana a las 7?", timeLabel: "10:41", status: "delivered" },
+      {
+        id: "m4",
+        fromMe: true,
+        text: "¿Mañana a las 7?",
+        sentAt: minutesAgo(19),
+        status: "delivered",
+      },
     ],
   },
   {
@@ -253,21 +262,21 @@ export const CONVERSATIONS: Conversation[] = [
     kind: "pawmates",
     pet: { name: "Coco", handle: "coco.beagle", tone: "peach", breed: "Beagle" },
     myPetName: "Rocco",
-    distanceLabel: "≈ 3 km",
+    distanceKm: 2.8,
     online: false,
     typing: false,
     unread: true,
     lastMessage: "¿Repetimos el sábado?",
-    timeLabel: "09:12",
+    lastMessageAt: minutesAgo(110),
     messages: [
       {
         id: "m1",
         fromMe: true,
         text: "¡Qué buen paseo el de ayer!",
-        timeLabel: "Ayer",
+        sentAt: minutesAgo(25 * 60),
         status: "read",
       },
-      { id: "m2", fromMe: false, text: "¿Repetimos el sábado?", timeLabel: "09:12" },
+      { id: "m2", fromMe: false, text: "¿Repetimos el sábado?", sentAt: minutesAgo(110) },
     ],
   },
   {
@@ -284,20 +293,20 @@ export const CONVERSATIONS: Conversation[] = [
     typing: false,
     unread: false,
     lastMessage: "Gracias por tu solicitud. Te escribimos esta semana.",
-    timeLabel: "Lun",
+    lastMessageAt: minutesAgo(3 * 24 * 60),
     messages: [
       {
         id: "m1",
         fromMe: true,
         text: "Hola, me gustaría adoptar a Canela.",
-        timeLabel: "Lun",
+        sentAt: minutesAgo(3 * 24 * 60 + 5),
         status: "read",
       },
       {
         id: "m2",
         fromMe: false,
         text: "Gracias por tu solicitud. Te escribimos esta semana.",
-        timeLabel: "Lun",
+        sentAt: minutesAgo(3 * 24 * 60),
       },
     ],
   },

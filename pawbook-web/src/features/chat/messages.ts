@@ -11,9 +11,9 @@ export function appendMessage(
   messages: ChatMessage[],
   rawText: string,
   id: string,
-  timeLabel: string,
+  sentAt: string,
 ): ChatMessage[] {
   const text = rawText.trim().slice(0, MAX_MESSAGE_LENGTH);
   if (!text) return messages;
-  return [...messages, { id, fromMe: true, text, timeLabel, status: "sent" }];
+  return [...messages, { id, fromMe: true, text, sentAt, status: "sent" }];
 }

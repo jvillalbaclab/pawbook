@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { MessageIcon } from "@/design-system/icons";
 import { ErrorState, ListItemSkeleton, LoadingState } from "@/design-system/states";
+import { TimeLabel } from "@/design-system/time-label";
 import { getConversations } from "@/lib/api";
 import type { Conversation } from "@/lib/types";
 
@@ -93,7 +94,11 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
                     <span className="truncate text-[15px] font-bold text-ink">
                       {conversation.pet.name}
                     </span>
-                    <span className="shrink-0 text-xs text-muted">{conversation.timeLabel}</span>
+                    <TimeLabel
+                      date={conversation.lastMessageAt}
+                      variant="conversation"
+                      className="shrink-0 text-xs text-muted"
+                    />
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span

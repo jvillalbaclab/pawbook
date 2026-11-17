@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { BoneIcon, FishIcon, HeartIcon, PawIcon } from "@/design-system/icons";
+import { fmt } from "@/i18n/formatters";
 import type { ReactionCounts, ReactionKind } from "@/lib/types";
 
 const REACTIONS: { kind: ReactionKind; label: string; icon: ComponentType<{ size?: number }> }[] = [
@@ -25,7 +26,7 @@ export function ReactionBar({ counts, mine, onReact }: ReactionBarProps) {
             key={kind}
             type="button"
             aria-pressed={active}
-            aria-label={`Reacción ${label}, ${counts[kind]}`}
+            aria-label={`Reacción ${label}, ${fmt.number(counts[kind])}`}
             onClick={() => onReact(kind)}
             className={`flex h-9 items-center gap-1.5 rounded-full border px-2.5 text-[13px] tabular-nums transition-colors ${
               active
@@ -34,7 +35,7 @@ export function ReactionBar({ counts, mine, onReact }: ReactionBarProps) {
             }`}
           >
             <Icon size={17} />
-            {counts[kind]}
+            {fmt.compact(counts[kind])}
           </button>
         );
       })}

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { Photo } from "@/design-system/photo";
 import { LoadingState, Skeleton } from "@/design-system/states";
+import { fmt } from "@/i18n/formatters";
 import { getMyPets, getPet, getPostsByPet, listPetHandles } from "@/lib/api";
 
 const SPECIES_LABEL = { dog: "Perro", cat: "Gato" } as const;
@@ -70,7 +71,7 @@ async function PetProfile({ params }: { params: Promise<{ handle: string }> }) {
               <div key={label} className="flex flex-col-reverse">
                 <dt className="text-xs text-muted">{label}</dt>
                 <dd className="font-display text-xl font-extrabold text-ink">
-                  {value.toLocaleString("es")}
+                  {fmt.number(value)}
                 </dd>
               </div>
             ))}

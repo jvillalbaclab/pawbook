@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Avatar } from "@/design-system/avatar";
 import { VerifiedBadge } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
+import { fmt } from "@/i18n/formatters";
 import { getCandidates, getSuggestedPets, listAdoptions } from "@/lib/api";
 import { useActivePet } from "@/stores/active-pet";
 
@@ -39,7 +40,7 @@ export function RightRail() {
             <div className="min-w-0">
               <p className="text-sm font-bold text-ink">{pet.name}</p>
               <p className="truncate text-xs text-muted">
-                {pet.breed} · {ENERGY_LABEL[energy]} · ≈ {distanceKm} km
+                {pet.breed} · {ENERGY_LABEL[energy]} · {fmt.distanceKm(distanceKm)}
               </p>
             </div>
           </div>
