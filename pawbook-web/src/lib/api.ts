@@ -1,5 +1,13 @@
 import { applyReaction } from "@/features/feed/reactions";
-import { ADOPTIONS, ALL_PETS, CANDIDATES, CONVERSATIONS, MY_PETS, POSTS } from "./sample-data";
+import {
+  ADOPTIONS,
+  ALL_PETS,
+  CANDIDATES,
+  CONVERSATIONS,
+  MY_PETS,
+  OTHER_PETS,
+  POSTS,
+} from "./sample-data";
 import type {
   AdoptionFilter,
   AdoptionListing,
@@ -13,8 +21,9 @@ import type {
 
 /*
  * Cliente de datos del prototipo. Imita al futuro cliente de /v1: funciones asíncronas
- * que devuelven copias. Las pantallas solo hablan con este módulo, así que conectar la
- * API real es cambiar el interior de estas funciones, no los componentes.
+ * que devuelven copias. Las pantallas solo hablan con este módulo (es el único que
+ * importa `sample-data.ts`, que es TEMPORAL), así que conectar la API real es cambiar
+ * el interior de estas funciones, no los componentes.
  */
 
 const IS_BROWSER = typeof window !== "undefined";
@@ -41,8 +50,24 @@ const FOLLOWING: Record<string, string[]> = {
   "pet-rocco": [],
 };
 
+/**
+ * TEMPORAL hasta T-M0.42: mascotas de la sesión en forma síncrona, para el store de
+ * mascota activa y el selector. Con /v1 llegarán de GET /v1/me/pets vía TanStack Query.
+ */
+export const SESSION_PETS: readonly Pet[] = MY_PETS;
+
 export function getMyPets(): Promise<Pet[]> {
   return respond(MY_PETS);
+}
+
+/** Handles públicos conocidos, para prerenderizar perfiles. */
+export function listPetHandles(): Promise<string[]> {
+  return respond(ALL_PETS.map((pet) => pet.handle));
+}
+
+/** Sugerencias del paso 3 del registro (por especie y cercanía cuando exista /v1). */
+export function getOnboardingSuggestions(): Promise<Pet[]> {
+  return respond(OTHER_PETS);
 }
 
 export function getFeed(tab: FeedTab, activePetId: string): Promise<Post[]> {

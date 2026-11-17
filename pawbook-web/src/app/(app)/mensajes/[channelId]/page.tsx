@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import { ChatView } from "@/features/chat/chat-view";
-import { CONVERSATIONS } from "@/lib/sample-data";
+import { getConversations } from "@/lib/api";
 
 /** Prerenderiza las conversaciones de ejemplo; con la API real serán siempre dinámicas. */
-export function generateStaticParams() {
-  return CONVERSATIONS.map((conversation) => ({ channelId: conversation.id }));
+export async function generateStaticParams() {
+  const conversations = await getConversations();
+  return conversations.map((conversation) => ({ channelId: conversation.id }));
 }
 
 export default function ConversationPage(props: PageProps<"/mensajes/[channelId]">) {

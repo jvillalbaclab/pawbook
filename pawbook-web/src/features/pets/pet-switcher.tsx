@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { CheckIcon, ChevronDownIcon } from "@/design-system/icons";
-import { MY_PETS } from "@/lib/sample-data";
+import { SESSION_PETS } from "@/lib/api";
 import { useActivePet, useActivePetStore } from "@/stores/active-pet";
 
 /**
@@ -40,7 +40,7 @@ export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
         variant === "chip" ? "top-12 right-0" : "bottom-full left-0 mb-2"
       }`}
     >
-      {MY_PETS.map((pet) => (
+      {SESSION_PETS.map((pet) => (
         <button
           key={pet.id}
           type="button"

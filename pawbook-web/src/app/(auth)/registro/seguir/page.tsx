@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { FollowSuggestions } from "@/features/auth/follow-suggestions";
 import { OnboardingHeader } from "@/features/auth/onboarding-header";
-import { OTHER_PETS } from "@/lib/sample-data";
+import { getOnboardingSuggestions } from "@/lib/api";
 
 export const metadata: Metadata = { title: "Mascotas para seguir" };
 
-export default function FollowStepPage() {
+export default async function FollowStepPage() {
+  const suggestions = await getOnboardingSuggestions();
   return (
     <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col gap-4 px-5 pt-4">
       <OnboardingHeader step={3} backHref="/registro/mascota" />
@@ -23,7 +24,7 @@ export default function FollowStepPage() {
           Sugerencias por especie y cerca de ti. Sigue al menos 5 para llenar tu feed.
         </p>
       </div>
-      <FollowSuggestions pets={OTHER_PETS} />
+      <FollowSuggestions pets={suggestions} />
     </div>
   );
 }

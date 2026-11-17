@@ -1,9 +1,13 @@
 import type { AdoptionListing, Conversation, PawMateCandidate, Pet, Post } from "./types";
 
 /*
- * Datos de ejemplo del prototipo. Nombres y cifras son inventados y se muestran
- * con el aviso "Datos de ejemplo" en la interfaz. Sin ciudades: el mercado inicial
- * (España o Colombia) sigue abierto (PRD Q1).
+ * TEMPORAL: datos de ejemplo del prototipo. Se eliminará al conectar la API /v1 (T-M0.39).
+ *
+ * Regla: solo `src/lib/api.ts` (y los tests) importan este módulo. Las pantallas y los
+ * stores nunca lo usan directamente, así que conectar /v1 es reescribir `api.ts` y borrar
+ * este fichero. Nombres y cifras son inventados y se muestran con el aviso "Datos de
+ * ejemplo" en la interfaz. Sin ciudades: el mercado inicial (España o Colombia) sigue
+ * abierto (PRD Q1).
  */
 
 export const MY_PETS: Pet[] = [

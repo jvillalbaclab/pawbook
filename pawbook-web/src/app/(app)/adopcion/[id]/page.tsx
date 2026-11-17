@@ -6,8 +6,7 @@ import { AdoptionIcon, ChevronLeftIcon, VerifiedBadge } from "@/design-system/ic
 import { Photo } from "@/design-system/photo";
 import { speciesLabel } from "@/features/adoption/adoption-card";
 import { RequestButton } from "@/features/adoption/request-button";
-import { getAdoption } from "@/lib/api";
-import { ADOPTIONS } from "@/lib/sample-data";
+import { getAdoption, listAdoptions } from "@/lib/api";
 import type { AdoptionStatus } from "@/lib/types";
 
 const STEPS: { status: AdoptionStatus; label: string }[] = [
@@ -28,8 +27,9 @@ export async function generateMetadata(props: PageProps<"/adopcion/[id]">): Prom
 }
 
 /** Prerenderiza las fichas conocidas; una ficha nueva se resuelve en la petición. */
-export function generateStaticParams() {
-  return ADOPTIONS.map((listing) => ({ id: listing.id }));
+export async function generateStaticParams() {
+  const listings = await listAdoptions();
+  return listings.map((listing) => ({ id: listing.id }));
 }
 
 export default function AdoptionDetailPage(props: PageProps<"/adopcion/[id]">) {

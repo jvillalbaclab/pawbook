@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { Photo } from "@/design-system/photo";
-import { getPet, getPostsByPet } from "@/lib/api";
-import { ALL_PETS, MY_PETS } from "@/lib/sample-data";
+import { getMyPets, getPet, getPostsByPet, listPetHandles } from "@/lib/api";
 
 const SPECIES_LABEL = { dog: "Perro", cat: "Gato" } as const;
 const SEX_LABEL = { female: "Hembra", male: "Macho" } as const;
@@ -22,8 +21,9 @@ export async function generateMetadata(props: PageProps<"/mascota/[handle]">): P
 }
 
 /** Prerenderiza los perfiles conocidos; un handle nuevo se resuelve en la petición. */
-export function generateStaticParams() {
-  return ALL_PETS.map((pet) => ({ handle: pet.handle }));
+export async function generateStaticParams() {
+  const handles = await listPetHandles();
+  return handles.map((handle) => ({ handle }));
 }
 
 export default function PetProfilePage(props: PageProps<"/mascota/[handle]">) {
@@ -48,8 +48,8 @@ async function PetProfile({ params }: { params: Promise<{ handle: string }> }) {
   const pet = await getPet(handle);
   if (!pet) notFound();
 
-  const posts = await getPostsByPet(handle);
-  const isMine = MY_PETS.some((mine) => mine.id === pet.id);
+  const [posts, myPets] = await Promise.all([getPostsByPet(handle), getMyPets()]);
+  const isMine = myPets.some((mine) => mine.id === pet.id);
   const stats = [
     { label: "Publicaciones", value: pet.stats.posts },
     { label: "Seguidores", value: pet.stats.followers },

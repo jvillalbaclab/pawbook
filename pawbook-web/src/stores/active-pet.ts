@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { MY_PETS } from "@/lib/sample-data";
+import { SESSION_PETS } from "@/lib/api";
 import type { Pet } from "@/lib/types";
 
 /*
@@ -13,7 +13,7 @@ type ActivePetState = {
   setActivePet: (petId: string) => void;
 };
 
-const DEFAULT_PET_ID = MY_PETS[0].id;
+const DEFAULT_PET_ID = SESSION_PETS[0].id;
 
 export const useActivePetStore = create<ActivePetState>()(
   persist(
@@ -21,7 +21,7 @@ export const useActivePetStore = create<ActivePetState>()(
       activePetId: DEFAULT_PET_ID,
       setActivePet: (petId) => {
         // Solo se puede activar una mascota propia; cualquier otro id se ignora.
-        if (MY_PETS.some((pet) => pet.id === petId)) set({ activePetId: petId });
+        if (SESSION_PETS.some((pet) => pet.id === petId)) set({ activePetId: petId });
       },
     }),
     {
@@ -37,5 +37,5 @@ export const useActivePetStore = create<ActivePetState>()(
 /** Devuelve la mascota activa completa; cae a la primera si el id guardado ya no existe. */
 export function useActivePet(): Pet {
   const activePetId = useActivePetStore((state) => state.activePetId);
-  return MY_PETS.find((pet) => pet.id === activePetId) ?? MY_PETS[0];
+  return SESSION_PETS.find((pet) => pet.id === activePetId) ?? SESSION_PETS[0];
 }

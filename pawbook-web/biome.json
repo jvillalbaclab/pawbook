@@ -18,7 +18,18 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "@/lib/sample-data": "Datos de ejemplo TEMPORALES: accede a ellos solo a través de @/lib/api.",
+              "./sample-data": "Datos de ejemplo TEMPORALES: accede a ellos solo a través de @/lib/api."
+            }
+          }
+        }
+      }
     }
   },
   "javascript": {
@@ -38,5 +49,17 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/lib/api.ts", "**/*.test.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
+          }
+        }
+      }
+    }
+  ]
 }

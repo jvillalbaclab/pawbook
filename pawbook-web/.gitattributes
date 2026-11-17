@@ -1,0 +1,4 @@
+# LF en toda la web: Biome lo exige y evita diffs ruidosos al clonar en Windows (core.autocrlf).
+* text=auto eol=lf
+*.ico binary
+*.png binary
