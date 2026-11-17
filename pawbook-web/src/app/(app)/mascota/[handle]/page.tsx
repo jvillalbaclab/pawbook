@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { Photo } from "@/design-system/photo";
+import { LoadingState, Skeleton } from "@/design-system/states";
 import { getMyPets, getPet, getPostsByPet, listPetHandles } from "@/lib/api";
 
 const SPECIES_LABEL = { dog: "Perro", cat: "Gato" } as const;
@@ -36,10 +37,13 @@ export default function PetProfilePage(props: PageProps<"/mascota/[handle]">) {
 
 function ProfileSkeleton() {
   return (
-    <div aria-hidden="true" className="mx-auto flex max-w-[680px] items-center gap-4 pt-2">
-      <span className="size-[88px] rounded-full bg-skeleton" />
-      <span className="h-6 flex-1 rounded-full bg-surface-2" />
-    </div>
+    <LoadingState
+      label="Cargando perfil"
+      className="mx-auto flex max-w-[680px] items-center gap-4 pt-2"
+    >
+      <Skeleton className="size-[88px] shrink-0 rounded-full" />
+      <Skeleton className="h-6 flex-1 rounded-full" />
+    </LoadingState>
   );
 }
 

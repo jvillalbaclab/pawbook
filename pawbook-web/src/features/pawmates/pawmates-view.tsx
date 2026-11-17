@@ -5,7 +5,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { CloseIcon, PawIcon, PinIcon } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
-import { EmptyState } from "@/design-system/states";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Skeleton,
+  STATE_ACTION_CLASSES,
+} from "@/design-system/states";
 import { getCandidates } from "@/lib/api";
 import { useActivePet } from "@/stores/active-pet";
 import { decide, INITIAL_DECK } from "./deck";
@@ -20,16 +26,17 @@ export function PawMatesView() {
 
   if (candidates.isPending) {
     return (
-      <div aria-busy="true" className="mx-auto h-[520px] max-w-md rounded-[26px] bg-surface-2" />
+      <LoadingState label="Buscando mascotas cerca" className="mx-auto max-w-md">
+        <Skeleton className="h-[520px] rounded-[26px]" />
+      </LoadingState>
     );
   }
   if (candidates.isError) {
     return (
-      <EmptyState
-        tone="neutral"
+      <ErrorState
         icon={<PawIcon size={44} />}
         title="No pudimos cargar PawMates"
-        description="Inténtalo de nuevo en un momento."
+        onRetry={() => candidates.refetch()}
       />
     );
   }
@@ -130,7 +137,7 @@ export function PawMatesView() {
             <button
               type="button"
               onClick={() => setDeck(INITIAL_DECK)}
-              className="mt-2 h-12 rounded-2xl bg-inverse px-6 text-[15px] font-bold text-on-inverse"
+              className={STATE_ACTION_CLASSES.inverse}
             >
               Ver de nuevo
             </button>

@@ -4,8 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Avatar } from "@/design-system/avatar";
-import { ChevronLeftIcon, ImageIcon, MoreIcon, SendIcon } from "@/design-system/icons";
+import { ChevronLeftIcon, ImageIcon, MessageIcon, MoreIcon, SendIcon } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Skeleton,
+  STATE_ACTION_CLASSES,
+} from "@/design-system/states";
 import { getConversation } from "@/lib/api";
 import type { ChatMessage } from "@/lib/types";
 import { appendMessage, MAX_MESSAGE_LENGTH } from "./messages";
@@ -32,15 +39,32 @@ export function ChatView({ conversationId }: { conversationId: string }) {
     if (messageCount > 0) endRef.current?.scrollIntoView({ block: "end" });
   }, [messageCount]);
 
-  if (conversation.isPending)
-    return <p className="p-6 text-sm text-muted">Cargando conversación…</p>;
+  if (conversation.isPending) return <ChatSkeleton />;
+  if (conversation.isError) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <ErrorState
+          icon={<MessageIcon size={40} />}
+          title="No pudimos abrir la conversación"
+          onRetry={() => conversation.refetch()}
+        />
+      </div>
+    );
+  }
   if (!conversation.data) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-        <p className="font-display text-lg font-extrabold text-ink">Conversación no encontrada</p>
-        <Link href="/mensajes" className="text-sm font-bold text-primary-ink">
-          Volver a mensajes
-        </Link>
+      <div className="flex flex-1 items-center justify-center">
+        <EmptyState
+          tone="neutral"
+          icon={<MessageIcon size={40} />}
+          title="Conversación no encontrada"
+          description="Puede que se haya cerrado o que el enlace no sea correcto."
+          action={
+            <Link href="/mensajes" className={STATE_ACTION_CLASSES.inverse}>
+              Volver a mensajes
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -179,5 +203,20 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         </button>
       </form>
     </div>
+  );
+}
+
+/** Esqueleto de una conversación: cabecera y burbujas alternas. */
+export function ChatSkeleton() {
+  return (
+    <LoadingState label="Cargando conversación" className="flex flex-1 flex-col gap-4 p-5">
+      <div className="flex items-center gap-3">
+        <Skeleton className="size-10 rounded-full" />
+        <Skeleton className="h-3 w-32 rounded-full" />
+      </div>
+      <Skeleton className="h-10 w-2/3 rounded-2xl" />
+      <Skeleton className="ml-auto h-10 w-1/2 rounded-2xl" />
+      <Skeleton className="h-16 w-3/5 rounded-2xl" />
+    </LoadingState>
   );
 }

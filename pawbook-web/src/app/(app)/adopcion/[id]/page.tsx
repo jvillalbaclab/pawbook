@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AdoptionIcon, ChevronLeftIcon, VerifiedBadge } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
+import { LoadingState, Skeleton } from "@/design-system/states";
 import { speciesLabel } from "@/features/adoption/adoption-card";
 import { RequestButton } from "@/features/adoption/request-button";
 import { getAdoption, listAdoptions } from "@/lib/api";
@@ -36,10 +37,9 @@ export default function AdoptionDetailPage(props: PageProps<"/adopcion/[id]">) {
   return (
     <Suspense
       fallback={
-        <div
-          aria-hidden="true"
-          className="mx-auto h-[440px] max-w-[960px] rounded-[24px] bg-surface-2"
-        />
+        <LoadingState label="Cargando ficha" className="mx-auto max-w-[960px]">
+          <Skeleton className="h-[440px] rounded-[24px]" />
+        </LoadingState>
       }
     >
       <AdoptionDetail params={props.params} />

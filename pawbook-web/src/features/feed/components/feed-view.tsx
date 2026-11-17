@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { PawIcon } from "@/design-system/icons";
-import { EmptyState, PostSkeleton } from "@/design-system/states";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  PostSkeleton,
+  STATE_ACTION_CLASSES,
+  viewStateOf,
+} from "@/design-system/states";
 import type { FeedTab } from "@/lib/types";
 import { useActivePet } from "@/stores/active-pet";
 import { useFeed, useReact, useToggleSave } from "../use-feed";
@@ -21,6 +28,7 @@ export function FeedView() {
   const feed = useFeed(tab, activePet.id);
   const react = useReact();
   const toggleSave = useToggleSave();
+  const state = viewStateOf(feed);
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,37 +53,28 @@ export function FeedView() {
         ))}
       </div>
 
-      {feed.isPending && (
-        <div
-          role="status"
-          aria-busy="true"
-          aria-label="Cargando publicaciones"
-          className="flex flex-col gap-4"
-        >
+      {state === "loading" && (
+        <LoadingState label="Cargando publicaciones">
           <PostSkeleton />
           <PostSkeleton />
-        </div>
+        </LoadingState>
       )}
 
-      {feed.isError && (
-        <EmptyState
-          tone="neutral"
+      {state === "error" && (
+        <ErrorState
           icon={<PawIcon size={44} />}
           title="No pudimos cargar el feed"
-          description="Estamos teniendo un problema. Tus publicaciones están a salvo."
-          action={
-            <button
-              type="button"
-              onClick={() => feed.refetch()}
-              className="mt-2 h-12 rounded-2xl bg-inverse px-6 text-[15px] font-bold text-on-inverse"
-            >
-              Reintentar
-            </button>
+          description="No es tu conexión: estamos teniendo un problema. Tus publicaciones están a salvo."
+          onRetry={() => feed.refetch()}
+          secondaryAction={
+            <Link href="/adopcion" className={STATE_ACTION_CLASSES.link}>
+              Mientras tanto, ver animales en adopción
+            </Link>
           }
         />
       )}
 
-      {feed.isSuccess && feed.data.length === 0 && (
+      {state === "empty" && (
         <EmptyState
           icon={<PawIcon size={52} />}
           title={`${activePet.name} todavía no sigue a nadie`}
@@ -84,7 +83,7 @@ export function FeedView() {
             <button
               type="button"
               onClick={() => setTab("for-you")}
-              className="mt-2 h-12 rounded-2xl bg-primary px-6 text-[15px] font-bold text-white hover:bg-primary-hover"
+              className={STATE_ACTION_CLASSES.primary}
             >
               Ver lo popular en Para ti
             </button>
@@ -92,8 +91,8 @@ export function FeedView() {
         />
       )}
 
-      {feed.isSuccess &&
-        feed.data.map((post) => (
+      {state === "ready" &&
+        feed.data?.map((post) => (
           <PostCard
             key={post.id}
             post={post}
@@ -103,7 +102,7 @@ export function FeedView() {
           />
         ))}
 
-      {feed.isSuccess && feed.data.length > 0 && (
+      {state === "ready" && (
         <p className="py-4 text-center text-sm text-muted">
           Estás al día.{" "}
           <Link href="/pawmates" className="font-semibold text-primary-ink">

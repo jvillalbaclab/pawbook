@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 import { Avatar } from "@/design-system/avatar";
+import { MessageIcon } from "@/design-system/icons";
+import { ErrorState, ListItemSkeleton, LoadingState } from "@/design-system/states";
 import { getConversations } from "@/lib/api";
 import type { Conversation } from "@/lib/types";
 
@@ -43,7 +45,19 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
       </div>
 
       {conversations.isPending && (
-        <p className="px-5 py-6 text-sm text-muted">Cargando conversaciones…</p>
+        <LoadingState label="Cargando conversaciones" className="flex flex-col">
+          <ListItemSkeleton />
+          <ListItemSkeleton />
+          <ListItemSkeleton />
+        </LoadingState>
+      )}
+
+      {conversations.isError && (
+        <ErrorState
+          icon={<MessageIcon size={40} />}
+          title="No pudimos cargar tus mensajes"
+          onRetry={() => conversations.refetch()}
+        />
       )}
 
       {conversations.isSuccess && visible.length === 0 && (

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ChatView } from "@/features/chat/chat-view";
+import { ChatSkeleton, ChatView } from "@/features/chat/chat-view";
 import { getConversations } from "@/lib/api";
 
 /** Prerenderiza las conversaciones de ejemplo; con la API real serán siempre dinámicas. */
@@ -10,7 +10,7 @@ export async function generateStaticParams() {
 
 export default function ConversationPage(props: PageProps<"/mensajes/[channelId]">) {
   return (
-    <Suspense fallback={<p className="p-6 text-sm text-muted">Cargando conversación…</p>}>
+    <Suspense fallback={<ChatSkeleton />}>
       <Conversation params={props.params} />
     </Suspense>
   );
