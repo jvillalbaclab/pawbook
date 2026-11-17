@@ -1,9 +1,12 @@
 import type { ComponentType } from "react";
 import { AdoptionIcon, HomeIcon, MessageIcon, PawIcon } from "@/design-system/icons";
 
+/** Clave del texto en el catálogo (namespace "nav"). */
+export type NavLabelKey = "home" | "pawmates" | "messages" | "adoption";
+
 export type NavItem = {
   href: string;
-  label: string;
+  labelKey: NavLabelKey;
   icon: ComponentType<{ size?: number }>;
   badge?: number;
 };
@@ -12,10 +15,10 @@ const PawOutline = ({ size }: { size?: number }) => <PawIcon outline size={size}
 
 /** Solo secciones que ya existen: nada de enlaces a pantallas vacías. */
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Inicio", icon: HomeIcon },
-  { href: "/pawmates", label: "PawMates", icon: PawOutline },
-  { href: "/mensajes", label: "Mensajes", icon: MessageIcon, badge: 1 },
-  { href: "/adopcion", label: "Adopción", icon: AdoptionIcon },
+  { href: "/", labelKey: "home", icon: HomeIcon },
+  { href: "/pawmates", labelKey: "pawmates", icon: PawOutline },
+  { href: "/mensajes", labelKey: "messages", icon: MessageIcon, badge: 1 },
+  { href: "/adopcion", labelKey: "adoption", icon: AdoptionIcon },
 ];
 
 /** Una sección está activa si la ruta es ella o cuelga de ella ("/" solo exacta). */

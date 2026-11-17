@@ -29,13 +29,15 @@ export type Comment = {
   id: string;
   author: Pick<Pet, "name" | "handle" | "tone">;
   text: string;
-  timeLabel: string;
+  /** Fecha ISO 8601; la interfaz la formatea según la región (OR-I18N-002). */
+  createdAt: string;
 };
 
 export type Post = {
   id: string;
   author: Pick<Pet, "name" | "handle" | "tone" | "breed" | "species">;
-  timeLabel: string;
+  /** Fecha ISO 8601. */
+  createdAt: string;
   location?: string;
   mood?: string;
   text: string;
@@ -71,7 +73,8 @@ export type ChatMessage = {
   fromMe: boolean;
   text: string;
   photo?: { tone: Tone; alt: string };
-  timeLabel: string;
+  /** Fecha ISO 8601. */
+  sentAt: string;
   status?: MessageStatus;
 };
 
@@ -80,12 +83,14 @@ export type Conversation = {
   kind: "pawmates" | "adoption";
   pet: Pick<Pet, "name" | "handle" | "tone" | "breed">;
   myPetName: string;
-  distanceLabel?: string;
+  /** Distancia aproximada; la interfaz nunca muestra la ubicación exacta. */
+  distanceKm?: number;
   online: boolean;
   typing: boolean;
   unread: boolean;
   lastMessage: string;
-  timeLabel: string;
+  /** Fecha ISO 8601 del último mensaje. */
+  lastMessageAt: string;
   messages: ChatMessage[];
 };
 

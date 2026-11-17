@@ -5,6 +5,24 @@ export type AppEnv = {
   Variables: {
     requestId: string;
     logger: Logger;
+    /** IP del cliente resuelta por `clientIp` (respeta la configuración de proxies de confianza). */
+    clientIp: string;
+    /**
+     * Usuario autenticado. Lo rellena `authenticate` (middleware/auth.ts), que va antes de
+     * `rateLimit` e `idempotency` para que estos usen el usuario y no la IP como clave.
+     */
+    userId?: string;
+    /** Sesión (familia de refresh tokens) del access token presentado. */
+    sessionId?: string;
+    /** Claim `ev` del access token; lo usa el guard `requireVerifiedEmail` (FR-AUTH-006). */
+    emailVerified?: boolean;
+    /** Había un Bearer pero no es válido; `rejectInvalidToken` responde 401 tras el rate limit. */
+    authError?: "invalid-token";
+    /**
+     * Mascota activa de la cabecera `X-Pet-Id`, ya verificada (pertenece al usuario y no está
+     * archivada). La rellena el middleware `activePet` (middleware/active-pet.ts).
+     */
+    activePetId?: string;
   };
 };
 

@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import type { Pet } from "@/lib/types";
-
-/** Meta del PRD: seguir al menos 5 mascotas para llenar el feed (objetivo "Red"). */
-const FOLLOW_TARGET = 5;
+import { FOLLOW_TARGET } from "./registration";
 
 export function FollowSuggestions({ pets }: { pets: Pet[] }) {
+  const t = useTranslations("followStep");
   const [followed, setFollowed] = useState<Set<string>>(() => new Set());
   const target = Math.min(FOLLOW_TARGET, pets.length);
   const progress = Math.min(followed.size / target, 1);
@@ -49,7 +49,7 @@ export function FollowSuggestions({ pets }: { pets: Pet[] }) {
                     : "bg-inverse text-on-inverse"
                 }`}
               >
-                {isFollowing ? "Siguiendo" : "Seguir"}
+                {isFollowing ? t("following") : t("follow")}
               </button>
             </li>
           );
@@ -64,19 +64,19 @@ export function FollowSuggestions({ pets }: { pets: Pet[] }) {
               style={{ width: `${progress * 100}%` }}
             />
           </div>
-          {followed.size} de {target} seguidas
+          {t("progress", { count: followed.size, target })}
         </div>
         <Link
           href="/"
           className="mt-1.5 flex h-[52px] items-center justify-center rounded-2xl bg-primary text-[15px] font-bold text-white hover:bg-primary-hover"
         >
-          Ir a mi feed
+          {t("goToFeed")}
         </Link>
         <Link
           href="/"
           className="flex h-10 items-center justify-center text-sm font-semibold text-ink-2"
         >
-          Omitir por ahora
+          {t("skip")}
         </Link>
       </footer>
     </>

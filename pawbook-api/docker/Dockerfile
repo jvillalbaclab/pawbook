@@ -16,6 +16,9 @@ FROM oven/bun:1.4.2-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3001
 COPY --from=build --chown=bun:bun /app/dist ./dist
+# main.migrate.js lee las migraciones SQL de ../migrations en tiempo de ejecución.
+COPY --chown=bun:bun migrations ./migrations
 USER bun
+# Worker: CMD ["bun", "dist/main.worker.js"]. Migraciones: CMD ["bun", "dist/main.migrate.js"].
 EXPOSE 3001
 CMD ["bun", "dist/main.api.js"]

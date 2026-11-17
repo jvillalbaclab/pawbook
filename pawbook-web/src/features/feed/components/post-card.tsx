@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/design-system/avatar";
 import { BookmarkIcon, MessageIcon, MoreIcon } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
+import { TimeLabel } from "@/design-system/time-label";
+import { fmt } from "@/i18n/formatters";
 import type { Pet, Post, ReactionKind } from "@/lib/types";
 import { ReactionBar } from "./reaction-bar";
 
@@ -27,9 +30,10 @@ function renderText(text: string) {
 }
 
 export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardProps) {
+  const t = useTranslations("post");
   const { author } = post;
   return (
-    <article className="overflow-hidden rounded-[22px] border border-line bg-surface">
+    <article className="overflow-hidden rounded-card border border-line bg-surface">
       <header className="flex items-center gap-2.5 py-3 pr-2 pl-3.5">
         <Link href={`/@${author.handle}`} className="shrink-0">
           <Avatar name={author.name} tone={author.tone} size={42} />
@@ -42,13 +46,13 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
             {author.name}
           </Link>
           <p className="truncate text-xs text-muted">
-            @{author.handle} · {post.timeLabel}
+            @{author.handle} · <TimeLabel date={post.createdAt} />
             {post.location ? ` · ${post.location}` : ""}
           </p>
         </div>
         <button
           type="button"
-          aria-label="Más opciones"
+          aria-label={t("options")}
           className="flex size-11 items-center justify-center rounded-xl text-muted hover:bg-surface-2"
         >
           <MoreIcon />
@@ -58,7 +62,7 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
       <Photo tone={post.photo.tone} alt={post.photo.alt} className="aspect-[5/4] lg:aspect-[16/10]">
         {post.photo.count > 1 && (
           <span className="absolute top-3 right-3 rounded-xl bg-black/70 px-2.5 py-1 text-xs font-semibold text-white">
-            1/{post.photo.count}
+            {t("photoCount", { current: 1, total: post.photo.count })}
           </span>
         )}
         {post.mood && (
@@ -77,13 +81,13 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
         <div className="ml-auto flex items-center">
           <span className="flex h-10 items-center gap-1 px-1.5 text-[13px] font-semibold text-ink-2">
             <MessageIcon size={20} />
-            <span className="sr-only">Comentarios:</span>
-            {post.commentCount}
+            <span className="sr-only">{t("comments")}</span>
+            {fmt.compact(post.commentCount)}
           </span>
           <button
             type="button"
             aria-pressed={post.saved}
-            aria-label={post.saved ? "Quitar de guardados" : "Guardar publicación"}
+            aria-label={post.saved ? t("unsave") : t("save")}
             onClick={onToggleSave}
             className={`flex size-10 items-center justify-center rounded-xl hover:bg-surface-2 ${
               post.saved ? "text-primary-ink" : "text-ink-2"
@@ -101,16 +105,16 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
               <Avatar name={comment.author.name} tone={comment.author.tone} size={30} />
               <p className="text-sm leading-snug text-ink">
                 <strong>{comment.author.name}</strong> {comment.text}
-                <span className="mt-0.5 block text-xs text-muted">{comment.timeLabel}</span>
+                <TimeLabel date={comment.createdAt} className="mt-0.5 block text-xs text-muted" />
               </p>
             </div>
           ))}
           <label className="flex items-center gap-2.5">
             <Avatar name={activePet.name} tone={activePet.tone} size={30} />
-            <span className="sr-only">Comentar como {activePet.name}</span>
+            <span className="sr-only">{t("commentAs", { name: activePet.name })}</span>
             <input
               type="text"
-              placeholder={`Comenta como ${activePet.name}…`}
+              placeholder={t("commentPlaceholder", { name: activePet.name })}
               className="h-10 min-w-0 flex-1 rounded-full border border-line bg-canvas px-3.5 text-sm text-ink outline-none placeholder:text-muted focus:border-line-strong"
             />
           </label>

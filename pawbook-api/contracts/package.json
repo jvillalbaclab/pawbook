@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./openapi": "./src/generated/openapi.ts",
+    "./openapi.json": "./openapi.json"
   },
   "dependencies": {
     "@hono/zod-openapi": "^1.6.3",

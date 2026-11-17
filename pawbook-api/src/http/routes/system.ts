@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HealthSchema, ReadinessSchema } from "@pawbook/contracts";
+import { withTimeout } from "../../shared/timeout";
 import type { AppEnv, ReadinessCheck } from "../types";
 
 const CHECK_TIMEOUT_MS = 2_000;
@@ -30,14 +31,6 @@ const readyRoute = createRoute({
     },
   },
 });
-
-function withTimeout(promise: Promise<void>, ms: number): Promise<void> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`timeout tras ${ms} ms`)), ms);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
 
 export function systemRoutes(options: { version: string; checks: readonly ReadinessCheck[] }) {
   return new OpenAPIHono<AppEnv>()

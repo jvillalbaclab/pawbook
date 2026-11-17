@@ -2,20 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { PlusIcon } from "@/design-system/icons";
 import { Logo } from "@/design-system/logo";
 import { ThemeToggle } from "@/design-system/theme-toggle";
+import { SessionMenu } from "@/features/auth/session-menu";
 import { PetSwitcher } from "@/features/pets/pet-switcher";
 import { isActivePath, NAV_ITEMS } from "./nav-items";
 
 /** Barra superior móvil (< 1.024 px): logo, tema y mascota activa siempre a mano. */
 export function MobileTopBar() {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between bg-canvas/95 px-4 py-3 backdrop-blur lg:hidden">
+    <header className="sticky top-0 z-20 flex items-center justify-between bg-canvas/95 px-4 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 backdrop-blur lg:hidden">
       <Logo />
       <div className="flex items-center gap-1">
         <ThemeToggle />
+        <SessionMenu />
         <PetSwitcher variant="chip" />
       </div>
     </header>
@@ -37,11 +40,12 @@ function BottomNavWithPath() {
 }
 
 function BottomNavView({ pathname }: { pathname: string | null }) {
+  const t = useTranslations("nav");
   const [home, pawmates, messages, adoption] = NAV_ITEMS;
   const left = [home, pawmates];
   const right = [messages, adoption];
 
-  const item = ({ href, label, icon: Icon, badge }: (typeof NAV_ITEMS)[number]) => {
+  const item = ({ href, labelKey, icon: Icon, badge }: (typeof NAV_ITEMS)[number]) => {
     const active = pathname !== null && isActivePath(pathname, href);
     return (
       <Link
@@ -53,7 +57,7 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
         }`}
       >
         <Icon size={24} />
-        {label}
+        {t(labelKey)}
         {badge ? (
           <span className="absolute -top-1 right-[calc(50%-20px)] flex size-[18px] items-center justify-center rounded-full border-2 border-surface bg-primary text-[10px] font-bold text-white">
             {badge}
@@ -65,14 +69,14 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
 
   return (
     <nav
-      aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-20 grid h-[78px] grid-cols-5 items-center border-t border-line bg-surface px-2 pb-3.5 lg:hidden"
+      aria-label={t("label")}
+      className="fixed inset-x-0 bottom-0 z-20 grid h-[calc(78px+env(safe-area-inset-bottom))] grid-cols-5 items-center border-t border-line bg-surface px-2 pb-[calc(14px+env(safe-area-inset-bottom))] lg:hidden"
     >
       {left.map(item)}
       <Link
         href="/#publicar"
-        aria-label="Publicar"
-        className="-mt-5 flex size-[54px] items-center justify-center justify-self-center rounded-[18px] bg-primary text-white shadow-lg shadow-primary/30"
+        aria-label={t("publish")}
+        className="-mt-5 flex size-[54px] items-center justify-center justify-self-center rounded-panel bg-primary text-white shadow-brand"
       >
         <PlusIcon size={26} />
       </Link>

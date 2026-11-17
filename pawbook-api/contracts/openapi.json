@@ -1,0 +1,2033 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PawBook API",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "headers": {
+      "RateLimit-Limit": {
+        "description": "Solicitudes permitidas en la ventana actual.",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "RateLimit-Remaining": {
+        "description": "Solicitudes que quedan en la ventana actual.",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "RateLimit-Reset": {
+        "description": "Segundos hasta que se reinicia la ventana.",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "RateLimit-Policy": {
+        "description": "Política aplicada: `límite;w=ventana en segundos` (p. ej. `120;w=60`).",
+        "schema": {
+          "type": "string",
+          "example": "120;w=60"
+        }
+      },
+      "Retry-After": {
+        "description": "Segundos que hay que esperar antes de reintentar.",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "Idempotent-Replayed": {
+        "description": "`true` si la respuesta se reproduce de una solicitud anterior con la misma Idempotency-Key.",
+        "schema": {
+          "type": "string",
+          "enum": ["true"]
+        }
+      }
+    },
+    "responses": {
+      "TooManyRequests": {
+        "description": "Límite de solicitudes superado (NFR-SEC-004).",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/Retry-After"
+          },
+          "RateLimit-Limit": {
+            "$ref": "#/components/headers/RateLimit-Limit"
+          },
+          "RateLimit-Remaining": {
+            "$ref": "#/components/headers/RateLimit-Remaining"
+          },
+          "RateLimit-Reset": {
+            "$ref": "#/components/headers/RateLimit-Reset"
+          },
+          "RateLimit-Policy": {
+            "$ref": "#/components/headers/RateLimit-Policy"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Falta el access token, no es válido o ha caducado.",
+        "headers": {
+          "WWW-Authenticate": {
+            "schema": {
+              "type": "string",
+              "example": "Bearer realm=\"pawbook\""
+            }
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Access token de `POST /v1/auth/sign-in`, `/google` o `/refresh` (15 min)."
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://pawbook.app/problems/not-found"
+          },
+          "title": {
+            "type": "string",
+            "example": "No encontramos lo que buscas"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string",
+            "example": "/v1/pets/luna"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": ["path", "message"]
+            }
+          }
+        },
+        "required": ["type", "title", "status"]
+      },
+      "IdempotencyKey": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "pattern": "^[\\x21-\\x7e]+$",
+        "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+        "example": "0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61"
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"]
+          },
+          "version": {
+            "type": "string",
+            "example": "0.1.0"
+          }
+        },
+        "required": ["status", "version"]
+      },
+      "Readiness": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok", "unavailable"]
+          },
+          "checks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": ["ok", "fail"]
+            },
+            "example": {
+              "postgres": "ok",
+              "valkey": "ok"
+            }
+          }
+        },
+        "required": ["status", "checks"]
+      },
+      "SignUpResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["verification-pending"]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["status", "message"]
+      },
+      "SignUpRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "description": "Correo electrónico.",
+            "example": "ana@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 128,
+            "description": "Entre 10 y 128 caracteres. Se rechaza si aparece en listas de contraseñas filtradas.",
+            "example": "una frase larga y propia"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento (AAAA-MM-DD). Debe cumplir la edad mínima de registro.",
+            "example": "1995-04-23"
+          },
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Versión de los términos y la política de privacidad que el usuario acepta (OR-LEG-001). Debe ser la vigente.",
+            "example": "2026-11-17"
+          }
+        },
+        "required": ["email", "password", "birthDate", "termsVersion"]
+      },
+      "AuthSession": {
+        "type": "object",
+        "properties": {
+          "tokenType": {
+            "type": "string",
+            "enum": ["Bearer"]
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "JWT para `Authorization: Bearer`."
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Segundos de vida del access token (15 min).",
+            "example": 900
+          },
+          "accessTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshToken": {
+            "type": ["string", "null"],
+            "description": "Refresh token rotatorio de un solo uso. `null` si se entregó en cookie. Reutilizar uno ya usado revoca toda la sesión (FR-AUTH-004)."
+          },
+          "refreshTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "$ref": "#/components/schemas/Me"
+          }
+        },
+        "required": [
+          "tokenType",
+          "accessToken",
+          "expiresIn",
+          "accessTokenExpiresAt",
+          "refreshToken",
+          "refreshTokenExpiresAt",
+          "user"
+        ]
+      },
+      "Me": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "description": "Correo electrónico.",
+            "example": "ana@example.com"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending_verification", "active"],
+            "description": "`pending_verification` hasta verificar el correo (FR-AUTH-001/002)."
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento (AAAA-MM-DD). Debe cumplir la edad mínima de registro.",
+            "example": "1995-04-23"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "termsAcceptance": {
+            "type": ["object", "null"],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "acceptedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": ["version", "acceptedAt"],
+            "description": "Última aceptación registrada de los términos (OR-LEG-001)."
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "status",
+          "emailVerified",
+          "birthDate",
+          "createdAt",
+          "termsAcceptance"
+        ]
+      },
+      "SignInRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "description": "Correo electrónico.",
+            "example": "ana@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "refreshTokenDelivery": {
+            "type": "string",
+            "enum": ["body", "cookie"],
+            "default": "body",
+            "description": "`body` (por defecto, móvil): el refresh token va en la respuesta. `cookie` (web): va en una cookie `HttpOnly; Secure; SameSite=Lax` y `refreshToken` es `null`."
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "GoogleSignInResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuthSession"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "isNewUser": {
+                "type": "boolean"
+              }
+            },
+            "required": ["isNewUser"]
+          }
+        ]
+      },
+      "GoogleSignInRequest": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "description": "ID token (JWT) obtenido de Google Identity Services."
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Obligatoria solo si la cuenta no existe todavía.",
+            "example": "1995-04-23"
+          },
+          "termsVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Obligatoria solo si la cuenta no existe todavía.",
+            "example": "2026-11-17"
+          },
+          "refreshTokenDelivery": {
+            "type": "string",
+            "enum": ["body", "cookie"],
+            "default": "body",
+            "description": "`body` (por defecto, móvil): el refresh token va en la respuesta. `cookie` (web): va en una cookie `HttpOnly; Secure; SameSite=Lax` y `refreshToken` es `null`."
+          }
+        },
+        "required": ["idToken"]
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Obligatorio si no se envía la cookie de refresh (clientes móviles)."
+          }
+        }
+      },
+      "SignOutRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Obligatorio si no se envía la cookie de refresh (clientes móviles)."
+          }
+        }
+      },
+      "VerifyEmailResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["verified"]
+          }
+        },
+        "required": ["status"]
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": ["token"]
+      },
+      "ForgotPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["accepted"]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["status", "message"]
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "description": "Correo electrónico.",
+            "example": "ana@example.com"
+          }
+        },
+        "required": ["email"]
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 128,
+            "description": "Entre 10 y 128 caracteres. Se rechaza si aparece en listas de contraseñas filtradas.",
+            "example": "una frase larga y propia"
+          }
+        },
+        "required": ["token", "newPassword"]
+      },
+      "SessionPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Session"
+            }
+          },
+          "nextCursor": {
+            "type": ["string", "null"],
+            "description": "Cursor de la página siguiente; `null` si no hay más."
+          }
+        },
+        "required": ["items", "nextCursor"]
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userAgent": {
+            "type": ["string", "null"]
+          },
+          "current": {
+            "type": "boolean",
+            "description": "`true` si es la sesión de este access token."
+          }
+        },
+        "required": ["id", "createdAt", "lastUsedAt", "expiresAt", "userAgent", "current"]
+      },
+      "MyPets": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pet"
+            },
+            "maxItems": 10,
+            "description": "Mascotas activas, de la más antigua a la más reciente (máximo 10)."
+          }
+        },
+        "required": ["items"]
+      },
+      "Pet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "handle": {
+            "type": "string",
+            "example": "luna.gato"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string",
+            "enum": ["dog", "cat"],
+            "description": "Especie."
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["female", "male"],
+            "description": "Sexo."
+          },
+          "breed": {
+            "type": ["string", "null"]
+          },
+          "birthMonth": {
+            "type": ["string", "null"],
+            "example": "2023-05"
+          },
+          "bio": {
+            "type": ["string", "null"]
+          },
+          "favoriteToy": {
+            "type": ["string", "null"]
+          },
+          "favoriteTreat": {
+            "type": ["string", "null"]
+          },
+          "avatarMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "coverMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "archived"]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "handleChangedAt": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Último cambio de handle; `null` si conserva el elegido al crearla."
+          },
+          "nextHandleChangeAt": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Desde cuándo se puede volver a cambiar el handle; `null` si ya se puede."
+          }
+        },
+        "required": [
+          "id",
+          "handle",
+          "name",
+          "species",
+          "sex",
+          "breed",
+          "birthMonth",
+          "bio",
+          "favoriteToy",
+          "favoriteTreat",
+          "avatarMediaId",
+          "coverMediaId",
+          "createdAt",
+          "status",
+          "updatedAt",
+          "handleChangedAt",
+          "nextHandleChangeAt"
+        ]
+      },
+      "CreatePetRequest": {
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 31,
+            "description": "@handle único (3-30 caracteres de `[a-z0-9_.]`). Se guarda en minúsculas y sin `@`.",
+            "example": "luna.gato"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Nombre visible.",
+            "example": "Luna"
+          },
+          "species": {
+            "type": "string",
+            "enum": ["dog", "cat"],
+            "description": "Especie."
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["female", "male"],
+            "description": "Sexo."
+          },
+          "breed": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Raza: del catálogo del cliente o texto libre."
+          },
+          "birthMonth": {
+            "type": ["string", "null"],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "description": "Fecha de nacimiento aproximada (AAAA-MM).",
+            "example": "2023-05"
+          },
+          "bio": {
+            "type": ["string", "null"],
+            "maxLength": 300,
+            "description": "Bio (≤ 300 caracteres)."
+          },
+          "favoriteToy": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Juguete favorito."
+          },
+          "favoriteTreat": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Premio favorito."
+          },
+          "avatarMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "Foto de perfil. ID de un medio del módulo media (M1); hoy no se valida."
+          },
+          "coverMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "Portada. ID de un medio del módulo media (M1); hoy no se valida."
+          }
+        },
+        "required": ["handle", "name", "species", "sex"]
+      },
+      "HandleAvailability": {
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": "string",
+            "description": "Handle normalizado que se comprobó."
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": ["string", "null"],
+            "enum": ["invalid", "reserved", "taken", null],
+            "description": "`invalid`: no cumple el formato · `reserved`: no se puede usar · `taken`: ya es de otra mascota · `null` si está libre."
+          }
+        },
+        "required": ["handle", "available", "reason"]
+      },
+      "PublicPet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "handle": {
+            "type": "string",
+            "example": "luna.gato"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string",
+            "enum": ["dog", "cat"],
+            "description": "Especie."
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["female", "male"],
+            "description": "Sexo."
+          },
+          "breed": {
+            "type": ["string", "null"]
+          },
+          "birthMonth": {
+            "type": ["string", "null"],
+            "example": "2023-05"
+          },
+          "bio": {
+            "type": ["string", "null"]
+          },
+          "favoriteToy": {
+            "type": ["string", "null"]
+          },
+          "favoriteTreat": {
+            "type": ["string", "null"]
+          },
+          "avatarMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "coverMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "caretaker": {
+            "type": ["object", "null"],
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "Laura"
+              }
+            },
+            "required": ["firstName"],
+            "description": "Responsable visible (FR-PET-008). `null` si lo oculta en los ajustes o no ha indicado su nombre."
+          }
+        },
+        "required": [
+          "id",
+          "handle",
+          "name",
+          "species",
+          "sex",
+          "breed",
+          "birthMonth",
+          "bio",
+          "favoriteToy",
+          "favoriteTreat",
+          "avatarMediaId",
+          "coverMediaId",
+          "createdAt",
+          "caretaker"
+        ]
+      },
+      "UpdatePetRequest": {
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 31,
+            "description": "Nuevo @handle. Se puede cambiar una vez cada 30 días (el elegido al crear la mascota no cuenta).",
+            "example": "luna.gato"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Nombre visible.",
+            "example": "Luna"
+          },
+          "species": {
+            "type": "string",
+            "enum": ["dog", "cat"],
+            "description": "Especie."
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["female", "male"],
+            "description": "Sexo."
+          },
+          "breed": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Raza: del catálogo del cliente o texto libre."
+          },
+          "birthMonth": {
+            "type": ["string", "null"],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "description": "Fecha de nacimiento aproximada (AAAA-MM).",
+            "example": "2023-05"
+          },
+          "bio": {
+            "type": ["string", "null"],
+            "maxLength": 300,
+            "description": "Bio (≤ 300 caracteres)."
+          },
+          "favoriteToy": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Juguete favorito."
+          },
+          "favoriteTreat": {
+            "type": ["string", "null"],
+            "maxLength": 60,
+            "description": "Premio favorito."
+          },
+          "avatarMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "Foto de perfil. ID de un medio del módulo media (M1); hoy no se valida."
+          },
+          "coverMediaId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "Portada. ID de un medio del módulo media (M1); hoy no se valida."
+          }
+        },
+        "description": "Solo se cambian los campos presentes. `null` vacía un campo opcional."
+      },
+      "CaretakerProfile": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": ["string", "null"],
+            "description": "Nombre de pila que se muestra como «Responsable: …». Nunca apellidos.",
+            "example": "Laura"
+          },
+          "showFirstName": {
+            "type": "boolean",
+            "description": "Si se muestra en el perfil de las mascotas (por defecto, sí)."
+          }
+        },
+        "required": ["firstName", "showFirstName"]
+      },
+      "UpdateCaretakerProfileRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": ["string", "null"],
+            "maxLength": 40
+          },
+          "showFirstName": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StreamTokens": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "description": "API key pública de la app de Stream."
+          },
+          "feedsUserId": {
+            "type": "string",
+            "example": "pet_0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61"
+          },
+          "feedsToken": {
+            "type": "string",
+            "description": "Token de Feeds de la mascota activa."
+          },
+          "chatUserId": {
+            "type": "string",
+            "example": "usr_0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61"
+          },
+          "chatToken": {
+            "type": ["string", "null"],
+            "description": "Token de Chat del usuario. `null` si su correo no está verificado: no puede chatear (FR-AUTH-006)."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Caducidad de ambos tokens (≤ 24 h). El cliente pide otros antes."
+          }
+        },
+        "required": ["apiKey", "feedsUserId", "feedsToken", "chatUserId", "chatToken", "expiresAt"]
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "schema": {
+          "$ref": "#/components/schemas/IdempotencyKey"
+        },
+        "required": false,
+        "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+        "name": "Idempotency-Key",
+        "in": "header"
+      }
+    }
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "tags": ["Sistema"],
+        "summary": "Liveness: el proceso está vivo",
+        "responses": {
+          "200": {
+            "description": "Proceso activo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ready": {
+      "get": {
+        "tags": ["Sistema"],
+        "summary": "Readiness: las dependencias responden y la instancia puede recibir tráfico",
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Alguna dependencia no responde",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sign-up": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Registro con correo, contraseña y fecha de nacimiento",
+        "description": "FR-AUTH-001 y OR-LEG-001. La respuesta es la misma exista o no el correo; si existe, se envía un aviso al buzón. La cuenta queda `pending_verification` hasta abrir el enlace del correo (24 h).",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[\\x21-\\x7e]+$",
+              "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+              "example": "0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61"
+            },
+            "required": false,
+            "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+            "name": "idempotency-key",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Solicitud aceptada; revisa tu correo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignUpResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos, edad mínima no alcanzada, contraseña filtrada o términos desactualizados",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/sign-in": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Inicio de sesión con correo y contraseña",
+        "description": "Devuelve un access token de 15 min y un refresh token rotatorio de 30 días (FR-AUTH-004). Con `refreshTokenDelivery: cookie` el refresh va en una cookie HttpOnly (web).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sesión iniciada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Correo o contraseña incorrectos",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "503": {
+            "description": "El límite de intentos no está disponible; reintenta más tarde",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/google": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Inicio de sesión o registro con Google (OIDC)",
+        "description": "FR-AUTH-003. Verifica el ID token de Google. Si el correo ya tiene cuenta, la vincula. Si la cuenta es nueva, exige `birthDate` y `termsVersion` (422 si faltan: el cliente los pide y reintenta con el mismo ID token).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleSignInRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sesión iniciada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleSignInResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "ID token no válido",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Google no ha verificado el correo",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Alta simultánea con el mismo correo",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Faltan datos de registro o no son válidos",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "503": {
+            "description": "Google no está configurado en este entorno",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Renueva el access token rotando el refresh token",
+        "description": "FR-AUTH-004. El refresh token presentado (cuerpo o cookie) se consume y se emite otro. Reutilizar uno ya consumido revoca toda la sesión. La respuesta usa el mismo canal (cuerpo o cookie) por el que llegó el token.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens renovados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token ausente, desconocido, caducado, revocado o reutilizado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/sign-out": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Cierra la sesión del refresh token",
+        "description": "Revoca la sesión y borra la cookie de refresh. Es idempotente.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignOutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Sesión cerrada"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/verify-email": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Verifica el correo con el token del enlace",
+        "description": "FR-AUTH-002. El enlace vale 24 h. Caducado: 410 y se puede pedir otro.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Correo verificado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyEmailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Enlace no válido o ya usado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Enlace caducado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/verify-email/resend": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Reenvía el enlace de verificación al usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Enlace reenviado"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "El correo ya está verificado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/password/forgot": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Solicita un enlace para restablecer la contraseña",
+        "description": "FR-AUTH-005. Responde siempre 202 con el mismo cuerpo, exista o no el correo. El enlace es de un solo uso y vale 1 h.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Solicitud aceptada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForgotPasswordResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/auth/password/reset": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Fija una contraseña nueva con el token del enlace",
+        "description": "Consume el enlace y cierra todas las sesiones abiertas de la cuenta.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Contraseña cambiada"
+          },
+          "400": {
+            "description": "Enlace no válido o ya usado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Enlace caducado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "La contraseña no cumple la política",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": ["Cuenta"],
+        "summary": "Cuenta del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cuenta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/me/sessions": {
+      "get": {
+        "tags": ["Cuenta"],
+        "summary": "Sesiones activas del usuario (FR-AUTH-007)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Cursor opaco devuelto en `nextCursor` de la página anterior."
+            },
+            "required": false,
+            "description": "Cursor opaco devuelto en `nextCursor` de la página anterior.",
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20,
+              "description": "Elementos por página (máximo 50).",
+              "example": 20
+            },
+            "required": false,
+            "description": "Elementos por página (máximo 50).",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesiones activas, de la más reciente a la más antigua",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/me/sessions/{id}": {
+      "delete": {
+        "tags": ["Cuenta"],
+        "summary": "Cierra una sesión del usuario (FR-AUTH-007)",
+        "description": "Revoca su refresh token. El access token de esa sesión sigue siendo válido hasta caducar (≤ 15 min).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Sesión cerrada"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "La sesión no existe, ya está cerrada o no es tuya",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/me/pets": {
+      "get": {
+        "tags": ["Mascotas"],
+        "summary": "Mascotas activas del usuario autenticado",
+        "description": "Para el selector de mascota activa (UI-003). Como máximo 10, sin paginación.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mascotas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPets"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/pets": {
+      "post": {
+        "tags": ["Mascotas"],
+        "summary": "Crea una mascota",
+        "description": "FR-PET-001 y FR-PET-002. Máximo 10 mascotas activas por usuario. No exige correo verificado. Admite `Idempotency-Key`.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[\\x21-\\x7e]+$",
+              "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+              "example": "0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61"
+            },
+            "required": false,
+            "description": "Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación.",
+            "name": "idempotency-key",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mascota creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "Handle ocupado o límite de 10 mascotas alcanzado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos o handle reservado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/pets/handles/{handle}/availability": {
+      "get": {
+        "tags": ["Mascotas"],
+        "summary": "Comprueba si un @handle está libre",
+        "description": "Para el onboarding (T-M0.41): normaliza el handle (minúsculas, sin `@`) y dice si se puede registrar. Es orientativo: el alta puede fallar con 409 si otro lo ocupa entretanto.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 31,
+              "example": "luna.gato"
+            },
+            "required": true,
+            "name": "handle",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandleAvailability"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/pets/{handle}": {
+      "get": {
+        "tags": ["Mascotas"],
+        "summary": "Perfil público de una mascota",
+        "description": "FR-PET-003 y FR-FEED-010: no exige sesión. Incluye el nombre de pila del responsable salvo que lo oculte (FR-PET-008). Las mascotas archivadas responden 404.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 31,
+              "example": "luna.gato"
+            },
+            "required": true,
+            "name": "handle",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPet"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe o está archivada",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/pets/{id}": {
+      "patch": {
+        "tags": ["Mascotas"],
+        "summary": "Edita una mascota propia",
+        "description": "FR-PET-004 y FR-PET-002. Solo el responsable; para cualquier otro usuario responde 404. El handle se puede cambiar una vez cada 30 días.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mascota actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No existe, está archivada o no es tuya",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Handle ocupado o cambiado hace menos de 30 días",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Datos no válidos o handle reservado",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/pets/{id}/archive": {
+      "post": {
+        "tags": ["Mascotas"],
+        "summary": "Archiva una mascota propia",
+        "description": "FR-PET-006: el perfil y su contenido dejan de verse para terceros y ya no puede ser la mascota activa. Es idempotente. El handle sigue reservado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Mascota archivada"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "No existe o no es tuya",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/me/caretaker-profile": {
+      "get": {
+        "tags": ["Mascotas"],
+        "summary": "Cómo apareces como responsable en tus mascotas",
+        "description": "FR-PET-008: nombre de pila y si se muestra («Responsable: Laura»).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ajustes del responsable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaretakerProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Mascotas"],
+        "summary": "Cambia tu nombre de pila o lo oculta de tus mascotas",
+        "description": "FR-PET-008 y US-06. Solo el nombre de pila: nunca apellidos ni datos de contacto. `firstName: null` lo borra.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCaretakerProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ajustes guardados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaretakerProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "description": "Nombre no válido",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/v1/stream/token": {
+      "post": {
+        "tags": ["Tiempo real"],
+        "summary": "Tokens de GetStream para la mascota activa y el usuario",
+        "description": "FR-AUTH-010 y ADR-002: token de Feeds para `pet_<X-Pet-Id>` y de Chat para `usr_<userId>`, válidos 1 h. Al cambiar de mascota activa, el cliente pide otro (solo cambia el de Feeds). Sin correo verificado, `chatToken` es `null` (FR-AUTH-006).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Mascota activa en cuyo nombre se actúa. Debe ser del usuario autenticado y no estar archivada."
+            },
+            "required": true,
+            "description": "Mascota activa en cuyo nombre se actúa. Debe ser del usuario autenticado y no estar archivada.",
+            "name": "x-pet-id",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tokens emitidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamTokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falta `X-Pet-Id` o no es un ID válido",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "La mascota no existe, está archivada o no es tuya",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "503": {
+            "description": "GetStream no está configurado en este entorno",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

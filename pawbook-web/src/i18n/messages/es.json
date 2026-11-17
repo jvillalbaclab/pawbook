@@ -1,0 +1,451 @@
+{
+  "metadata": {
+    "title": "PawBook",
+    "description": "La red social donde tu mascota es la protagonista.",
+    "notFoundTitle": "Página no encontrada"
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "skipToContent": "Saltar al contenido",
+    "home": "Inicio",
+    "pawmates": "PawMates",
+    "messages": "Mensajes",
+    "adoption": "Adopción",
+    "publish": "Publicar",
+    "sampleDataNotice": "Prototipo con datos de ejemplo"
+  },
+  "common": {
+    "logoLabel": "PawBook, inicio",
+    "verifiedOrganization": "Organización verificada"
+  },
+  "pets": {
+    "publishingAs": "Publicando como",
+    "activePetLabel": "Mascota activa: {name}. Cambiar mascota",
+    "switcherLabel": "Tus mascotas",
+    "addPet": "Añadir mascota",
+    "loading": "Cargando tus mascotas…",
+    "loadError": "No pudimos cargar tus mascotas",
+    "noPets": "Aún no tienes mascotas",
+    "createFirst": "Crea tu mascota",
+    "species": {
+      "dog": "Perro",
+      "cat": "Gato"
+    },
+    "sex": {
+      "female": "Hembra",
+      "male": "Macho"
+    }
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "automático",
+    "light": "claro",
+    "dark": "oscuro",
+    "toggleLabel": "Tema: {current}. Cambiar a {next}"
+  },
+  "states": {
+    "retry": "Reintentar",
+    "genericErrorDescription": "No es tu conexión: estamos teniendo un problema. Inténtalo de nuevo en un momento.",
+    "sectionErrorTitle": "Algo no ha ido bien",
+    "backHome": "Volver al inicio",
+    "notFoundTitle": "Esta página no existe",
+    "notFoundDescription": "Puede que el enlace esté mal escrito o que la página se haya movido."
+  },
+  "offline": {
+    "title": "Sin conexión",
+    "description": "No hay conexión a internet. Cuando vuelva, PawBook seguirá donde lo dejaste.",
+    "retry": "Volver a intentarlo"
+  },
+  "feed": {
+    "pageTitle": "Inicio",
+    "tabsLabel": "Feed",
+    "forYou": "Para ti",
+    "following": "Siguiendo",
+    "loading": "Cargando publicaciones",
+    "errorTitle": "No pudimos cargar el feed",
+    "errorDescription": "No es tu conexión: estamos teniendo un problema. Tus publicaciones están a salvo.",
+    "errorFallbackLink": "Mientras tanto, ver animales en adopción",
+    "emptyTitle": "{name} todavía no sigue a nadie",
+    "emptyDescription": "Cuando siga a otras mascotas, sus publicaciones aparecerán aquí, de la más reciente a la más antigua.",
+    "emptyAction": "Ver lo popular en Para ti",
+    "upToDate": "Estás al día.",
+    "findPawmates": "Busca PawMates cerca"
+  },
+  "composer": {
+    "label": "Nueva publicación",
+    "textLabel": "Texto de la publicación",
+    "placeholder": "¿Qué hizo {name} hoy?",
+    "photos": "Fotos",
+    "location": "Ubicación",
+    "aiCaption": "Sugerir pie con IA",
+    "publish": "Publicar",
+    "notAvailable": "Publicar estará disponible cuando conectemos la API.",
+    "tooLong": "El texto supera los {max, number} caracteres."
+  },
+  "post": {
+    "options": "Más opciones",
+    "photoCount": "{current}/{total}",
+    "comments": "Comentarios:",
+    "save": "Guardar publicación",
+    "unsave": "Quitar de guardados",
+    "commentAs": "Comentar como {name}",
+    "commentPlaceholder": "Comenta como {name}…",
+    "reaction": "Reacción {label}, {count, number}",
+    "reactions": {
+      "paw": "huella",
+      "heart": "corazón",
+      "bone": "hueso",
+      "fish": "pez"
+    }
+  },
+  "rightRail": {
+    "pawmatesNearby": "PawMates cerca",
+    "seeAll": "Ver todos",
+    "forAdoption": "En adopción",
+    "seeListing": "Ver ficha",
+    "suggestedFor": "Sugeridas para {name}"
+  },
+  "profile": {
+    "notFoundTitle": "Mascota no encontrada",
+    "metaTitle": "{name} (@{handle})",
+    "ogTitle": "{name} en PawBook",
+    "loading": "Cargando perfil",
+    "postsStat": "{count, plural, one {Publicación} other {Publicaciones}}",
+    "followersStat": "{count, plural, one {Seguidor} other {Seguidores}}",
+    "followingStat": "Siguiendo",
+    "owner": "Responsable: {name}.",
+    "edit": "Editar perfil",
+    "follow": "Seguir",
+    "share": "Compartir",
+    "postsHeading": "Publicaciones",
+    "noPosts": "{name} aún no ha publicado nada.",
+    "notFoundHeading": "Esta mascota no está por aquí",
+    "notFoundDescription": "El perfil no existe o su responsable lo ha archivado."
+  },
+  "adoption": {
+    "title": "Adopción",
+    "description": "Perros y gatos en adopción de refugios y fundaciones verificadas.",
+    "verifiedOnly": "Solo refugios y fundaciones verificadas",
+    "filtersLabel": "Filtros de adopción",
+    "filterAll": "Todos",
+    "filterDogs": "Perros",
+    "filterCats": "Gatos",
+    "urgentOnly": "Solo urgentes",
+    "emptyTitle": "Sin animales con estos filtros",
+    "emptyDescription": "Prueba a quitar algún filtro para ver más fichas.",
+    "clearFilters": "Quitar filtros",
+    "photoAlt": "Foto de {name}",
+    "urgent": "Urgente",
+    "speciesSex": {
+      "cat": {
+        "female": "Gata",
+        "male": "Gato"
+      },
+      "dog": {
+        "female": "Perra",
+        "male": "Perro"
+      }
+    },
+    "status": {
+      "available": "Disponible",
+      "in-process": "En proceso",
+      "adopted": "Adoptado"
+    }
+  },
+  "adoptionDetail": {
+    "notFoundTitle": "Ficha no encontrada",
+    "metaTitle": "{name} en adopción",
+    "ogTitle": "Adopta a {name}",
+    "loading": "Cargando ficha",
+    "back": "Volver a adopción",
+    "mainPhotoAlt": "Foto principal de {name}",
+    "species": "Especie",
+    "age": "Edad",
+    "health": "Salud",
+    "temperament": "Carácter",
+    "status": "Estado",
+    "alreadyAdopted": "Ya fue adoptado.",
+    "request": "Solicitar adopción",
+    "requestNotAvailable": "Enviar solicitudes estará disponible cuando conectemos la API.",
+    "requestHint": "La solicitud llega a {organization} por chat y correo."
+  },
+  "pawmates": {
+    "title": "PawMates",
+    "radius": "Hasta {km, number} km · ubicación aproximada, nunca la exacta",
+    "loading": "Buscando mascotas cerca",
+    "errorTitle": "No pudimos cargar PawMates",
+    "match": "<strong>{myPet} y {pet} hicieron match.</strong> Ya podéis chatear.",
+    "write": "Escribir",
+    "photoAlt": "Foto de {name}, {breed}",
+    "highlyCompatible": "Muy compatible",
+    "energy": {
+      "low": "Energía baja",
+      "medium": "Energía media",
+      "high": "Energía alta"
+    },
+    "size": {
+      "small": "Pequeño",
+      "medium": "Mediano",
+      "large": "Grande"
+    },
+    "pass": "Pasar de {name}",
+    "interested": "Me interesa",
+    "emptyTitle": "Has visto a todas las mascotas cerca",
+    "emptyDescription": "Vuelve más tarde o amplía el radio de búsqueda para descubrir más compañeros.",
+    "restart": "Ver de nuevo"
+  },
+  "chat": {
+    "title": "Mensajes",
+    "conversationsLabel": "Conversaciones",
+    "kindLabel": "Tipo de conversación",
+    "kind": {
+      "pawmates": "PawMates",
+      "adoption": "Adopción"
+    },
+    "loadingList": "Cargando conversaciones",
+    "listErrorTitle": "No pudimos cargar tus mensajes",
+    "empty": {
+      "pawmates": "Aún no tienes matches. Cuando otra mascota también marque interés, podréis chatear aquí.",
+      "adoption": "Aquí aparecerán tus solicitudes de adopción."
+    },
+    "typing": "escribiendo…",
+    "unread": "Sin leer",
+    "safetyNotice": "Solo puedes chatear con mascotas con las que tienes match. Puedes bloquear o denunciar desde cada conversación.",
+    "chooseTitle": "Elige una conversación",
+    "chooseDescription": "Tus matches de PawMates y tus solicitudes de adopción aparecen a la izquierda.",
+    "loading": "Cargando conversación",
+    "openErrorTitle": "No pudimos abrir la conversación",
+    "notFoundTitle": "Conversación no encontrada",
+    "notFoundDescription": "Puede que se haya cerrado o que el enlace no sea correcto.",
+    "backToMessages": "Volver a mensajes",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "options": "Opciones: ver perfil, bloquear o denunciar",
+    "matchBanner": "{myPet} y {pet} hicieron match · Quedad en sitios públicos",
+    "status": {
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "read": "Leído"
+    },
+    "typingLabel": "{name} está escribiendo",
+    "sendImage": "Enviar imagen",
+    "messageLabel": "Mensaje",
+    "placeholder": "Escribe como {name}…",
+    "send": "Enviar"
+  },
+  "registration": {
+    "title": "Crea tu cuenta",
+    "heroTitle": "La red social donde tu mascota es la protagonista",
+    "heroDescription": "Un espacio solo para perros y gatos, sin perderse entre todo lo demás.",
+    "pillars": {
+      "profile": {
+        "title": "Un perfil para cada mascota",
+        "text": "Publica fotos y deja que ella firme lo que comparte."
+      },
+      "pawmates": {
+        "title": "PawMates cerca de ti",
+        "text": "Compañeros de paseo compatibles, sin revelar tu ubicación exacta."
+      },
+      "adoption": {
+        "title": "Adopción responsable",
+        "text": "Solo refugios y fundaciones verificadas."
+      }
+    },
+    "nextStep": "Después presentarás a tu primera mascota.",
+    "haveAccount": "¿Ya tienes cuenta? <login>Inicia sesión</login>",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo {min, number} caracteres",
+    "birthDate": "Fecha de nacimiento",
+    "birthDateHint": "Solo para comprobar la edad mínima. No aparece en tu perfil.",
+    "terms": "Confirmo que tengo {minAge, number} años o más y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+    "submit": "Crear cuenta",
+    "submitting": "Creando cuenta…",
+    "verifyNotice": "Te enviaremos un enlace para verificar tu correo antes de publicar."
+  },
+  "auth": {
+    "orEmail": "o con tu correo",
+    "fieldErrors": {
+      "emailInvalid": "Escribe un correo válido, por ejemplo nombre@correo.com.",
+      "passwordRequired": "Escribe tu contraseña.",
+      "passwordTooShort": "La contraseña necesita al menos {min, number} caracteres.",
+      "passwordTooLong": "La contraseña puede tener como máximo {max, number} caracteres.",
+      "passwordsMismatch": "Las contraseñas no coinciden.",
+      "birthDateInvalid": "Indica tu fecha de nacimiento.",
+      "termsRequired": "Debes confirmar la edad mínima y aceptar los términos."
+    },
+    "problems": {
+      "network": "No pudimos conectar con PawBook. Revisa tu conexión e inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos seguidos. Espera un momento y vuelve a probar.",
+      "rateLimitedWait": "Demasiados intentos seguidos. Vuelve a probar en {seconds, plural, one {# segundo} other {# segundos}}.",
+      "invalidCredentials": "El correo o la contraseña no son correctos.",
+      "validation": "Revisa los datos e inténtalo de nuevo.",
+      "invalidLink": "El enlace no es válido o ya se usó.",
+      "linkExpired": "El enlace ha caducado.",
+      "providerDisabled": "Este método de acceso no está disponible ahora mismo.",
+      "unavailable": "El servicio no está disponible en este momento. Inténtalo en unos minutos.",
+      "generic": "Algo no ha ido bien. Inténtalo de nuevo en un momento."
+    },
+    "google": {
+      "button": "Continuar con Google",
+      "loading": "Conectando con Google…",
+      "notices": {
+        "unavailable": "El acceso con Google no está disponible ahora mismo. Usa tu correo.",
+        "registrationRequired": "Para crear tu cuenta con Google, indica tu fecha de nacimiento y acepta los términos en el formulario de registro.",
+        "forbidden": "Google no ha verificado ese correo. Verifícalo en tu cuenta de Google o usa tu correo y contraseña.",
+        "failed": "No se pudo completar el acceso con Google. Inténtalo de nuevo o usa tu correo."
+      }
+    },
+    "session": {
+      "checking": "Comprobando tu sesión",
+      "signIn": "Iniciar sesión",
+      "signOut": "Cerrar sesión",
+      "signingOut": "Cerrando sesión…"
+    },
+    "login": {
+      "title": "Inicia sesión",
+      "description": "Tu manada te está esperando.",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@correo.com",
+      "password": "Contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "noAccount": "¿No tienes cuenta? <signup>Regístrate</signup>"
+    },
+    "forgot": {
+      "title": "Recupera tu contraseña",
+      "description": "Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.",
+      "submit": "Enviar enlace",
+      "resubmit": "Enviar de nuevo",
+      "submitting": "Enviando…",
+      "sent": "Si hay una cuenta con ese correo, te llegará un enlace en unos minutos. Sirve una sola vez y caduca en 1 hora.",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "reset": {
+      "title": "Crea una contraseña nueva",
+      "description": "Al cambiarla se cerrará la sesión en todos tus dispositivos.",
+      "password": "Contraseña nueva",
+      "passwordPlaceholder": "Mínimo {min, number} caracteres",
+      "confirmation": "Repite la contraseña",
+      "submit": "Guardar contraseña",
+      "submitting": "Guardando…",
+      "successTitle": "Contraseña actualizada",
+      "successDescription": "Ya puedes iniciar sesión con tu contraseña nueva.",
+      "goToLogin": "Iniciar sesión",
+      "invalidTitle": "Este enlace no sirve",
+      "invalidDescription": "El enlace no es válido o ya se usó. Pide uno nuevo desde «¿Olvidaste tu contraseña?».",
+      "expiredTitle": "El enlace ha caducado",
+      "expiredDescription": "Los enlaces para restablecer la contraseña duran 1 hora. Pide uno nuevo.",
+      "requestNew": "Pedir un enlace nuevo"
+    },
+    "checkEmail": {
+      "title": "Revisa tu correo",
+      "description": "Te enviamos un enlace para confirmar tu correo; caduca en 24 horas. Puedes presentar a tu mascota mientras tanto: verificarlo solo hace falta para publicar, comentar y seguir.",
+      "sent": "Si el correo es válido, en unos minutos recibirás un mensaje con los siguientes pasos.",
+      "sentTo": "Enviamos el enlace a {email}. Si no te llega en unos minutos, pide otro.",
+      "spam": "¿No lo encuentras? Mira en spam o en promociones.",
+      "resend": "Reenviar enlace",
+      "resending": "Enviando…",
+      "resent": "Te enviamos un enlace nuevo.",
+      "continue": "Presentar a mi mascota",
+      "signInToContinue": "<login>Inicia sesión</login> para reenviar el enlace o seguir con el registro."
+    },
+    "verify": {
+      "title": "Verificación de correo",
+      "verifying": "Verificando tu correo",
+      "successTitle": "¡Correo verificado!",
+      "successDescription": "Ya puedes publicar, comentar y chatear en PawBook.",
+      "continue": "Continuar",
+      "signIn": "Iniciar sesión",
+      "retry": "Reintentar",
+      "expiredTitle": "El enlace ha caducado",
+      "expiredDescription": "Los enlaces de verificación duran 24 horas. Pide uno nuevo y ábrelo desde tu correo.",
+      "resend": "Enviar un enlace nuevo",
+      "resent": "Te enviamos un enlace nuevo. Revisa tu correo.",
+      "signInToResend": "Inicia sesión para pedir otro",
+      "invalidTitle": "Este enlace no sirve",
+      "invalidDescription": "El enlace no es válido o ya se usó. Si ya verificaste tu correo, inicia sesión."
+    }
+  },
+  "onboarding": {
+    "back": "Volver",
+    "progressLabel": "Paso {step, number} de {total, number}",
+    "progress": "{step, number} de {total, number}"
+  },
+  "petStep": {
+    "title": "Presenta a tu mascota",
+    "description": "Será la autora de todo lo que publiques. Podrás añadir más mascotas después.",
+    "addPhoto": "Añadir foto de perfil",
+    "photo": "Foto",
+    "species": "Especie",
+    "name": "Nombre",
+    "namePlaceholder": "Luna",
+    "handle": "Usuario",
+    "handlePlaceholder": "luna.gato",
+    "breed": "Raza",
+    "breeds": {
+      "mixed": "Mestizo",
+      "european": "Europeo común",
+      "siamese": "Siamés",
+      "persian": "Persa",
+      "maineCoon": "Maine coon",
+      "labrador": "Labrador",
+      "borderCollie": "Border collie",
+      "beagle": "Beagle",
+      "poodle": "Caniche",
+      "unknown": "No lo sé",
+      "other": "Otra"
+    },
+    "otherBreed": "Escribe la raza",
+    "birth": "Nacimiento aprox.",
+    "sex": "Sexo",
+    "handleStatus": {
+      "checking": "Comprobando…",
+      "available": "Disponible",
+      "taken": "Ocupado",
+      "reserved": "Reservado",
+      "invalid": "No válido"
+    },
+    "errors": {
+      "nameRequired": "Escribe el nombre de tu mascota.",
+      "nameTooLong": "El nombre puede tener hasta 40 caracteres.",
+      "handleInvalid": "El usuario debe tener entre 3 y 30 caracteres: letras minúsculas, números, punto o guion bajo, con al menos una letra o un número.",
+      "handleTaken": "Ese usuario ya lo tiene otra mascota. Prueba con otro.",
+      "handleReserved": "Ese usuario está reservado. Elige otro.",
+      "handleRejected": "Ese usuario no se puede usar. Elige otro.",
+      "breedTooLong": "La raza puede tener hasta 60 caracteres.",
+      "birthMonthInvalid": "Elige un mes y un año válidos.",
+      "fieldInvalid": "Revisa este dato."
+    },
+    "alerts": {
+      "petLimit": "Ya tienes {max, number} mascotas, el máximo. Archiva una para añadir otra.",
+      "network": "Sin conexión. Revisa tu red e inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a probar.",
+      "validation": "Revisa los datos del formulario.",
+      "unavailable": "El servicio no está disponible ahora mismo. Inténtalo en unos minutos.",
+      "generic": "No pudimos crear la mascota. Inténtalo de nuevo."
+    },
+    "alreadyHasPets": "{count, plural, one {Ya tienes una mascota.} other {Ya tienes # mascotas.}} Puedes añadir otra o",
+    "limitReached": "Ya tienes {max, number} mascotas, el máximo.",
+    "skipAdding": "seguir sin añadir",
+    "creating": "Creando…",
+    "continue": "Continuar",
+    "laterNotice": "La bio y más fotos se añaden luego desde el perfil."
+  },
+  "followStep": {
+    "title": "Mascotas para seguir",
+    "verifyEmail": "Verifica tu correo para poder publicar, comentar y seguir.",
+    "resend": "Reenviar",
+    "resent": "Te enviamos un enlace nuevo. Revisa tu correo.",
+    "resendFailed": "No pudimos reenviar el enlace. Inténtalo de nuevo.",
+    "heading": "¿A quién quieres seguir?",
+    "description": "Sugerencias por especie y cerca de ti. Sigue al menos {count, number} para llenar tu feed.",
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "progress": "{count, number} de {target, number} seguidas",
+    "goToFeed": "Ir a mi feed",
+    "skip": "Omitir por ahora"
+  }
+}

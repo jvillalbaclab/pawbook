@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode, SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & { size?: number };
@@ -92,6 +93,18 @@ export const BellIcon = (p: IconProps) => (
 export const MessageIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="M4 5h16v11H9l-5 4z" />
+  </Stroke>
+);
+export const LogoutIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" />
+    <path d="M10 16l-4-4 4-4M6 12h10" />
+  </Stroke>
+);
+export const MailIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+    <path d="M4 7l8 6 8-6" />
   </Stroke>
 );
 export const AdoptionIcon = (p: IconProps) => (
@@ -194,6 +207,12 @@ export const MoonIcon = (p: IconProps) => (
     <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
   </Stroke>
 );
+export const MonitorIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </Stroke>
+);
 export const CheckIcon = (p: IconProps) => (
   <Stroke strokeWidth={2.4} {...p}>
     <path d="M5 12.5l4.5 4.5L19 7.5" />
@@ -202,13 +221,14 @@ export const CheckIcon = (p: IconProps) => (
 
 /** Insignia de organización verificada: con nombre accesible propio. */
 export function VerifiedBadge({ size = 16 }: { size?: number }) {
+  const t = useTranslations("common");
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
       role="img"
-      aria-label="Organización verificada"
+      aria-label={t("verifiedOrganization")}
     >
       <circle cx="12" cy="12" r="10" fill="var(--success)" />
       <path

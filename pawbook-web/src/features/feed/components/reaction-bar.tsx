@@ -1,12 +1,14 @@
+import { useTranslations } from "next-intl";
 import type { ComponentType } from "react";
 import { BoneIcon, FishIcon, HeartIcon, PawIcon } from "@/design-system/icons";
+import { fmt } from "@/i18n/formatters";
 import type { ReactionCounts, ReactionKind } from "@/lib/types";
 
-const REACTIONS: { kind: ReactionKind; label: string; icon: ComponentType<{ size?: number }> }[] = [
-  { kind: "paw", label: "huella", icon: PawIcon },
-  { kind: "heart", label: "corazón", icon: HeartIcon },
-  { kind: "bone", label: "hueso", icon: BoneIcon },
-  { kind: "fish", label: "pez", icon: FishIcon },
+const REACTIONS: { kind: ReactionKind; icon: ComponentType<{ size?: number }> }[] = [
+  { kind: "paw", icon: PawIcon },
+  { kind: "heart", icon: HeartIcon },
+  { kind: "bone", icon: BoneIcon },
+  { kind: "fish", icon: FishIcon },
 ];
 
 type ReactionBarProps = {
@@ -16,16 +18,17 @@ type ReactionBarProps = {
 };
 
 export function ReactionBar({ counts, mine, onReact }: ReactionBarProps) {
+  const t = useTranslations("post");
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {REACTIONS.map(({ kind, label, icon: Icon }) => {
+      {REACTIONS.map(({ kind, icon: Icon }) => {
         const active = mine === kind;
         return (
           <button
             key={kind}
             type="button"
             aria-pressed={active}
-            aria-label={`Reacción ${label}, ${counts[kind]}`}
+            aria-label={t("reaction", { label: t(`reactions.${kind}`), count: counts[kind] })}
             onClick={() => onReact(kind)}
             className={`flex h-9 items-center gap-1.5 rounded-full border px-2.5 text-[13px] tabular-nums transition-colors ${
               active
@@ -34,7 +37,7 @@ export function ReactionBar({ counts, mine, onReact }: ReactionBarProps) {
             }`}
           >
             <Icon size={17} />
-            {counts[kind]}
+            {fmt.compact(counts[kind])}
           </button>
         );
       })}

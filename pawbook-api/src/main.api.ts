@@ -1,7 +1,12 @@
 import packageJson from "../package.json" with { type: "json" };
 import { loadConfig } from "./composition/config";
 import { createContainer } from "./composition/container";
+import { createIdentityModule } from "./composition/identity";
+import { createPetsModule } from "./composition/pets";
+import { createSocialModule } from "./composition/social";
 import { createApp } from "./http/app";
+import { ValkeyIdempotencyStore } from "./http/idempotency/valkey-store";
+import { ValkeyRateLimitStore } from "./http/rate-limit/valkey-store";
 
 /*
  * Entrypoint HTTP. Usa Bun.serve si corre en Bun y @hono/node-server en Node 22: el mismo
@@ -10,11 +15,40 @@ import { createApp } from "./http/app";
 const container = createContainer(loadConfig(process.env));
 const { config, logger } = container;
 
+const rateLimitStore = new ValkeyRateLimitStore(container.valkey);
+const idempotencyStore = new ValkeyIdempotencyStore(container.valkey);
+const identity = createIdentityModule({
+  config,
+  logger,
+  unitOfWork: container.unitOfWork,
+  outbox: container.outbox,
+  rateLimitStore,
+  idempotencyStore,
+});
+const pets = createPetsModule({
+  logger,
+  unitOfWork: container.unitOfWork,
+  outbox: container.outbox,
+  valkey: container.valkey,
+  idempotencyStore,
+});
+const social = createSocialModule({
+  config,
+  logger,
+  petProfiles: pets.petSocialProfile,
+  activePet: pets.activePet,
+});
+
 const app = createApp({
   logger,
   version: packageJson.version,
   corsOrigins: config.CORS_ORIGINS,
   readinessChecks: container.readinessChecks,
+  trustedProxyHops: config.TRUSTED_PROXY_HOPS,
+  rateLimitStore,
+  idempotencyStore,
+  accessTokenVerifier: identity.accessTokenVerifier,
+  moduleRoutes: [identity.routes, pets.routes, social.routes],
 });
 
 type Stoppable = { stop(): Promise<void> };

@@ -12,6 +12,6 @@ describe("validatePostText", () => {
   });
 
   test("rechaza un carácter por encima del máximo", () => {
-    expect(validatePostText("a".repeat(MAX_POST_LENGTH + 1))).toContain("supera");
+    expect(validatePostText("a".repeat(MAX_POST_LENGTH + 1))).toBe("too-long");
   });
 });

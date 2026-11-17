@@ -2,6 +2,12 @@ import Redis from "ioredis";
 import pino, { type Logger } from "pino";
 import postgres from "postgres";
 import type { ReadinessCheck } from "../http/types";
+import { createDatabase, type Database, DrizzleUnitOfWork } from "../infrastructure/db/database";
+import { DrizzleInbox } from "../infrastructure/db/inbox";
+import { DrizzleEventOutbox } from "../infrastructure/db/outbox";
+import type { EventHandler, EventOutbox } from "../shared/events";
+import type { Inbox } from "../shared/inbox";
+import type { UnitOfWork } from "../shared/unit-of-work";
 import type { Config } from "./config";
 
 /*
@@ -12,6 +18,12 @@ export type Container = {
   config: Config;
   logger: Logger;
   sql: postgres.Sql;
+  db: Database;
+  unitOfWork: UnitOfWork;
+  outbox: EventOutbox;
+  inbox: Inbox;
+  /** Handlers que el worker registra en pg-boss. Cada módulo añadirá aquí los suyos. */
+  eventHandlers: EventHandler[];
   valkey: Redis;
   readinessChecks: ReadinessCheck[];
   close(): Promise<void>;
@@ -26,6 +38,8 @@ export function createContainer(config: Config): Container {
   });
 
   const sql = postgres(config.DATABASE_URL, { max: 10, connect_timeout: 5, idle_timeout: 30 });
+  const db = createDatabase(sql);
+  const unitOfWork = new DrizzleUnitOfWork(db);
 
   const valkey = new Redis(config.VALKEY_URL, {
     lazyConnect: true,
@@ -54,6 +68,11 @@ export function createContainer(config: Config): Container {
     config,
     logger,
     sql,
+    db,
+    unitOfWork,
+    outbox: new DrizzleEventOutbox(),
+    inbox: new DrizzleInbox(unitOfWork),
+    eventHandlers: [],
     valkey,
     readinessChecks,
     close: async () => {

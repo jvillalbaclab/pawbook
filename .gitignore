@@ -11,3 +11,7 @@ coverage/
 .env.*
 !.env.example
 *.pem
+
+# Handoffs locales de las skills del agente
+.agent/
+.claude/worktrees/

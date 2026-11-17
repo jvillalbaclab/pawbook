@@ -11,10 +11,14 @@ export type ProblemCode =
   | "validation-failed"
   | "unauthorized"
   | "forbidden"
+  | "email-not-verified"
   | "not-found"
   | "conflict"
+  | "invalid-link"
+  | "link-expired"
   | "rate-limited"
   | "service-unavailable"
+  | "auth-provider-disabled"
   | "internal-error";
 
 const DEFAULTS: Record<ProblemCode, { status: number; title: string }> = {
@@ -22,10 +26,19 @@ const DEFAULTS: Record<ProblemCode, { status: number; title: string }> = {
   "validation-failed": { status: 422, title: "Los datos enviados no son válidos" },
   unauthorized: { status: 401, title: "Necesitas iniciar sesión" },
   forbidden: { status: 403, title: "No tienes permiso para hacer esto" },
+  // FR-AUTH-006: publicar, comentar o chatear exige el correo verificado.
+  "email-not-verified": { status: 403, title: "Verifica tu correo para hacer esto" },
   "not-found": { status: 404, title: "No encontramos lo que buscas" },
   conflict: { status: 409, title: "La solicitud entra en conflicto con el estado actual" },
+  "invalid-link": { status: 400, title: "El enlace no es válido o ya se usó" },
+  // FR-AUTH-002: un enlace caducado responde 410 para que el cliente ofrezca reenviarlo.
+  "link-expired": { status: 410, title: "El enlace ha caducado" },
   "rate-limited": { status: 429, title: "Demasiadas solicitudes" },
   "service-unavailable": { status: 503, title: "Servicio no disponible temporalmente" },
+  "auth-provider-disabled": {
+    status: 503,
+    title: "Este método de inicio de sesión no está disponible",
+  },
   "internal-error": { status: 500, title: "Algo salió mal en nuestro lado" },
 };
 
