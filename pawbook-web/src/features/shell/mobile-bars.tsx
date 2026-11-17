@@ -13,7 +13,7 @@ import { isActivePath, NAV_ITEMS } from "./nav-items";
 /** Barra superior móvil (< 1.024 px): logo, tema y mascota activa siempre a mano. */
 export function MobileTopBar() {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between bg-canvas/95 px-4 py-3 backdrop-blur lg:hidden">
+    <header className="sticky top-0 z-20 flex items-center justify-between bg-canvas/95 px-4 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-3 backdrop-blur lg:hidden">
       <Logo />
       <div className="flex items-center gap-1">
         <ThemeToggle />
@@ -68,7 +68,7 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
   return (
     <nav
       aria-label={t("label")}
-      className="fixed inset-x-0 bottom-0 z-20 grid h-[78px] grid-cols-5 items-center border-t border-line bg-surface px-2 pb-3.5 lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-20 grid h-[calc(78px+env(safe-area-inset-bottom))] grid-cols-5 items-center border-t border-line bg-surface px-2 pb-[calc(14px+env(safe-area-inset-bottom))] lg:hidden"
     >
       {left.map(item)}
       <Link

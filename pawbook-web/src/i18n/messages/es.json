@@ -6,6 +6,7 @@
   },
   "nav": {
     "label": "Navegación principal",
+    "skipToContent": "Saltar al contenido",
     "home": "Inicio",
     "pawmates": "PawMates",
     "messages": "Mensajes",

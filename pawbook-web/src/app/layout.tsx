@@ -28,6 +28,8 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#151311" },
   ],
   colorScheme: "light dark",
+  // Permite usar env(safe-area-inset-*) en móviles con muesca y en la PWA instalada.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
