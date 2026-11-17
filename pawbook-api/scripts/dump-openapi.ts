@@ -1,9 +1,12 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import Redis from "ioredis";
 import pino from "pino";
 import packageJson from "../package.json" with { type: "json" };
 import { loadConfig } from "../src/composition/config";
 import { createIdentityModule } from "../src/composition/identity";
+import { createPetsModule } from "../src/composition/pets";
+import { createSocialModule } from "../src/composition/social";
 import { createApp } from "../src/http/app";
 import { MemoryIdempotencyStore } from "../src/http/idempotency/store";
 import { MemoryRateLimitStore } from "../src/http/rate-limit/store";
@@ -48,6 +51,16 @@ const identity = createIdentityModule({
   idempotencyStore,
 });
 
+// lazyConnect: el cliente nunca abre conexión porque ningún caso de uso se ejecuta.
+const valkey = new Redis(config.VALKEY_URL, { lazyConnect: true });
+const pets = createPetsModule({ logger, unitOfWork, outbox, valkey, idempotencyStore });
+const social = createSocialModule({
+  config,
+  logger,
+  petProfiles: pets.petSocialProfile,
+  activePet: pets.activePet,
+});
+
 const app = createApp({
   logger,
   version: packageJson.version,
@@ -57,7 +70,7 @@ const app = createApp({
   rateLimitStore,
   idempotencyStore,
   accessTokenVerifier: identity.accessTokenVerifier,
-  moduleRoutes: [identity.routes],
+  moduleRoutes: [identity.routes, pets.routes, social.routes],
 });
 
 const response = await app.request("/v1/openapi.json");

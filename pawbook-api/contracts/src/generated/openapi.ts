@@ -738,6 +738,481 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/me/pets": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Mascotas activas del usuario autenticado
+     * @description Para el selector de mascota activa (UI-003). Como máximo 10, sin paginación.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Mascotas */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["MyPets"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/pets": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Crea una mascota
+     * @description FR-PET-001 y FR-PET-002. Máximo 10 mascotas activas por usuario. No exige correo verificado. Admite `Idempotency-Key`.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: {
+          /** @description Clave única por operación. Reintentar con la misma clave y el mismo cuerpo devuelve la respuesta original sin repetir la operación. */
+          "idempotency-key"?: string;
+        };
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreatePetRequest"];
+        };
+      };
+      responses: {
+        /** @description Mascota creada */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Pet"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        /** @description Handle ocupado o límite de 10 mascotas alcanzado */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        /** @description Datos no válidos o handle reservado */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/pets/handles/{handle}/availability": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Comprueba si un @handle está libre
+     * @description Para el onboarding (T-M0.41): normaliza el handle (minúsculas, sin `@`) y dice si se puede registrar. Es orientativo: el alta puede fallar con 409 si otro lo ocupa entretanto.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          handle: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Resultado */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["HandleAvailability"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/pets/{handle}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Perfil público de una mascota
+     * @description FR-PET-003 y FR-FEED-010: no exige sesión. Incluye el nombre de pila del responsable salvo que lo oculte (FR-PET-008). Las mascotas archivadas responden 404.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          handle: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Perfil */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["PublicPet"];
+          };
+        };
+        /** @description No existe o está archivada */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/pets/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Edita una mascota propia
+     * @description FR-PET-004 y FR-PET-002. Solo el responsable; para cualquier otro usuario responde 404. El handle se puede cambiar una vez cada 30 días.
+     */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdatePetRequest"];
+        };
+      };
+      responses: {
+        /** @description Mascota actualizada */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Pet"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        /** @description No existe, está archivada o no es tuya */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        /** @description Handle ocupado o cambiado hace menos de 30 días */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        /** @description Datos no válidos o handle reservado */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    trace?: never;
+  };
+  "/v1/pets/{id}/archive": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Archiva una mascota propia
+     * @description FR-PET-006: el perfil y su contenido dejan de verse para terceros y ya no puede ser la mascota activa. Es idempotente. El handle sigue reservado.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Mascota archivada */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        401: components["responses"]["Unauthorized"];
+        /** @description No existe o no es tuya */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/me/caretaker-profile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Cómo apareces como responsable en tus mascotas
+     * @description FR-PET-008: nombre de pila y si se muestra («Responsable: Laura»).
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Ajustes del responsable */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["CaretakerProfile"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Cambia tu nombre de pila o lo oculta de tus mascotas
+     * @description FR-PET-008 y US-06. Solo el nombre de pila: nunca apellidos ni datos de contacto. `firstName: null` lo borra.
+     */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateCaretakerProfileRequest"];
+        };
+      };
+      responses: {
+        /** @description Ajustes guardados */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["CaretakerProfile"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        /** @description Nombre no válido */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+      };
+    };
+    trace?: never;
+  };
+  "/v1/stream/token": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Tokens de GetStream para la mascota activa y el usuario
+     * @description FR-AUTH-010 y ADR-002: token de Feeds para `pet_<X-Pet-Id>` y de Chat para `usr_<userId>`, válidos 1 h. Al cambiar de mascota activa, el cliente pide otro (solo cambia el de Feeds). Sin correo verificado, `chatToken` es `null` (FR-AUTH-006).
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header: {
+          /** @description Mascota activa en cuyo nombre se actúa. Debe ser del usuario autenticado y no estar archivada. */
+          "x-pet-id": string;
+        };
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Tokens emitidos */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["StreamTokens"];
+          };
+        };
+        /** @description Falta `X-Pet-Id` o no es un ID válido */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        401: components["responses"]["Unauthorized"];
+        /** @description La mascota no existe, está archivada o no es tuya */
+        403: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+        429: components["responses"]["TooManyRequests"];
+        /** @description GetStream no está configurado en este entorno */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["Problem"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -954,6 +1429,218 @@ export interface components {
       userAgent: string | null;
       /** @description `true` si es la sesión de este access token. */
       current: boolean;
+    };
+    MyPets: {
+      /** @description Mascotas activas, de la más antigua a la más reciente (máximo 10). */
+      items: components["schemas"]["Pet"][];
+    };
+    Pet: {
+      /** Format: uuid */
+      id: string;
+      /** @example luna.gato */
+      handle: string;
+      name: string;
+      /**
+       * @description Especie.
+       * @enum {string}
+       */
+      species: "dog" | "cat";
+      /**
+       * @description Sexo.
+       * @enum {string}
+       */
+      sex: "female" | "male";
+      breed: string | null;
+      /** @example 2023-05 */
+      birthMonth: string | null;
+      bio: string | null;
+      favoriteToy: string | null;
+      favoriteTreat: string | null;
+      /** Format: uuid */
+      avatarMediaId: string | null;
+      /** Format: uuid */
+      coverMediaId: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** @enum {string} */
+      status: "active" | "archived";
+      /** Format: date-time */
+      updatedAt: string;
+      /**
+       * Format: date-time
+       * @description Último cambio de handle; `null` si conserva el elegido al crearla.
+       */
+      handleChangedAt: string | null;
+      /**
+       * Format: date-time
+       * @description Desde cuándo se puede volver a cambiar el handle; `null` si ya se puede.
+       */
+      nextHandleChangeAt: string | null;
+    };
+    CreatePetRequest: {
+      /**
+       * @description @handle único (3-30 caracteres de `[a-z0-9_.]`). Se guarda en minúsculas y sin `@`.
+       * @example luna.gato
+       */
+      handle: string;
+      /**
+       * @description Nombre visible.
+       * @example Luna
+       */
+      name: string;
+      /**
+       * @description Especie.
+       * @enum {string}
+       */
+      species: "dog" | "cat";
+      /**
+       * @description Sexo.
+       * @enum {string}
+       */
+      sex: "female" | "male";
+      /** @description Raza: del catálogo del cliente o texto libre. */
+      breed?: string | null;
+      /**
+       * @description Fecha de nacimiento aproximada (AAAA-MM).
+       * @example 2023-05
+       */
+      birthMonth?: string | null;
+      /** @description Bio (≤ 300 caracteres). */
+      bio?: string | null;
+      /** @description Juguete favorito. */
+      favoriteToy?: string | null;
+      /** @description Premio favorito. */
+      favoriteTreat?: string | null;
+      /**
+       * Format: uuid
+       * @description Foto de perfil. ID de un medio del módulo media (M1); hoy no se valida.
+       */
+      avatarMediaId?: string | null;
+      /**
+       * Format: uuid
+       * @description Portada. ID de un medio del módulo media (M1); hoy no se valida.
+       */
+      coverMediaId?: string | null;
+    };
+    HandleAvailability: {
+      /** @description Handle normalizado que se comprobó. */
+      handle: string;
+      available: boolean;
+      /**
+       * @description `invalid`: no cumple el formato · `reserved`: no se puede usar · `taken`: ya es de otra mascota · `null` si está libre.
+       * @enum {string|null}
+       */
+      reason: "invalid" | "reserved" | "taken" | null;
+    };
+    PublicPet: {
+      /** Format: uuid */
+      id: string;
+      /** @example luna.gato */
+      handle: string;
+      name: string;
+      /**
+       * @description Especie.
+       * @enum {string}
+       */
+      species: "dog" | "cat";
+      /**
+       * @description Sexo.
+       * @enum {string}
+       */
+      sex: "female" | "male";
+      breed: string | null;
+      /** @example 2023-05 */
+      birthMonth: string | null;
+      bio: string | null;
+      favoriteToy: string | null;
+      favoriteTreat: string | null;
+      /** Format: uuid */
+      avatarMediaId: string | null;
+      /** Format: uuid */
+      coverMediaId: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** @description Responsable visible (FR-PET-008). `null` si lo oculta en los ajustes o no ha indicado su nombre. */
+      caretaker: {
+        /** @example Laura */
+        firstName: string;
+      } | null;
+    };
+    /** @description Solo se cambian los campos presentes. `null` vacía un campo opcional. */
+    UpdatePetRequest: {
+      /**
+       * @description Nuevo @handle. Se puede cambiar una vez cada 30 días (el elegido al crear la mascota no cuenta).
+       * @example luna.gato
+       */
+      handle?: string;
+      /**
+       * @description Nombre visible.
+       * @example Luna
+       */
+      name?: string;
+      /**
+       * @description Especie.
+       * @enum {string}
+       */
+      species?: "dog" | "cat";
+      /**
+       * @description Sexo.
+       * @enum {string}
+       */
+      sex?: "female" | "male";
+      /** @description Raza: del catálogo del cliente o texto libre. */
+      breed?: string | null;
+      /**
+       * @description Fecha de nacimiento aproximada (AAAA-MM).
+       * @example 2023-05
+       */
+      birthMonth?: string | null;
+      /** @description Bio (≤ 300 caracteres). */
+      bio?: string | null;
+      /** @description Juguete favorito. */
+      favoriteToy?: string | null;
+      /** @description Premio favorito. */
+      favoriteTreat?: string | null;
+      /**
+       * Format: uuid
+       * @description Foto de perfil. ID de un medio del módulo media (M1); hoy no se valida.
+       */
+      avatarMediaId?: string | null;
+      /**
+       * Format: uuid
+       * @description Portada. ID de un medio del módulo media (M1); hoy no se valida.
+       */
+      coverMediaId?: string | null;
+    };
+    CaretakerProfile: {
+      /**
+       * @description Nombre de pila que se muestra como «Responsable: …». Nunca apellidos.
+       * @example Laura
+       */
+      firstName: string | null;
+      /** @description Si se muestra en el perfil de las mascotas (por defecto, sí). */
+      showFirstName: boolean;
+    };
+    UpdateCaretakerProfileRequest: {
+      firstName?: string | null;
+      showFirstName?: boolean;
+    };
+    StreamTokens: {
+      /** @description API key pública de la app de Stream. */
+      apiKey: string;
+      /** @example pet_0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61 */
+      feedsUserId: string;
+      /** @description Token de Feeds de la mascota activa. */
+      feedsToken: string;
+      /** @example usr_0192f5e4-7c1a-7b3e-9a40-5d1f0c2b8e61 */
+      chatUserId: string;
+      /** @description Token de Chat del usuario. `null` si su correo no está verificado: no puede chatear (FR-AUTH-006). */
+      chatToken: string | null;
+      /**
+       * Format: date-time
+       * @description Caducidad de ambos tokens (≤ 24 h). El cliente pide otros antes.
+       */
+      expiresAt: string;
     };
   };
   responses: {
