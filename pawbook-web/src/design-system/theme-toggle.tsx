@@ -1,15 +1,11 @@
 "use client";
 
-import { nextThemePreference, type ThemePreference } from "@/lib/theme";
+import { useTranslations } from "next-intl";
+import { nextThemePreference } from "@/lib/theme";
 import { MonitorIcon, MoonIcon, SunIcon } from "./icons";
 import { setThemePreference, useThemePreference } from "./use-theme";
 
 const ICONS = { system: MonitorIcon, light: SunIcon, dark: MoonIcon } as const;
-const LABELS: Record<ThemePreference, string> = {
-  system: "automático",
-  light: "claro",
-  dark: "oscuro",
-};
 
 /**
  * Conmutador de tema (UI-006): recorre automático (sigue al sistema) → claro → oscuro.
@@ -17,11 +13,12 @@ const LABELS: Record<ThemePreference, string> = {
  * HTML del servidor coincida con el del cliente.
  */
 export function ThemeToggle({ withLabel = false }: { withLabel?: boolean }) {
+  const t = useTranslations("theme");
   const preference = useThemePreference();
   const current = preference ?? "system";
   const next = nextThemePreference(current);
   const Icon = ICONS[current];
-  const label = `Tema: ${LABELS[current]}. Cambiar a ${LABELS[next]}`;
+  const label = t("toggleLabel", { current: t(current), next: t(next) });
 
   return (
     <button
@@ -34,7 +31,11 @@ export function ThemeToggle({ withLabel = false }: { withLabel?: boolean }) {
       }`}
     >
       <Icon size={21} />
-      {withLabel && <span aria-hidden="true">Tema {preference ? LABELS[current] : ""}</span>}
+      {withLabel && (
+        <span aria-hidden="true">
+          {t("label")} {preference ? t(current) : ""}
+        </span>
+      )}
     </button>
   );
 }

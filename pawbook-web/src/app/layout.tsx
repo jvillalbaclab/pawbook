@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Providers } from "@/lib/providers";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -11,10 +13,13 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: { default: "PawBook", template: "%s · PawBook" },
-  description: "La red social donde tu mascota es la protagonista.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
+  return {
+    title: { default: t("title"), template: `%s · ${t("title")}` },
+    description: t("description"),
+  };
+}
 
 /** Color de la barra del navegador y de la PWA según el tema del sistema (UI-006). */
 export const viewport: Viewport = {
@@ -25,16 +30,24 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
   return (
     // suppressHydrationWarning: el script de tema cambia data-theme antes de hidratar.
-    <html lang="es" className={`${dmSans.variable} ${jakarta.variable}`} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`${dmSans.variable} ${jakarta.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: script estático propio, sin datos del usuario */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-dvh font-sans">
-        <Providers>{children}</Providers>
+        {/* Hereda locale y catálogo de src/i18n/request.ts para los componentes cliente. */}
+        <NextIntlClientProvider>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -1,6 +1,18 @@
 import { describe, expect, test } from "bun:test";
+import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { messagesFor } from "@/i18n/messages";
 import { EmptyState, ErrorState, LoadingState, viewStateOf } from "./states";
+
+/** Renderiza con el catálogo en español, como lo hace el layout raíz. */
+function render(node: ReactNode): string {
+  return renderToStaticMarkup(
+    <NextIntlClientProvider locale="es" messages={messagesFor("es")}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 describe("viewStateOf", () => {
   test("sin datos ni error, está cargando", () => {
@@ -26,7 +38,7 @@ describe("viewStateOf", () => {
 
 describe("componentes de estado", () => {
   test("el error se anuncia y ofrece reintentar", () => {
-    const html = renderToStaticMarkup(
+    const html = render(
       <ErrorState icon={null} title="No pudimos cargar el feed" onRetry={() => {}} />,
     );
     expect(html).toContain('role="alert"');
@@ -35,17 +47,22 @@ describe("componentes de estado", () => {
   });
 
   test("sin onRetry no pinta el botón", () => {
-    const html = renderToStaticMarkup(<ErrorState icon={null} title="Falló" />);
+    const html = render(<ErrorState icon={null} title="Falló" />);
     expect(html).not.toContain("Reintentar");
   });
 
+  test("sin descripción usa la genérica del catálogo", () => {
+    const html = render(<ErrorState icon={null} title="Falló" />);
+    expect(html).toContain("No es tu conexión");
+  });
+
   test("el estado vacío no se anuncia como alerta", () => {
-    const html = renderToStaticMarkup(<EmptyState icon={null} title="Nada" description="Aún." />);
+    const html = render(<EmptyState icon={null} title="Nada" description="Aún." />);
     expect(html).not.toContain('role="alert"');
   });
 
   test("la carga expone un texto accesible y oculta los esqueletos", () => {
-    const html = renderToStaticMarkup(
+    const html = render(
       <LoadingState label="Cargando publicaciones">
         <span>esqueleto</span>
       </LoadingState>,

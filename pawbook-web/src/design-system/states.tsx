@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 /*
@@ -69,23 +70,24 @@ type ErrorStateProps = {
 export function ErrorState({
   icon,
   title,
-  description = "No es tu conexión: estamos teniendo un problema. Inténtalo de nuevo en un momento.",
+  description,
   onRetry,
   secondaryAction,
 }: ErrorStateProps) {
+  const t = useTranslations("states");
   return (
     <EmptyState
       role="alert"
       tone="neutral"
       icon={icon}
       title={title}
-      description={description}
+      description={description ?? t("genericErrorDescription")}
       action={
         onRetry || secondaryAction ? (
           <div className="flex flex-col items-center gap-3">
             {onRetry && (
               <button type="button" onClick={onRetry} className={STATE_ACTION_CLASSES.inverse}>
-                Reintentar
+                {t("retry")}
               </button>
             )}
             {secondaryAction}

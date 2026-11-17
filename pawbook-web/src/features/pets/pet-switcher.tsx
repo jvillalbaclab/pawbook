@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { CheckIcon, ChevronDownIcon } from "@/design-system/icons";
@@ -11,6 +12,7 @@ import { useActivePet, useActivePetStore } from "@/stores/active-pet";
  * variant "chip" para la barra móvil, "card" para el menú lateral de desktop.
  */
 export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
+  const t = useTranslations("pets");
   const activePet = useActivePet();
   const setActivePet = useActivePetStore((state) => state.setActivePet);
   const [open, setOpen] = useState(false);
@@ -70,7 +72,7 @@ export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
           type="button"
           aria-haspopup="menu"
           aria-expanded={open}
-          aria-label={`Mascota activa: ${activePet.name}. Cambiar mascota`}
+          aria-label={t("activePetLabel", { name: activePet.name })}
           onClick={() => setOpen((value) => !value)}
           className="flex h-11 items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-1 text-ink"
         >
@@ -85,7 +87,7 @@ export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
 
   return (
     <div ref={rootRef} className="relative rounded-[18px] border border-line bg-surface p-3.5">
-      <p className="mb-2.5 text-xs font-bold text-muted">Publicando como</p>
+      <p className="mb-2.5 text-xs font-bold text-muted">{t("publishingAs")}</p>
       <button
         type="button"
         aria-haspopup="menu"

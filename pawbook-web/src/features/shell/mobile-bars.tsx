@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { PlusIcon } from "@/design-system/icons";
 import { Logo } from "@/design-system/logo";
@@ -37,11 +38,12 @@ function BottomNavWithPath() {
 }
 
 function BottomNavView({ pathname }: { pathname: string | null }) {
+  const t = useTranslations("nav");
   const [home, pawmates, messages, adoption] = NAV_ITEMS;
   const left = [home, pawmates];
   const right = [messages, adoption];
 
-  const item = ({ href, label, icon: Icon, badge }: (typeof NAV_ITEMS)[number]) => {
+  const item = ({ href, labelKey, icon: Icon, badge }: (typeof NAV_ITEMS)[number]) => {
     const active = pathname !== null && isActivePath(pathname, href);
     return (
       <Link
@@ -53,7 +55,7 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
         }`}
       >
         <Icon size={24} />
-        {label}
+        {t(labelKey)}
         {badge ? (
           <span className="absolute -top-1 right-[calc(50%-20px)] flex size-[18px] items-center justify-center rounded-full border-2 border-surface bg-primary text-[10px] font-bold text-white">
             {badge}
@@ -65,13 +67,13 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
 
   return (
     <nav
-      aria-label="Navegación principal"
+      aria-label={t("label")}
       className="fixed inset-x-0 bottom-0 z-20 grid h-[78px] grid-cols-5 items-center border-t border-line bg-surface px-2 pb-3.5 lg:hidden"
     >
       {left.map(item)}
       <Link
         href="/#publicar"
-        aria-label="Publicar"
+        aria-label={t("publish")}
         className="-mt-5 flex size-[54px] items-center justify-center justify-self-center rounded-[18px] bg-primary text-white shadow-lg shadow-primary/30"
       >
         <PlusIcon size={26} />

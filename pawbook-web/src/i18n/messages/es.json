@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "title": "PawBook",
+    "description": "La red social donde tu mascota es la protagonista.",
+    "notFoundTitle": "Página no encontrada"
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "home": "Inicio",
+    "pawmates": "PawMates",
+    "messages": "Mensajes",
+    "adoption": "Adopción",
+    "publish": "Publicar",
+    "sampleDataNotice": "Prototipo con datos de ejemplo"
+  },
+  "pets": {
+    "publishingAs": "Publicando como",
+    "activePetLabel": "Mascota activa: {name}. Cambiar mascota"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "automático",
+    "light": "claro",
+    "dark": "oscuro",
+    "toggleLabel": "Tema: {current}. Cambiar a {next}"
+  },
+  "states": {
+    "retry": "Reintentar",
+    "genericErrorDescription": "No es tu conexión: estamos teniendo un problema. Inténtalo de nuevo en un momento.",
+    "sectionErrorTitle": "Algo no ha ido bien",
+    "backHome": "Volver al inicio",
+    "notFoundTitle": "Esta página no existe",
+    "notFoundDescription": "Puede que el enlace esté mal escrito o que la página se haya movido."
+  },
+  "offline": {
+    "title": "Sin conexión",
+    "description": "No hay conexión a internet. Cuando vuelva, PawBook seguirá donde lo dejaste.",
+    "retry": "Volver a intentarlo"
+  },
+  "feed": {
+    "pageTitle": "Inicio",
+    "tabsLabel": "Feed",
+    "forYou": "Para ti",
+    "following": "Siguiendo",
+    "loading": "Cargando publicaciones",
+    "errorTitle": "No pudimos cargar el feed",
+    "errorDescription": "No es tu conexión: estamos teniendo un problema. Tus publicaciones están a salvo.",
+    "errorFallbackLink": "Mientras tanto, ver animales en adopción",
+    "emptyTitle": "{name} todavía no sigue a nadie",
+    "emptyDescription": "Cuando siga a otras mascotas, sus publicaciones aparecerán aquí, de la más reciente a la más antigua.",
+    "emptyAction": "Ver lo popular en Para ti",
+    "upToDate": "Estás al día.",
+    "findPawmates": "Busca PawMates cerca"
+  },
+  "composer": {
+    "label": "Nueva publicación",
+    "textLabel": "Texto de la publicación",
+    "placeholder": "¿Qué hizo {name} hoy?",
+    "photos": "Fotos",
+    "location": "Ubicación",
+    "aiCaption": "Sugerir pie con IA",
+    "publish": "Publicar",
+    "notAvailable": "Publicar estará disponible cuando conectemos la API.",
+    "tooLong": "El texto supera los {max, number} caracteres."
+  },
+  "post": {
+    "options": "Más opciones",
+    "photoCount": "{current}/{total}",
+    "comments": "Comentarios:",
+    "save": "Guardar publicación",
+    "unsave": "Quitar de guardados",
+    "commentAs": "Comentar como {name}",
+    "commentPlaceholder": "Comenta como {name}…",
+    "reaction": "Reacción {label}, {count, number}",
+    "reactions": {
+      "paw": "huella",
+      "heart": "corazón",
+      "bone": "hueso",
+      "fish": "pez"
+    }
+  }
+}

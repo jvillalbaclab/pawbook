@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PawIcon } from "@/design-system/icons";
 import {
@@ -17,12 +18,13 @@ import { useFeed, useReact, useToggleSave } from "../use-feed";
 import { Composer } from "./composer";
 import { PostCard } from "./post-card";
 
-const TABS: { id: FeedTab; label: string }[] = [
-  { id: "for-you", label: "Para ti" },
-  { id: "following", label: "Siguiendo" },
+const TABS: { id: FeedTab; labelKey: "forYou" | "following" }[] = [
+  { id: "for-you", labelKey: "forYou" },
+  { id: "following", labelKey: "following" },
 ];
 
 export function FeedView() {
+  const t = useTranslations("feed");
   const activePet = useActivePet();
   const [tab, setTab] = useState<FeedTab>("for-you");
   const feed = useFeed(tab, activePet.id);
@@ -34,8 +36,8 @@ export function FeedView() {
     <div className="flex flex-col gap-4">
       <Composer activePet={activePet} />
 
-      <div role="tablist" aria-label="Feed" className="flex gap-1.5">
-        {TABS.map(({ id, label }) => (
+      <div role="tablist" aria-label={t("tabsLabel")} className="flex gap-1.5">
+        {TABS.map(({ id, labelKey }) => (
           <button
             key={id}
             type="button"
@@ -48,13 +50,13 @@ export function FeedView() {
                 : "border border-line bg-surface font-semibold text-ink-2 hover:bg-surface-2"
             }`}
           >
-            {label}
+            {t(labelKey)}
           </button>
         ))}
       </div>
 
       {state === "loading" && (
-        <LoadingState label="Cargando publicaciones">
+        <LoadingState label={t("loading")}>
           <PostSkeleton />
           <PostSkeleton />
         </LoadingState>
@@ -63,12 +65,12 @@ export function FeedView() {
       {state === "error" && (
         <ErrorState
           icon={<PawIcon size={44} />}
-          title="No pudimos cargar el feed"
-          description="No es tu conexión: estamos teniendo un problema. Tus publicaciones están a salvo."
+          title={t("errorTitle")}
+          description={t("errorDescription")}
           onRetry={() => feed.refetch()}
           secondaryAction={
             <Link href="/adopcion" className={STATE_ACTION_CLASSES.link}>
-              Mientras tanto, ver animales en adopción
+              {t("errorFallbackLink")}
             </Link>
           }
         />
@@ -77,15 +79,15 @@ export function FeedView() {
       {state === "empty" && (
         <EmptyState
           icon={<PawIcon size={52} />}
-          title={`${activePet.name} todavía no sigue a nadie`}
-          description="Cuando siga a otras mascotas, sus publicaciones aparecerán aquí, de la más reciente a la más antigua."
+          title={t("emptyTitle", { name: activePet.name })}
+          description={t("emptyDescription")}
           action={
             <button
               type="button"
               onClick={() => setTab("for-you")}
               className={STATE_ACTION_CLASSES.primary}
             >
-              Ver lo popular en Para ti
+              {t("emptyAction")}
             </button>
           }
         />
@@ -104,9 +106,9 @@ export function FeedView() {
 
       {state === "ready" && (
         <p className="py-4 text-center text-sm text-muted">
-          Estás al día.{" "}
+          {t("upToDate")}{" "}
           <Link href="/pawmates" className="font-semibold text-primary-ink">
-            Busca PawMates cerca
+            {t("findPawmates")}
           </Link>
         </p>
       )}

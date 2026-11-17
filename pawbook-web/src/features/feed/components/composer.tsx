@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { ImageIcon, PinIcon, SparklesIcon } from "@/design-system/icons";
@@ -11,20 +12,22 @@ import { MAX_POST_LENGTH, validatePostText } from "../post-validation";
  * el botón lo dice en vez de fingir que funciona (principio "nada simulado").
  */
 export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> }) {
+  const t = useTranslations("composer");
   const [text, setText] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
-  const error = validatePostText(text);
+  const error =
+    validatePostText(text) === "too-long" ? t("tooLong", { max: MAX_POST_LENGTH }) : null;
 
   return (
     <section
       id="publicar"
-      aria-label="Nueva publicación"
+      aria-label={t("label")}
       className="scroll-mt-24 rounded-[22px] border border-line bg-surface p-4"
     >
       <div className="flex gap-3">
         <Avatar name={activePet.name} tone={activePet.tone} size={44} />
         <label className="flex-1">
-          <span className="sr-only">Texto de la publicación</span>
+          <span className="sr-only">{t("textLabel")}</span>
           <textarea
             value={text}
             onChange={(event) => {
@@ -32,7 +35,7 @@ export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> 
               setNotice(null);
             }}
             rows={2}
-            placeholder={`¿Qué hizo ${activePet.name} hoy?`}
+            placeholder={t("placeholder", { name: activePet.name })}
             className="w-full resize-none bg-transparent py-2.5 text-base text-ink outline-none placeholder:text-muted"
           />
         </label>
@@ -43,21 +46,21 @@ export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> 
           className="flex h-[38px] items-center gap-1.5 rounded-xl bg-surface-2 px-3 text-[13px] font-semibold text-ink-2"
         >
           <ImageIcon size={17} />
-          Fotos
+          {t("photos")}
         </button>
         <button
           type="button"
           className="flex h-[38px] items-center gap-1.5 rounded-xl bg-surface-2 px-3 text-[13px] font-semibold text-ink-2"
         >
           <PinIcon size={17} />
-          Ubicación
+          {t("location")}
         </button>
         <button
           type="button"
           className="flex h-[38px] items-center gap-1.5 rounded-xl border border-ai-line bg-ai-tint px-3 text-[13px] font-bold text-ai-ink"
         >
           <SparklesIcon size={17} />
-          Sugerir pie con IA
+          {t("aiCaption")}
         </button>
         <span
           className={`ml-auto text-xs tabular-nums ${error ? "text-danger-ink" : "text-muted"}`}
@@ -67,10 +70,10 @@ export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> 
         <button
           type="button"
           disabled={text.trim().length === 0 || error !== null}
-          onClick={() => setNotice("Publicar estará disponible cuando conectemos la API.")}
+          onClick={() => setNotice(t("notAvailable"))}
           className="h-10 rounded-[14px] bg-primary px-5 text-sm font-bold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Publicar
+          {t("publish")}
         </button>
       </div>
       {(error || notice) && (
