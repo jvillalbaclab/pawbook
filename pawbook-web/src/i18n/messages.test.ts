@@ -35,4 +35,38 @@ describe("catálogo de textos", () => {
     const tEs = createTranslator({ locale: "es-ES", messages: es, namespace: "composer" });
     expect(tEs("tooLong", { max: 2200 })).toBe("El texto supera los 2200 caracteres.");
   });
+
+  test("las etiquetas con número concuerdan en singular y plural", () => {
+    const t = createTranslator({ locale: "es", messages: es, namespace: "profile" });
+    expect(t("followersStat", { count: 1 })).toBe("Seguidor");
+    expect(t("followersStat", { count: 0 })).toBe("Seguidores");
+    expect(t("followersStat", { count: 1204 })).toBe("Seguidores");
+    expect(t("postsStat", { count: 1 })).toBe("Publicación");
+    expect(t("postsStat", { count: 3 })).toBe("Publicaciones");
+  });
+
+  test("los mensajes de validación usan el límite como variable", () => {
+    const t = createTranslator({ locale: "es", messages: es, namespace: "registration" });
+    expect(t("errors.passwordTooShort", { min: 8 })).toBe(
+      "La contraseña necesita al menos 8 caracteres.",
+    );
+    expect(t("passwordPlaceholder", { min: 8 })).toBe("Mínimo 8 caracteres");
+  });
+
+  test("los textos con enlaces conservan las etiquetas como marcado", () => {
+    const t = createTranslator({ locale: "es", messages: es, namespace: "registration" });
+    const html = t.markup("terms", {
+      terms: (chunks) => `<a>${chunks}</a>`,
+      privacy: (chunks) => `<a>${chunks}</a>`,
+    });
+    expect(html).toBe(
+      "Confirmo que tengo [EDAD MÍNIMA] años o más y acepto los <a>Términos</a> y la <a>Política de privacidad</a>.",
+    );
+  });
+
+  test("el progreso del alta interpola paso y total", () => {
+    const t = createTranslator({ locale: "es", messages: es, namespace: "onboarding" });
+    expect(t("progressLabel", { step: 2, total: 3 })).toBe("Paso 2 de 3");
+    expect(t("progress", { step: 2, total: 3 })).toBe("2 de 3");
+  });
 });

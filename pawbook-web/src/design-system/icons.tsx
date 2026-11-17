@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode, SVGProps } from "react";
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & { size?: number };
@@ -208,13 +209,14 @@ export const CheckIcon = (p: IconProps) => (
 
 /** Insignia de organización verificada: con nombre accesible propio. */
 export function VerifiedBadge({ size = 16 }: { size?: number }) {
+  const t = useTranslations("common");
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
       role="img"
-      aria-label="Organización verificada"
+      aria-label={t("verifiedOrganization")}
     >
       <circle cx="12" cy="12" r="10" fill="var(--success)" />
       <path

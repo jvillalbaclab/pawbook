@@ -4,24 +4,30 @@ export type RegistrationInput = {
   acceptedTerms: boolean;
 };
 
-export type RegistrationErrors = Partial<Record<keyof RegistrationInput, string>>;
+/** Código de error de cada campo; la interfaz lo traduce con el catálogo. */
+export type RegistrationErrorCode = "invalid-email" | "password-too-short" | "terms-required";
+
+export type RegistrationErrors = Partial<Record<keyof RegistrationInput, RegistrationErrorCode>>;
 
 export const MIN_PASSWORD_LENGTH = 8;
+
+/** Meta del PRD: seguir al menos 5 mascotas para llenar el feed (objetivo "Red"). */
+export const FOLLOW_TARGET = 5;
 
 // Comprobación básica en cliente; la verificación real es el enlace por correo (FR-AUTH-002).
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Valida el formulario de registro; devuelve un objeto vacío si todo es correcto. */
+/** Valida el formulario de registro; devuelve los códigos de error, o un objeto vacío si todo es correcto. */
 export function validateRegistration(input: RegistrationInput): RegistrationErrors {
   const errors: RegistrationErrors = {};
   if (!EMAIL_PATTERN.test(input.email.trim())) {
-    errors.email = "Escribe un correo válido, por ejemplo nombre@correo.com.";
+    errors.email = "invalid-email";
   }
   if (input.password.length < MIN_PASSWORD_LENGTH) {
-    errors.password = `La contraseña necesita al menos ${MIN_PASSWORD_LENGTH} caracteres.`;
+    errors.password = "password-too-short";
   }
   if (!input.acceptedTerms) {
-    errors.acceptedTerms = "Debes confirmar la edad mínima y aceptar los términos.";
+    errors.acceptedTerms = "terms-required";
   }
   return errors;
 }

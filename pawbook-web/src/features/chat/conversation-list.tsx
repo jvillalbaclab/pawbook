@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { MessageIcon } from "@/design-system/icons";
@@ -10,13 +11,11 @@ import { TimeLabel } from "@/design-system/time-label";
 import { getConversations } from "@/lib/api";
 import type { Conversation } from "@/lib/types";
 
-const TABS: { id: Conversation["kind"]; label: string }[] = [
-  { id: "pawmates", label: "PawMates" },
-  { id: "adoption", label: "Adopción" },
-];
+const KINDS: Conversation["kind"][] = ["pawmates", "adoption"];
 
 /** selectedId lo decide MessagesShell, que ya lee el segmento de la ruta. */
 export function ConversationList({ selectedId }: { selectedId: string | null }) {
+  const t = useTranslations("chat");
   const conversations = useQuery({ queryKey: ["conversations"], queryFn: getConversations });
   const [kind, setKind] = useState<Conversation["kind"]>("pawmates");
   const visible = conversations.data?.filter((conversation) => conversation.kind === kind) ?? [];
@@ -24,9 +23,9 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-3 px-4 pt-1 pb-3 lg:px-5 lg:pt-5">
-        <h1 className="font-display text-2xl font-extrabold text-ink">Mensajes</h1>
-        <div role="tablist" aria-label="Tipo de conversación" className="flex gap-1.5">
-          {TABS.map(({ id, label }) => (
+        <h1 className="font-display text-2xl font-extrabold text-ink">{t("title")}</h1>
+        <div role="tablist" aria-label={t("kindLabel")} className="flex gap-1.5">
+          {KINDS.map((id) => (
             <button
               key={id}
               type="button"
@@ -39,14 +38,14 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
                   : "border border-line bg-surface font-semibold text-ink-2"
               }`}
             >
-              {label}
+              {t(`kind.${id}`)}
             </button>
           ))}
         </div>
       </div>
 
       {conversations.isPending && (
-        <LoadingState label="Cargando conversaciones" className="flex flex-col">
+        <LoadingState label={t("loadingList")} className="flex flex-col">
           <ListItemSkeleton />
           <ListItemSkeleton />
           <ListItemSkeleton />
@@ -56,17 +55,13 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
       {conversations.isError && (
         <ErrorState
           icon={<MessageIcon size={40} />}
-          title="No pudimos cargar tus mensajes"
+          title={t("listErrorTitle")}
           onRetry={() => conversations.refetch()}
         />
       )}
 
       {conversations.isSuccess && visible.length === 0 && (
-        <p className="px-5 py-6 text-sm text-muted">
-          {kind === "pawmates"
-            ? "Aún no tienes matches. Cuando otra mascota también marque interés, podréis chatear aquí."
-            : "Aquí aparecerán tus solicitudes de adopción."}
-        </p>
+        <p className="px-5 py-6 text-sm text-muted">{t(`empty.${kind}`)}</p>
       )}
 
       <ul>
@@ -110,11 +105,11 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
                             : "text-muted"
                       }`}
                     >
-                      {conversation.typing ? "escribiendo…" : conversation.lastMessage}
+                      {conversation.typing ? t("typing") : conversation.lastMessage}
                     </span>
                     {conversation.unread && (
                       <span className="size-2.5 shrink-0 rounded-full bg-primary">
-                        <span className="sr-only">Sin leer</span>
+                        <span className="sr-only">{t("unread")}</span>
                       </span>
                     )}
                   </div>
@@ -126,8 +121,7 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
       </ul>
 
       <p className="mx-4 mt-3 rounded-control bg-canvas p-3 text-xs leading-relaxed text-muted lg:mx-5">
-        Solo puedes chatear con mascotas con las que tienes match. Puedes bloquear o denunciar desde
-        cada conversación.
+        {t("safetyNotice")}
       </p>
     </div>
   );

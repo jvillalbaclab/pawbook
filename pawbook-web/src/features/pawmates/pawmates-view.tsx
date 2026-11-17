@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { CloseIcon, PawIcon, PinIcon } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
@@ -17,17 +18,15 @@ import { getCandidates } from "@/lib/api";
 import { useActivePet } from "@/stores/active-pet";
 import { decide, INITIAL_DECK } from "./deck";
 
-const ENERGY_LABEL = { low: "Energía baja", medium: "Energía media", high: "Energía alta" };
-const SIZE_LABEL = { small: "Pequeño", medium: "Mediano", large: "Grande" };
-
 export function PawMatesView() {
+  const t = useTranslations("pawmates");
   const activePet = useActivePet();
   const candidates = useQuery({ queryKey: ["candidates"], queryFn: getCandidates });
   const [deck, setDeck] = useState(INITIAL_DECK);
 
   if (candidates.isPending) {
     return (
-      <LoadingState label="Buscando mascotas cerca" className="mx-auto max-w-md">
+      <LoadingState label={t("loading")} className="mx-auto max-w-md">
         <Skeleton className="h-[520px] rounded-[26px]" />
       </LoadingState>
     );
@@ -36,7 +35,7 @@ export function PawMatesView() {
     return (
       <ErrorState
         icon={<PawIcon size={44} />}
-        title="No pudimos cargar PawMates"
+        title={t("errorTitle")}
         onRetry={() => candidates.refetch()}
       />
     );
@@ -55,13 +54,14 @@ export function PawMatesView() {
         >
           <PawIcon size={24} className="text-brand" />
           <p className="flex-1 text-sm text-ink">
-            <strong>
-              {activePet.name} y {deck.match.pet.name} hicieron match.
-            </strong>{" "}
-            Ya podéis chatear.
+            {t.rich("match", {
+              myPet: activePet.name,
+              pet: deck.match.pet.name,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
           <Link href="/mensajes" className="text-sm font-bold text-primary-ink">
-            Escribir
+            {t("write")}
           </Link>
         </div>
       )}
@@ -71,12 +71,12 @@ export function PawMatesView() {
           <article className="overflow-hidden rounded-[26px] border border-line bg-surface">
             <Photo
               tone={current.pet.tone}
-              alt={`Foto de ${current.pet.name}, ${current.pet.breed}`}
+              alt={t("photoAlt", { name: current.pet.name, breed: current.pet.breed })}
               className="h-[330px]"
             >
               {current.highlyCompatible && (
                 <span className="absolute top-3.5 left-3.5 rounded-control bg-success px-3 py-1.5 text-xs font-bold text-white">
-                  Muy compatible
+                  {t("highlyCompatible")}
                 </span>
               )}
               <span className="absolute top-3.5 right-3.5 rounded-control bg-white px-3 py-1.5 text-xs font-bold text-stone-900">
@@ -94,10 +94,10 @@ export function PawMatesView() {
               </div>
               <ul className="flex flex-wrap gap-1.5">
                 <li className="rounded-chip bg-success-tint px-2.5 py-1 text-xs font-bold text-success-ink">
-                  {ENERGY_LABEL[current.energy]}
+                  {t(`energy.${current.energy}`)}
                 </li>
                 <li className="rounded-chip bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">
-                  {SIZE_LABEL[current.size]}
+                  {t(`size.${current.size}`)}
                 </li>
                 {current.tags.map((tag) => (
                   <li
@@ -113,7 +113,7 @@ export function PawMatesView() {
           <div className="flex items-center justify-center gap-4">
             <button
               type="button"
-              aria-label={`Pasar de ${current.pet.name}`}
+              aria-label={t("pass", { name: current.pet.name })}
               onClick={() => choose("pass")}
               className="flex size-[60px] items-center justify-center rounded-full border border-line bg-surface text-ink-2 shadow-sm hover:bg-surface-2"
             >
@@ -125,22 +125,22 @@ export function PawMatesView() {
               className="flex h-[60px] items-center gap-2 rounded-full bg-primary px-7 text-base font-bold text-white shadow-brand hover:bg-primary-hover"
             >
               <PawIcon size={22} />
-              Me interesa
+              {t("interested")}
             </button>
           </div>
         </>
       ) : (
         <EmptyState
           icon={<PinIcon size={44} />}
-          title="Has visto a todas las mascotas cerca"
-          description="Vuelve más tarde o amplía el radio de búsqueda para descubrir más compañeros."
+          title={t("emptyTitle")}
+          description={t("emptyDescription")}
           action={
             <button
               type="button"
               onClick={() => setDeck(INITIAL_DECK)}
               className={STATE_ACTION_CLASSES.inverse}
             >
-              Ver de nuevo
+              {t("restart")}
             </button>
           }
         />

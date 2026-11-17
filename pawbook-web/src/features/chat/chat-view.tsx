@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Avatar } from "@/design-system/avatar";
 import { ChevronLeftIcon, ImageIcon, MessageIcon, MoreIcon, SendIcon } from "@/design-system/icons";
@@ -19,13 +20,12 @@ import { getConversation } from "@/lib/api";
 import type { ChatMessage } from "@/lib/types";
 import { appendMessage, MAX_MESSAGE_LENGTH } from "./messages";
 
-const STATUS_LABEL = { sent: "Enviado", delivered: "Entregado", read: "Leído" };
-
 /**
  * Chat 1:1. Los mensajes nuevos viven en estado local: el tiempo real llegará con
  * stream-chat-react (arquitectura §6.1), que sustituye este componente por dentro.
  */
 export function ChatView({ conversationId }: { conversationId: string }) {
+  const t = useTranslations("chat");
   const conversation = useQuery({
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversation(conversationId),
@@ -47,7 +47,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <div className="flex flex-1 items-center justify-center">
         <ErrorState
           icon={<MessageIcon size={40} />}
-          title="No pudimos abrir la conversación"
+          title={t("openErrorTitle")}
           onRetry={() => conversation.refetch()}
         />
       </div>
@@ -59,11 +59,11 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         <EmptyState
           tone="neutral"
           icon={<MessageIcon size={40} />}
-          title="Conversación no encontrada"
-          description="Puede que se haya cerrado o que el enlace no sea correcto."
+          title={t("notFoundTitle")}
+          description={t("notFoundDescription")}
           action={
             <Link href="/mensajes" className={STATE_ACTION_CLASSES.inverse}>
-              Volver a mensajes
+              {t("backToMessages")}
             </Link>
           }
         />
@@ -94,7 +94,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <header className="flex items-center gap-2.5 border-b border-line bg-surface px-2 py-2.5 lg:px-5">
         <Link
           href="/mensajes"
-          aria-label="Volver a mensajes"
+          aria-label={t("backToMessages")}
           className="flex size-11 items-center justify-center rounded-xl text-ink lg:hidden"
         >
           <ChevronLeftIcon size={22} />
@@ -109,12 +109,12 @@ export function ChatView({ conversationId }: { conversationId: string }) {
             </span>
           </p>
           <p className={`text-xs font-semibold ${chat.typing ? "text-success-ink" : "text-muted"}`}>
-            {chat.typing ? "escribiendo…" : chat.online ? "En línea" : "Desconectado"}
+            {chat.typing ? t("typing") : chat.online ? t("online") : t("offline")}
           </p>
         </div>
         <button
           type="button"
-          aria-label="Opciones: ver perfil, bloquear o denunciar"
+          aria-label={t("options")}
           className="flex size-10 items-center justify-center rounded-xl text-ink-2 hover:bg-surface-2"
         >
           <MoreIcon />
@@ -124,7 +124,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-canvas p-4 lg:p-6">
         {chat.kind === "pawmates" && (
           <p className="self-center rounded-control border border-primary-line bg-primary-tint px-4 py-2 text-center text-[13px] font-semibold text-primary-ink">
-            {chat.myPetName} y {chat.pet.name} hicieron match · Quedad en sitios públicos
+            {t("matchBanner", { myPet: chat.myPetName, pet: chat.pet.name })}
           </p>
         )}
         {messages.map((message) => (
@@ -150,7 +150,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
                 className={`mt-1 text-[11px] ${message.fromMe ? "text-right opacity-75" : "text-muted"}`}
               >
                 <TimeLabel date={message.sentAt} variant="clock" />
-                {message.status ? ` · ${STATUS_LABEL[message.status]}` : ""}
+                {message.status ? ` · ${t(`status.${message.status}`)}` : ""}
               </p>
             </div>
           </div>
@@ -158,7 +158,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         {chat.typing && (
           <div
             role="status"
-            aria-label={`${chat.pet.name} está escribiendo`}
+            aria-label={t("typingLabel", { name: chat.pet.name })}
             className="flex gap-1 self-start rounded-panel border border-line bg-surface px-3.5 py-3"
           >
             {[0, 1, 2].map((dot) => (
@@ -179,25 +179,25 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       >
         <button
           type="button"
-          aria-label="Enviar imagen"
+          aria-label={t("sendImage")}
           className="flex size-11 shrink-0 items-center justify-center rounded-control bg-surface-2 text-ink-2"
         >
           <ImageIcon size={20} />
         </button>
         <label htmlFor={inputId} className="sr-only">
-          Mensaje
+          {t("messageLabel")}
         </label>
         <input
           id={inputId}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder={`Escribe como ${chat.myPetName}…`}
+          placeholder={t("placeholder", { name: chat.myPetName })}
           className="h-11 min-w-0 flex-1 rounded-full border border-line bg-canvas px-4 text-[15px] text-ink outline-none placeholder:text-muted focus:border-line-strong"
         />
         <button
           type="submit"
-          aria-label="Enviar"
+          aria-label={t("send")}
           disabled={!draft.trim()}
           className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white disabled:opacity-50"
         >
@@ -210,8 +210,9 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
 /** Esqueleto de una conversación: cabecera y burbujas alternas. */
 export function ChatSkeleton() {
+  const t = useTranslations("chat");
   return (
-    <LoadingState label="Cargando conversación" className="flex flex-1 flex-col gap-4 p-5">
+    <LoadingState label={t("loading")} className="flex flex-1 flex-col gap-4 p-5">
       <div className="flex items-center gap-3">
         <Skeleton className="size-10 rounded-full" />
         <Skeleton className="h-3 w-32 rounded-full" />

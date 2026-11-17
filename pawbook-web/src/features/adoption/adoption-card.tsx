@@ -1,20 +1,12 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Photo } from "@/design-system/photo";
 import type { AdoptionListing } from "@/lib/types";
 
-const SPECIES_SEX = {
-  cat: { female: "Gata", male: "Gato" },
-  dog: { female: "Perra", male: "Perro" },
-} as const;
-
-export function speciesLabel(listing: Pick<AdoptionListing, "species" | "sex">): string {
-  return SPECIES_SEX[listing.species][listing.sex];
-}
-
 export function AdoptionCard({ listing }: { listing: AdoptionListing }) {
-  const details = [speciesLabel(listing), listing.ageLabel, listing.sizeLabel]
-    .filter(Boolean)
-    .join(" · ");
+  const t = useTranslations("adoption");
+  const species = t(`speciesSex.${listing.species}.${listing.sex}`);
+  const details = [species, listing.ageLabel, listing.sizeLabel].filter(Boolean).join(" · ");
   return (
     <Link
       href={`/adopcion/${listing.id}`}
@@ -22,18 +14,18 @@ export function AdoptionCard({ listing }: { listing: AdoptionListing }) {
     >
       <Photo
         tone={listing.tone}
-        alt={`Foto de ${listing.name}`}
+        alt={t("photoAlt", { name: listing.name })}
         className="h-[150px] lg:h-40"
         showPaw={false}
       >
         {listing.urgent && (
           <span className="absolute top-2.5 left-2.5 rounded-lg bg-white px-2.5 py-0.5 text-xs font-bold text-orange-800">
-            Urgente
+            {t("urgent")}
           </span>
         )}
         {listing.status === "in-process" && (
           <span className="absolute top-2.5 left-2.5 rounded-lg bg-white px-2.5 py-0.5 text-xs font-bold text-stone-700">
-            En proceso
+            {t("status.in-process")}
           </span>
         )}
       </Photo>

@@ -15,7 +15,7 @@ describe("validateRegistration", () => {
 
   test("rechaza correos mal formados", () => {
     for (const email of ["", "laura", "laura@", "laura@correo", "la ura@correo.com"]) {
-      expect(validateRegistration({ ...valid, email }).email).toBeDefined();
+      expect(validateRegistration({ ...valid, email }).email).toBe("invalid-email");
     }
   });
 
@@ -26,14 +26,16 @@ describe("validateRegistration", () => {
   test("exige la longitud mínima de contraseña, ni un carácter menos", () => {
     expect(
       validateRegistration({ ...valid, password: "a".repeat(MIN_PASSWORD_LENGTH - 1) }).password,
-    ).toBeDefined();
+    ).toBe("password-too-short");
     expect(
       validateRegistration({ ...valid, password: "a".repeat(MIN_PASSWORD_LENGTH) }).password,
     ).toBeUndefined();
   });
 
   test("exige aceptar términos y edad mínima", () => {
-    expect(validateRegistration({ ...valid, acceptedTerms: false }).acceptedTerms).toBeDefined();
+    expect(validateRegistration({ ...valid, acceptedTerms: false }).acceptedTerms).toBe(
+      "terms-required",
+    );
   });
 
   test("devuelve todos los errores a la vez", () => {

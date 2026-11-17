@@ -1,28 +1,34 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { FollowSuggestions } from "@/features/auth/follow-suggestions";
 import { OnboardingHeader } from "@/features/auth/onboarding-header";
+import { FOLLOW_TARGET } from "@/features/auth/registration";
 import { getOnboardingSuggestions } from "@/lib/api";
 
-export const metadata: Metadata = { title: "Mascotas para seguir" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("followStep");
+  return { title: t("title") };
+}
 
 export default async function FollowStepPage() {
-  const suggestions = await getOnboardingSuggestions();
+  const [suggestions, t] = await Promise.all([
+    getOnboardingSuggestions(),
+    getTranslations("followStep"),
+  ]);
   return (
     <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col gap-4 px-5 pt-4">
       <OnboardingHeader step={3} backHref="/registro/mascota" />
       <div className="flex items-center gap-2.5 rounded-control border border-warn-line bg-warn-tint px-3 py-2.5 text-[13px] text-warn-ink">
-        <span className="flex-1">Verifica tu correo para poder publicar.</span>
+        <span className="flex-1">{t("verifyEmail")}</span>
         <button type="button" className="font-bold underline">
-          Reenviar
+          {t("resend")}
         </button>
       </div>
       <div>
         <h1 className="font-display text-[26px] font-extrabold tracking-tight text-ink">
-          ¿A quién quieres seguir?
+          {t("heading")}
         </h1>
-        <p className="mt-1.5 text-sm text-ink-2">
-          Sugerencias por especie y cerca de ti. Sigue al menos 5 para llenar tu feed.
-        </p>
+        <p className="mt-1.5 text-sm text-ink-2">{t("description", { count: FOLLOW_TARGET })}</p>
       </div>
       <FollowSuggestions pets={suggestions} />
     </div>

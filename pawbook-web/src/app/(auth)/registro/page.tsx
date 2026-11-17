@@ -1,30 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { AdoptionIcon, ImageIcon, PawIcon } from "@/design-system/icons";
 import { Logo } from "@/design-system/logo";
 import { RegistrationForm } from "@/features/auth/registration-form";
 
-export const metadata: Metadata = { title: "Crea tu cuenta" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("registration");
+  return { title: t("title") };
+}
 
+/** Pilares del producto (claves de "registration.pillars"). */
 const PILLARS = [
-  {
-    icon: ImageIcon,
-    title: "Un perfil para cada mascota",
-    text: "Publica fotos y deja que ella firme lo que comparte.",
-  },
-  {
-    icon: PawIcon,
-    title: "PawMates cerca de ti",
-    text: "Compañeros de paseo compatibles, sin revelar tu ubicación exacta.",
-  },
-  {
-    icon: AdoptionIcon,
-    title: "Adopción responsable",
-    text: "Solo refugios y fundaciones verificadas.",
-  },
-];
+  { icon: ImageIcon, key: "profile" },
+  { icon: PawIcon, key: "pawmates" },
+  { icon: AdoptionIcon, key: "adoption" },
+] as const;
 
 export default function RegistrationPage() {
+  const t = useTranslations("registration");
   return (
     <div className="flex min-h-dvh flex-col lg:flex-row">
       {/* Panel de marca: siempre oscuro, en los dos temas. */}
@@ -32,21 +27,21 @@ export default function RegistrationPage() {
         <Logo />
         <div className="max-w-[520px]">
           <h1 className="font-display text-[46px] leading-[1.06] font-extrabold tracking-tight">
-            La red social donde tu mascota es la protagonista
+            {t("heroTitle")}
           </h1>
-          <p className="mt-4 text-[17px] leading-relaxed text-stone-300">
-            Un espacio solo para perros y gatos, sin perderse entre todo lo demás.
-          </p>
+          <p className="mt-4 text-[17px] leading-relaxed text-stone-300">{t("heroDescription")}</p>
         </div>
         <ul className="flex max-w-[480px] flex-col gap-4">
-          {PILLARS.map(({ icon: Icon, title, text }) => (
-            <li key={title} className="flex items-start gap-3.5">
+          {PILLARS.map(({ icon: Icon, key }) => (
+            <li key={key} className="flex items-start gap-3.5">
               <span className="flex size-11 shrink-0 items-center justify-center rounded-control bg-[#3a2620] text-[#ff8a6b]">
                 <Icon size={22} />
               </span>
               <span>
-                <span className="block font-bold">{title}</span>
-                <span className="mt-0.5 block text-sm text-stone-300">{text}</span>
+                <span className="block font-bold">{t(`pillars.${key}.title`)}</span>
+                <span className="mt-0.5 block text-sm text-stone-300">
+                  {t(`pillars.${key}.text`)}
+                </span>
               </span>
             </li>
           ))}
@@ -60,19 +55,20 @@ export default function RegistrationPage() {
           </div>
           <div>
             <h2 className="font-display text-[28px] font-extrabold tracking-tight text-ink lg:text-[30px]">
-              <span className="lg:hidden">La red social donde tu mascota es la protagonista</span>
-              <span className="hidden lg:inline">Crea tu cuenta</span>
+              <span className="lg:hidden">{t("heroTitle")}</span>
+              <span className="hidden lg:inline">{t("title")}</span>
             </h2>
-            <p className="mt-1.5 text-[15px] text-ink-2">
-              Después presentarás a tu primera mascota.
-            </p>
+            <p className="mt-1.5 text-[15px] text-ink-2">{t("nextStep")}</p>
           </div>
           <RegistrationForm />
           <p className="border-t border-line pt-3 text-center text-sm text-ink-2">
-            ¿Ya tienes cuenta?{" "}
-            <Link href="/" className="font-bold text-primary-ink">
-              Inicia sesión
-            </Link>
+            {t.rich("haveAccount", {
+              login: (chunks) => (
+                <Link href="/" className="font-bold text-primary-ink">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       </section>

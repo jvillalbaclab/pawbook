@@ -1,6 +1,7 @@
 "use client";
 
 import { useSelectedLayoutSegment } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { type ReactNode, Suspense } from "react";
 import { ConversationList } from "./conversation-list";
 
@@ -28,10 +29,11 @@ function MessagesFrame({
   openConversation: string | null;
   children: ReactNode;
 }) {
+  const t = useTranslations("chat");
   return (
     <div className="-mx-4 flex overflow-hidden border-line bg-surface lg:mx-0 lg:h-[calc(100dvh-48px)] lg:rounded-sheet lg:border">
       <section
-        aria-label="Conversaciones"
+        aria-label={t("conversationsLabel")}
         className={`w-full shrink-0 overflow-y-auto border-line lg:block lg:w-[320px] lg:border-r ${
           openConversation ? "hidden" : "block"
         }`}

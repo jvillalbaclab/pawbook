@@ -14,9 +14,21 @@
     "publish": "Publicar",
     "sampleDataNotice": "Prototipo con datos de ejemplo"
   },
+  "common": {
+    "logoLabel": "PawBook, inicio",
+    "verifiedOrganization": "Organización verificada"
+  },
   "pets": {
     "publishingAs": "Publicando como",
-    "activePetLabel": "Mascota activa: {name}. Cambiar mascota"
+    "activePetLabel": "Mascota activa: {name}. Cambiar mascota",
+    "species": {
+      "dog": "Perro",
+      "cat": "Gato"
+    },
+    "sex": {
+      "female": "Hembra",
+      "male": "Macho"
+    }
   },
   "theme": {
     "label": "Tema",
@@ -79,5 +91,222 @@
       "bone": "hueso",
       "fish": "pez"
     }
+  },
+  "rightRail": {
+    "pawmatesNearby": "PawMates cerca",
+    "seeAll": "Ver todos",
+    "forAdoption": "En adopción",
+    "seeListing": "Ver ficha",
+    "suggestedFor": "Sugeridas para {name}"
+  },
+  "profile": {
+    "notFoundTitle": "Mascota no encontrada",
+    "metaTitle": "{name} (@{handle})",
+    "ogTitle": "{name} en PawBook",
+    "loading": "Cargando perfil",
+    "postsStat": "{count, plural, one {Publicación} other {Publicaciones}}",
+    "followersStat": "{count, plural, one {Seguidor} other {Seguidores}}",
+    "followingStat": "Siguiendo",
+    "owner": "Responsable: {name}.",
+    "edit": "Editar perfil",
+    "follow": "Seguir",
+    "share": "Compartir",
+    "postsHeading": "Publicaciones",
+    "noPosts": "{name} aún no ha publicado nada.",
+    "notFoundHeading": "Esta mascota no está por aquí",
+    "notFoundDescription": "El perfil no existe o su responsable lo ha archivado."
+  },
+  "adoption": {
+    "title": "Adopción",
+    "description": "Perros y gatos en adopción de refugios y fundaciones verificadas.",
+    "verifiedOnly": "Solo refugios y fundaciones verificadas",
+    "filtersLabel": "Filtros de adopción",
+    "filterAll": "Todos",
+    "filterDogs": "Perros",
+    "filterCats": "Gatos",
+    "urgentOnly": "Solo urgentes",
+    "emptyTitle": "Sin animales con estos filtros",
+    "emptyDescription": "Prueba a quitar algún filtro para ver más fichas.",
+    "clearFilters": "Quitar filtros",
+    "photoAlt": "Foto de {name}",
+    "urgent": "Urgente",
+    "speciesSex": {
+      "cat": {
+        "female": "Gata",
+        "male": "Gato"
+      },
+      "dog": {
+        "female": "Perra",
+        "male": "Perro"
+      }
+    },
+    "status": {
+      "available": "Disponible",
+      "in-process": "En proceso",
+      "adopted": "Adoptado"
+    }
+  },
+  "adoptionDetail": {
+    "notFoundTitle": "Ficha no encontrada",
+    "metaTitle": "{name} en adopción",
+    "ogTitle": "Adopta a {name}",
+    "loading": "Cargando ficha",
+    "back": "Volver a adopción",
+    "mainPhotoAlt": "Foto principal de {name}",
+    "species": "Especie",
+    "age": "Edad",
+    "health": "Salud",
+    "temperament": "Carácter",
+    "status": "Estado",
+    "alreadyAdopted": "Ya fue adoptado.",
+    "request": "Solicitar adopción",
+    "requestNotAvailable": "Enviar solicitudes estará disponible cuando conectemos la API.",
+    "requestHint": "La solicitud llega a {organization} por chat y correo."
+  },
+  "pawmates": {
+    "title": "PawMates",
+    "radius": "Hasta {km, number} km · ubicación aproximada, nunca la exacta",
+    "loading": "Buscando mascotas cerca",
+    "errorTitle": "No pudimos cargar PawMates",
+    "match": "<strong>{myPet} y {pet} hicieron match.</strong> Ya podéis chatear.",
+    "write": "Escribir",
+    "photoAlt": "Foto de {name}, {breed}",
+    "highlyCompatible": "Muy compatible",
+    "energy": {
+      "low": "Energía baja",
+      "medium": "Energía media",
+      "high": "Energía alta"
+    },
+    "size": {
+      "small": "Pequeño",
+      "medium": "Mediano",
+      "large": "Grande"
+    },
+    "pass": "Pasar de {name}",
+    "interested": "Me interesa",
+    "emptyTitle": "Has visto a todas las mascotas cerca",
+    "emptyDescription": "Vuelve más tarde o amplía el radio de búsqueda para descubrir más compañeros.",
+    "restart": "Ver de nuevo"
+  },
+  "chat": {
+    "title": "Mensajes",
+    "conversationsLabel": "Conversaciones",
+    "kindLabel": "Tipo de conversación",
+    "kind": {
+      "pawmates": "PawMates",
+      "adoption": "Adopción"
+    },
+    "loadingList": "Cargando conversaciones",
+    "listErrorTitle": "No pudimos cargar tus mensajes",
+    "empty": {
+      "pawmates": "Aún no tienes matches. Cuando otra mascota también marque interés, podréis chatear aquí.",
+      "adoption": "Aquí aparecerán tus solicitudes de adopción."
+    },
+    "typing": "escribiendo…",
+    "unread": "Sin leer",
+    "safetyNotice": "Solo puedes chatear con mascotas con las que tienes match. Puedes bloquear o denunciar desde cada conversación.",
+    "chooseTitle": "Elige una conversación",
+    "chooseDescription": "Tus matches de PawMates y tus solicitudes de adopción aparecen a la izquierda.",
+    "loading": "Cargando conversación",
+    "openErrorTitle": "No pudimos abrir la conversación",
+    "notFoundTitle": "Conversación no encontrada",
+    "notFoundDescription": "Puede que se haya cerrado o que el enlace no sea correcto.",
+    "backToMessages": "Volver a mensajes",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "options": "Opciones: ver perfil, bloquear o denunciar",
+    "matchBanner": "{myPet} y {pet} hicieron match · Quedad en sitios públicos",
+    "status": {
+      "sent": "Enviado",
+      "delivered": "Entregado",
+      "read": "Leído"
+    },
+    "typingLabel": "{name} está escribiendo",
+    "sendImage": "Enviar imagen",
+    "messageLabel": "Mensaje",
+    "placeholder": "Escribe como {name}…",
+    "send": "Enviar"
+  },
+  "registration": {
+    "title": "Crea tu cuenta",
+    "heroTitle": "La red social donde tu mascota es la protagonista",
+    "heroDescription": "Un espacio solo para perros y gatos, sin perderse entre todo lo demás.",
+    "pillars": {
+      "profile": {
+        "title": "Un perfil para cada mascota",
+        "text": "Publica fotos y deja que ella firme lo que comparte."
+      },
+      "pawmates": {
+        "title": "PawMates cerca de ti",
+        "text": "Compañeros de paseo compatibles, sin revelar tu ubicación exacta."
+      },
+      "adoption": {
+        "title": "Adopción responsable",
+        "text": "Solo refugios y fundaciones verificadas."
+      }
+    },
+    "nextStep": "Después presentarás a tu primera mascota.",
+    "haveAccount": "¿Ya tienes cuenta? <login>Inicia sesión</login>",
+    "google": "Continuar con Google",
+    "orEmail": "o con tu correo",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@correo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo {min, number} caracteres",
+    "terms": "Confirmo que tengo [EDAD MÍNIMA] años o más y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+    "submit": "Crear cuenta",
+    "verifyNotice": "Te enviaremos un enlace para verificar tu correo antes de publicar.",
+    "errors": {
+      "invalidEmail": "Escribe un correo válido, por ejemplo nombre@correo.com.",
+      "passwordTooShort": "La contraseña necesita al menos {min, number} caracteres.",
+      "termsRequired": "Debes confirmar la edad mínima y aceptar los términos."
+    }
+  },
+  "onboarding": {
+    "back": "Volver",
+    "progressLabel": "Paso {step, number} de {total, number}",
+    "progress": "{step, number} de {total, number}"
+  },
+  "petStep": {
+    "title": "Presenta a tu mascota",
+    "description": "Será la autora de todo lo que publiques. Podrás añadir más mascotas después.",
+    "addPhoto": "Añadir foto de perfil",
+    "photo": "Foto",
+    "species": "Especie",
+    "name": "Nombre",
+    "namePlaceholder": "Luna",
+    "handle": "Usuario",
+    "handlePlaceholder": "luna.gato",
+    "breed": "Raza",
+    "breeds": {
+      "mixed": "Mestizo",
+      "european": "Europeo común",
+      "siamese": "Siamés",
+      "persian": "Persa",
+      "maineCoon": "Maine coon",
+      "labrador": "Labrador",
+      "borderCollie": "Border collie",
+      "beagle": "Beagle",
+      "poodle": "Caniche",
+      "unknown": "No lo sé"
+    },
+    "birth": "Nacimiento aprox.",
+    "sex": "Sexo",
+    "nameRequired": "Escribe el nombre de tu mascota.",
+    "handleInvalid": "El usuario debe tener entre 3 y 30 caracteres: letras minúsculas, números, punto o guion bajo.",
+    "continue": "Continuar",
+    "laterNotice": "La bio y más fotos se añaden luego desde el perfil."
+  },
+  "followStep": {
+    "title": "Mascotas para seguir",
+    "verifyEmail": "Verifica tu correo para poder publicar.",
+    "resend": "Reenviar",
+    "heading": "¿A quién quieres seguir?",
+    "description": "Sugerencias por especie y cerca de ti. Sigue al menos {count, number} para llenar tu feed.",
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "progress": "{count, number} de {target, number} seguidas",
+    "goToFeed": "Ir a mi feed",
+    "skip": "Omitir por ahora"
   }
 }

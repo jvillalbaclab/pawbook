@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/design-system/avatar";
 import { VerifiedBadge } from "@/design-system/icons";
 import { Photo } from "@/design-system/photo";
@@ -9,10 +10,11 @@ import { fmt } from "@/i18n/formatters";
 import { getCandidates, getSuggestedPets, listAdoptions } from "@/lib/api";
 import { useActivePet } from "@/stores/active-pet";
 
-const ENERGY_LABEL = { low: "Energía baja", medium: "Energía media", high: "Energía alta" };
-
 /** Tercera columna (≥ 1.280 px): PawMates cerca, adopción destacada y sugerencias. */
 export function RightRail() {
+  const t = useTranslations("rightRail");
+  const tPawmates = useTranslations("pawmates");
+  const tAdoption = useTranslations("adoption");
   const activePet = useActivePet();
   const candidates = useQuery({ queryKey: ["candidates"], queryFn: getCandidates });
   const urgent = useQuery({
@@ -29,9 +31,9 @@ export function RightRail() {
     <aside className="sticky top-6 hidden w-[300px] shrink-0 flex-col gap-4 self-start xl:flex">
       <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-base font-extrabold text-ink">PawMates cerca</h2>
+          <h2 className="font-display text-base font-extrabold text-ink">{t("pawmatesNearby")}</h2>
           <Link href="/pawmates" className="text-[13px] font-bold text-primary-ink">
-            Ver todos
+            {t("seeAll")}
           </Link>
         </div>
         {candidates.data?.map(({ pet, energy, distanceKm }) => (
@@ -40,7 +42,7 @@ export function RightRail() {
             <div className="min-w-0">
               <p className="text-sm font-bold text-ink">{pet.name}</p>
               <p className="truncate text-xs text-muted">
-                {pet.breed} · {ENERGY_LABEL[energy]} · {fmt.distanceKm(distanceKm)}
+                {pet.breed} · {tPawmates(`energy.${energy}`)} · {fmt.distanceKm(distanceKm)}
               </p>
             </div>
           </div>
@@ -50,19 +52,19 @@ export function RightRail() {
       {featured && (
         <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-base font-extrabold text-ink">En adopción</h2>
+            <h2 className="font-display text-base font-extrabold text-ink">{t("forAdoption")}</h2>
             <Link href="/adopcion" className="text-[13px] font-bold text-primary-ink">
-              Ver todos
+              {t("seeAll")}
             </Link>
           </div>
           <Photo
             tone={featured.tone}
-            alt={`Foto de ${featured.name}`}
+            alt={tAdoption("photoAlt", { name: featured.name })}
             className="h-36 rounded-2xl"
             showPaw={false}
           >
             <span className="absolute top-2.5 left-2.5 rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-orange-800">
-              Urgente
+              {tAdoption("urgent")}
             </span>
           </Photo>
           <div>
@@ -77,7 +79,7 @@ export function RightRail() {
             href={`/adopcion/${featured.id}`}
             className="flex h-[42px] items-center justify-center rounded-control bg-success text-sm font-bold text-white"
           >
-            Ver ficha
+            {t("seeListing")}
           </Link>
         </section>
       )}
@@ -85,7 +87,7 @@ export function RightRail() {
       {suggested.data && suggested.data.length > 0 && (
         <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
           <h2 className="font-display text-base font-extrabold text-ink">
-            Sugeridas para {activePet.name}
+            {t("suggestedFor", { name: activePet.name })}
           </h2>
           {suggested.data.map((pet) => (
             <Link key={pet.id} href={`/@${pet.handle}`} className="flex items-center gap-2.5">

@@ -2,19 +2,34 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { type FormEvent, useState } from "react";
-import { type RegistrationErrors, validateRegistration } from "./registration";
+import {
+  MIN_PASSWORD_LENGTH,
+  type RegistrationErrorCode,
+  type RegistrationErrors,
+  validateRegistration,
+} from "./registration";
 
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null;
+/** Clave del catálogo (namespace "registration") para cada código de error. */
+const ERROR_KEYS = {
+  "invalid-email": "errors.invalidEmail",
+  "password-too-short": "errors.passwordTooShort",
+  "terms-required": "errors.termsRequired",
+} as const satisfies Record<RegistrationErrorCode, string>;
+
+function FieldError({ id, code }: { id: string; code?: RegistrationErrorCode }) {
+  const t = useTranslations("registration");
+  if (!code) return null;
   return (
     <p id={id} className="text-[13px] font-semibold text-danger-ink">
-      {message}
+      {t(ERROR_KEYS[code], { min: MIN_PASSWORD_LENGTH })}
     </p>
   );
 }
 
 export function RegistrationForm() {
+  const t = useTranslations("registration");
   const router = useRouter();
   const [errors, setErrors] = useState<RegistrationErrors>({});
 
@@ -46,39 +61,40 @@ export function RegistrationForm() {
         >
           G
         </span>
-        Continuar con Google
+        {t("google")}
       </button>
       <div className="flex items-center gap-2.5 text-[13px] text-muted">
-        <span className="h-px flex-1 bg-line" />o con tu correo
+        <span className="h-px flex-1 bg-line" />
+        {t("orEmail")}
         <span className="h-px flex-1 bg-line" />
       </div>
 
       <form noValidate onSubmit={submit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1.5 text-[13px] font-bold text-ink">
-          Correo electrónico
+          {t("email")}
           <input
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="tu@correo.com"
+            placeholder={t("emailPlaceholder")}
             aria-invalid={Boolean(errors.email)}
             aria-describedby="email-error"
             className={`${input} ${errors.email ? "border-danger-ink" : "border-line-strong"}`}
           />
-          <FieldError id="email-error" message={errors.email} />
+          <FieldError id="email-error" code={errors.email} />
         </label>
         <label className="flex flex-col gap-1.5 text-[13px] font-bold text-ink">
-          Contraseña
+          {t("password")}
           <input
             name="password"
             type="password"
             autoComplete="new-password"
-            placeholder="Mínimo 8 caracteres"
+            placeholder={t("passwordPlaceholder", { min: MIN_PASSWORD_LENGTH })}
             aria-invalid={Boolean(errors.password)}
             aria-describedby="password-error"
             className={`${input} ${errors.password ? "border-danger-ink" : "border-line-strong"}`}
           />
-          <FieldError id="password-error" message={errors.password} />
+          <FieldError id="password-error" code={errors.password} />
         </label>
         <label className="flex items-start gap-2.5 text-[13px] leading-snug text-ink-2">
           <input
@@ -89,27 +105,28 @@ export function RegistrationForm() {
             className="mt-0.5 size-5 shrink-0 accent-primary"
           />
           <span>
-            Confirmo que tengo [EDAD MÍNIMA] años o más y acepto los{" "}
-            <Link href="#" className="font-semibold text-primary-ink">
-              Términos
-            </Link>{" "}
-            y la{" "}
-            <Link href="#" className="font-semibold text-primary-ink">
-              Política de privacidad
-            </Link>
-            .
+            {t.rich("terms", {
+              terms: (chunks) => (
+                <Link href="#" className="font-semibold text-primary-ink">
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href="#" className="font-semibold text-primary-ink">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </span>
         </label>
-        <FieldError id="terms-error" message={errors.acceptedTerms} />
+        <FieldError id="terms-error" code={errors.acceptedTerms} />
         <button
           type="submit"
           className="h-[52px] rounded-2xl bg-primary text-[15px] font-bold text-white hover:bg-primary-hover"
         >
-          Crear cuenta
+          {t("submit")}
         </button>
-        <p className="text-center text-xs text-muted">
-          Te enviaremos un enlace para verificar tu correo antes de publicar.
-        </p>
+        <p className="text-center text-xs text-muted">{t("verifyNotice")}</p>
       </form>
     </div>
   );

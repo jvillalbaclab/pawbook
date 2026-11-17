@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { AdoptionStatus } from "@/lib/types";
 
@@ -14,12 +15,13 @@ export function RequestButton({
   status: AdoptionStatus;
   organizationName: string;
 }) {
+  const t = useTranslations("adoptionDetail");
   const [pressed, setPressed] = useState(false);
 
   if (status === "adopted") {
     return (
       <p className="rounded-2xl bg-surface-2 p-3 text-center text-sm font-semibold text-ink-2">
-        Ya fue adoptado.
+        {t("alreadyAdopted")}
       </p>
     );
   }
@@ -32,12 +34,10 @@ export function RequestButton({
         onClick={() => setPressed(true)}
         className="h-[50px] rounded-2xl bg-success text-[15px] font-bold text-white disabled:opacity-60"
       >
-        Solicitar adopción
+        {t("request")}
       </button>
       <p role="status" className="text-center text-xs text-muted">
-        {pressed
-          ? "Enviar solicitudes estará disponible cuando conectemos la API."
-          : `La solicitud llega a ${organizationName} por chat y correo.`}
+        {pressed ? t("requestNotAvailable") : t("requestHint", { organization: organizationName })}
       </p>
     </div>
   );
