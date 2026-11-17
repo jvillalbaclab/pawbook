@@ -395,12 +395,42 @@
       "borderCollie": "Border collie",
       "beagle": "Beagle",
       "poodle": "Caniche",
-      "unknown": "No lo sé"
+      "unknown": "No lo sé",
+      "other": "Otra"
     },
+    "otherBreed": "Escribe la raza",
     "birth": "Nacimiento aprox.",
     "sex": "Sexo",
-    "nameRequired": "Escribe el nombre de tu mascota.",
-    "handleInvalid": "El usuario debe tener entre 3 y 30 caracteres: letras minúsculas, números, punto o guion bajo.",
+    "handleStatus": {
+      "checking": "Comprobando…",
+      "available": "Disponible",
+      "taken": "Ocupado",
+      "reserved": "Reservado",
+      "invalid": "No válido"
+    },
+    "errors": {
+      "nameRequired": "Escribe el nombre de tu mascota.",
+      "nameTooLong": "El nombre puede tener hasta 40 caracteres.",
+      "handleInvalid": "El usuario debe tener entre 3 y 30 caracteres: letras minúsculas, números, punto o guion bajo, con al menos una letra o un número.",
+      "handleTaken": "Ese usuario ya lo tiene otra mascota. Prueba con otro.",
+      "handleReserved": "Ese usuario está reservado. Elige otro.",
+      "handleRejected": "Ese usuario no se puede usar. Elige otro.",
+      "breedTooLong": "La raza puede tener hasta 60 caracteres.",
+      "birthMonthInvalid": "Elige un mes y un año válidos.",
+      "fieldInvalid": "Revisa este dato."
+    },
+    "alerts": {
+      "petLimit": "Ya tienes {max, number} mascotas, el máximo. Archiva una para añadir otra.",
+      "network": "Sin conexión. Revisa tu red e inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a probar.",
+      "validation": "Revisa los datos del formulario.",
+      "unavailable": "El servicio no está disponible ahora mismo. Inténtalo en unos minutos.",
+      "generic": "No pudimos crear la mascota. Inténtalo de nuevo."
+    },
+    "alreadyHasPets": "{count, plural, one {Ya tienes una mascota.} other {Ya tienes # mascotas.}} Puedes añadir otra o",
+    "limitReached": "Ya tienes {max, number} mascotas, el máximo.",
+    "skipAdding": "seguir sin añadir",
+    "creating": "Creando…",
     "continue": "Continuar",
     "laterNotice": "La bio y más fotos se añaden luego desde el perfil."
   },
