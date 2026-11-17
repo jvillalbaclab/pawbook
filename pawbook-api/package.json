@@ -22,7 +22,8 @@
     "build": "bun build src/main.api.ts src/main.worker.ts src/main.migrate.ts --target=node --outdir dist",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun src/main.migrate.ts",
-    "depcruise": "depcruise src contracts/src"
+    "depcruise": "depcruise src contracts/src",
+    "contracts:generate": "bun scripts/dump-openapi.ts && openapi-typescript contracts/openapi.json -o contracts/src/generated/openapi.ts && biome check --write contracts/openapi.json contracts/src/generated"
   },
   "packageManager": "bun@1.4.2",
   "dependencies": {
@@ -46,6 +47,7 @@
     "@types/node": "22",
     "dependency-cruiser": "^18.7.2",
     "drizzle-kit": "^0.31.11",
+    "openapi-typescript": "^7.13.0",
     "typescript": "^5"
   }
 }
