@@ -46,21 +46,30 @@ describe("catálogo de textos", () => {
   });
 
   test("los mensajes de validación usan el límite como variable", () => {
-    const t = createTranslator({ locale: "es", messages: es, namespace: "registration" });
-    expect(t("errors.passwordTooShort", { min: 8 })).toBe(
-      "La contraseña necesita al menos 8 caracteres.",
+    const t = createTranslator({ locale: "es", messages: es, namespace: "auth" });
+    expect(t("fieldErrors.passwordTooShort", { min: 10 })).toBe(
+      "La contraseña necesita al menos 10 caracteres.",
     );
-    expect(t("passwordPlaceholder", { min: 8 })).toBe("Mínimo 8 caracteres");
+    expect(t("problems.rateLimitedWait", { seconds: 1 })).toBe(
+      "Demasiados intentos seguidos. Vuelve a probar en 1 segundo.",
+    );
+    const tRegistration = createTranslator({
+      locale: "es",
+      messages: es,
+      namespace: "registration",
+    });
+    expect(tRegistration("passwordPlaceholder", { min: 10 })).toBe("Mínimo 10 caracteres");
   });
 
   test("los textos con enlaces conservan las etiquetas como marcado", () => {
     const t = createTranslator({ locale: "es", messages: es, namespace: "registration" });
     const html = t.markup("terms", {
+      minAge: 18,
       terms: (chunks) => `<a>${chunks}</a>`,
       privacy: (chunks) => `<a>${chunks}</a>`,
     });
     expect(html).toBe(
-      "Confirmo que tengo [EDAD MÍNIMA] años o más y acepto los <a>Términos</a> y la <a>Política de privacidad</a>.",
+      "Confirmo que tengo 18 años o más y acepto los <a>Términos</a> y la <a>Política de privacidad</a>.",
     );
   });
 

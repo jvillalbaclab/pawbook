@@ -95,6 +95,18 @@ export const MessageIcon = (p: IconProps) => (
     <path d="M4 5h16v11H9l-5 4z" />
   </Stroke>
 );
+export const LogoutIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" />
+    <path d="M10 16l-4-4 4-4M6 12h10" />
+  </Stroke>
+);
+export const MailIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+    <path d="M4 7l8 6 8-6" />
+  </Stroke>
+);
 export const AdoptionIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="M4 11l8-7 8 7v9H4z" />

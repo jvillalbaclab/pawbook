@@ -247,19 +247,120 @@
     },
     "nextStep": "Después presentarás a tu primera mascota.",
     "haveAccount": "¿Ya tienes cuenta? <login>Inicia sesión</login>",
-    "google": "Continuar con Google",
-    "orEmail": "o con tu correo",
     "email": "Correo electrónico",
     "emailPlaceholder": "tu@correo.com",
     "password": "Contraseña",
     "passwordPlaceholder": "Mínimo {min, number} caracteres",
-    "terms": "Confirmo que tengo [EDAD MÍNIMA] años o más y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
+    "birthDate": "Fecha de nacimiento",
+    "birthDateHint": "Solo para comprobar la edad mínima. No aparece en tu perfil.",
+    "terms": "Confirmo que tengo {minAge, number} años o más y acepto los <terms>Términos</terms> y la <privacy>Política de privacidad</privacy>.",
     "submit": "Crear cuenta",
-    "verifyNotice": "Te enviaremos un enlace para verificar tu correo antes de publicar.",
-    "errors": {
-      "invalidEmail": "Escribe un correo válido, por ejemplo nombre@correo.com.",
+    "submitting": "Creando cuenta…",
+    "verifyNotice": "Te enviaremos un enlace para verificar tu correo antes de publicar."
+  },
+  "auth": {
+    "orEmail": "o con tu correo",
+    "fieldErrors": {
+      "emailInvalid": "Escribe un correo válido, por ejemplo nombre@correo.com.",
+      "passwordRequired": "Escribe tu contraseña.",
       "passwordTooShort": "La contraseña necesita al menos {min, number} caracteres.",
+      "passwordTooLong": "La contraseña puede tener como máximo {max, number} caracteres.",
+      "passwordsMismatch": "Las contraseñas no coinciden.",
+      "birthDateInvalid": "Indica tu fecha de nacimiento.",
       "termsRequired": "Debes confirmar la edad mínima y aceptar los términos."
+    },
+    "problems": {
+      "network": "No pudimos conectar con PawBook. Revisa tu conexión e inténtalo de nuevo.",
+      "rateLimited": "Demasiados intentos seguidos. Espera un momento y vuelve a probar.",
+      "rateLimitedWait": "Demasiados intentos seguidos. Vuelve a probar en {seconds, plural, one {# segundo} other {# segundos}}.",
+      "invalidCredentials": "El correo o la contraseña no son correctos.",
+      "validation": "Revisa los datos e inténtalo de nuevo.",
+      "invalidLink": "El enlace no es válido o ya se usó.",
+      "linkExpired": "El enlace ha caducado.",
+      "providerDisabled": "Este método de acceso no está disponible ahora mismo.",
+      "unavailable": "El servicio no está disponible en este momento. Inténtalo en unos minutos.",
+      "generic": "Algo no ha ido bien. Inténtalo de nuevo en un momento."
+    },
+    "google": {
+      "button": "Continuar con Google",
+      "loading": "Conectando con Google…",
+      "notices": {
+        "unavailable": "El acceso con Google no está disponible ahora mismo. Usa tu correo.",
+        "registrationRequired": "Para crear tu cuenta con Google, indica tu fecha de nacimiento y acepta los términos en el formulario de registro.",
+        "forbidden": "Google no ha verificado ese correo. Verifícalo en tu cuenta de Google o usa tu correo y contraseña.",
+        "failed": "No se pudo completar el acceso con Google. Inténtalo de nuevo o usa tu correo."
+      }
+    },
+    "session": {
+      "checking": "Comprobando tu sesión",
+      "signIn": "Iniciar sesión",
+      "signOut": "Cerrar sesión",
+      "signingOut": "Cerrando sesión…"
+    },
+    "login": {
+      "title": "Inicia sesión",
+      "description": "Tu manada te está esperando.",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@correo.com",
+      "password": "Contraseña",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "noAccount": "¿No tienes cuenta? <signup>Regístrate</signup>"
+    },
+    "forgot": {
+      "title": "Recupera tu contraseña",
+      "description": "Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.",
+      "submit": "Enviar enlace",
+      "resubmit": "Enviar de nuevo",
+      "submitting": "Enviando…",
+      "sent": "Si hay una cuenta con ese correo, te llegará un enlace en unos minutos. Sirve una sola vez y caduca en 1 hora.",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "reset": {
+      "title": "Crea una contraseña nueva",
+      "description": "Al cambiarla se cerrará la sesión en todos tus dispositivos.",
+      "password": "Contraseña nueva",
+      "passwordPlaceholder": "Mínimo {min, number} caracteres",
+      "confirmation": "Repite la contraseña",
+      "submit": "Guardar contraseña",
+      "submitting": "Guardando…",
+      "successTitle": "Contraseña actualizada",
+      "successDescription": "Ya puedes iniciar sesión con tu contraseña nueva.",
+      "goToLogin": "Iniciar sesión",
+      "invalidTitle": "Este enlace no sirve",
+      "invalidDescription": "El enlace no es válido o ya se usó. Pide uno nuevo desde «¿Olvidaste tu contraseña?».",
+      "expiredTitle": "El enlace ha caducado",
+      "expiredDescription": "Los enlaces para restablecer la contraseña duran 1 hora. Pide uno nuevo.",
+      "requestNew": "Pedir un enlace nuevo"
+    },
+    "checkEmail": {
+      "title": "Revisa tu correo",
+      "description": "Te enviamos un enlace para confirmar tu correo; caduca en 24 horas. Puedes presentar a tu mascota mientras tanto: verificarlo solo hace falta para publicar, comentar y seguir.",
+      "sent": "Si el correo es válido, en unos minutos recibirás un mensaje con los siguientes pasos.",
+      "sentTo": "Enviamos el enlace a {email}. Si no te llega en unos minutos, pide otro.",
+      "spam": "¿No lo encuentras? Mira en spam o en promociones.",
+      "resend": "Reenviar enlace",
+      "resending": "Enviando…",
+      "resent": "Te enviamos un enlace nuevo.",
+      "continue": "Presentar a mi mascota",
+      "signInToContinue": "<login>Inicia sesión</login> para reenviar el enlace o seguir con el registro."
+    },
+    "verify": {
+      "title": "Verificación de correo",
+      "verifying": "Verificando tu correo",
+      "successTitle": "¡Correo verificado!",
+      "successDescription": "Ya puedes publicar, comentar y chatear en PawBook.",
+      "continue": "Continuar",
+      "signIn": "Iniciar sesión",
+      "retry": "Reintentar",
+      "expiredTitle": "El enlace ha caducado",
+      "expiredDescription": "Los enlaces de verificación duran 24 horas. Pide uno nuevo y ábrelo desde tu correo.",
+      "resend": "Enviar un enlace nuevo",
+      "resent": "Te enviamos un enlace nuevo. Revisa tu correo.",
+      "signInToResend": "Inicia sesión para pedir otro",
+      "invalidTitle": "Este enlace no sirve",
+      "invalidDescription": "El enlace no es válido o ya se usó. Si ya verificaste tu correo, inicia sesión."
     }
   },
   "onboarding": {
@@ -299,8 +400,10 @@
   },
   "followStep": {
     "title": "Mascotas para seguir",
-    "verifyEmail": "Verifica tu correo para poder publicar.",
+    "verifyEmail": "Verifica tu correo para poder publicar, comentar y seguir.",
     "resend": "Reenviar",
+    "resent": "Te enviamos un enlace nuevo. Revisa tu correo.",
+    "resendFailed": "No pudimos reenviar el enlace. Inténtalo de nuevo.",
     "heading": "¿A quién quieres seguir?",
     "description": "Sugerencias por especie y cerca de ti. Sigue al menos {count, number} para llenar tu feed.",
     "follow": "Seguir",

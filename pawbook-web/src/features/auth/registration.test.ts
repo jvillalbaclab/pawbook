@@ -1,49 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-  isValidHandle,
-  MIN_PASSWORD_LENGTH,
-  suggestHandle,
-  validateRegistration,
-} from "./registration";
-
-const valid = { email: "laura@correo.com", password: "segura123", acceptedTerms: true };
-
-describe("validateRegistration", () => {
-  test("sin errores cuando todo es válido", () => {
-    expect(validateRegistration(valid)).toEqual({});
-  });
-
-  test("rechaza correos mal formados", () => {
-    for (const email of ["", "laura", "laura@", "laura@correo", "la ura@correo.com"]) {
-      expect(validateRegistration({ ...valid, email }).email).toBe("invalid-email");
-    }
-  });
-
-  test("acepta un correo con espacios alrededor", () => {
-    expect(validateRegistration({ ...valid, email: "  laura@correo.com " }).email).toBeUndefined();
-  });
-
-  test("exige la longitud mínima de contraseña, ni un carácter menos", () => {
-    expect(
-      validateRegistration({ ...valid, password: "a".repeat(MIN_PASSWORD_LENGTH - 1) }).password,
-    ).toBe("password-too-short");
-    expect(
-      validateRegistration({ ...valid, password: "a".repeat(MIN_PASSWORD_LENGTH) }).password,
-    ).toBeUndefined();
-  });
-
-  test("exige aceptar términos y edad mínima", () => {
-    expect(validateRegistration({ ...valid, acceptedTerms: false }).acceptedTerms).toBe(
-      "terms-required",
-    );
-  });
-
-  test("devuelve todos los errores a la vez", () => {
-    expect(
-      Object.keys(validateRegistration({ email: "", password: "", acceptedTerms: false })).sort(),
-    ).toEqual(["acceptedTerms", "email", "password"]);
-  });
-});
+import { isValidHandle, suggestHandle } from "./registration";
 
 describe("isValidHandle", () => {
   test("acepta minúsculas, números, punto y guion bajo", () => {

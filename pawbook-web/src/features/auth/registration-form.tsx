@@ -3,109 +3,105 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { type FormEvent, useState } from "react";
-import {
-  MIN_PASSWORD_LENGTH,
-  type RegistrationErrorCode,
-  type RegistrationErrors,
-  validateRegistration,
-} from "./registration";
+import { useRef } from "react";
+import { MIN_SIGNUP_AGE, signUp, TERMS_VERSION } from "./auth-api";
+import { FieldErrorText, FormAlert, SubmitButton, TextField } from "./form-fields";
+import { GoogleButton } from "./google-button";
+import { CHECK_EMAIL_PATH, ONBOARDING_START_PATH } from "./guards";
+import { useAuthForm } from "./use-auth-form";
+import { PASSWORD_MIN_LENGTH, type SignUpField, validateSignUp } from "./validation";
 
-/** Clave del catálogo (namespace "registration") para cada código de error. */
-const ERROR_KEYS = {
-  "invalid-email": "errors.invalidEmail",
-  "password-too-short": "errors.passwordTooShort",
-  "terms-required": "errors.termsRequired",
-} as const satisfies Record<RegistrationErrorCode, string>;
+/** Errores de la API por ruta del contrato → campo del formulario. */
+const API_FIELDS: Readonly<Record<string, SignUpField>> = {
+  email: "email",
+  password: "password",
+  birthDate: "birthDate",
+  termsVersion: "acceptedTerms",
+};
 
-function FieldError({ id, code }: { id: string; code?: RegistrationErrorCode }) {
-  const t = useTranslations("registration");
-  if (!code) return null;
-  return (
-    <p id={id} className="text-[13px] font-semibold text-danger-ink">
-      {t(ERROR_KEYS[code], { min: MIN_PASSWORD_LENGTH })}
-    </p>
-  );
+function readForm(data: FormData) {
+  return {
+    email: String(data.get("email") ?? ""),
+    password: String(data.get("password") ?? ""),
+    birthDate: String(data.get("birthDate") ?? ""),
+    acceptedTerms: data.get("terms") === "on",
+  };
 }
 
 export function RegistrationForm() {
   const t = useTranslations("registration");
+  const tAuth = useTranslations("auth");
   const router = useRouter();
-  const [errors, setErrors] = useState<RegistrationErrors>({});
+  const formRef = useRef<HTMLFormElement>(null);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const found = validateRegistration({
-      email: String(data.get("email") ?? ""),
-      password: String(data.get("password") ?? ""),
-      acceptedTerms: data.get("terms") === "on",
-    });
-    setErrors(found);
-    // Sin API todavía: si el formulario es válido, el prototipo pasa al siguiente paso.
-    if (Object.keys(found).length === 0) router.push("/registro/mascota");
+  const form = useAuthForm({
+    validate: (data) => validateSignUp(readForm(data), TERMS_VERSION),
+    submit: signUp,
+    // Con o sin sesión (el correo podía tener ya cuenta), la siguiente pantalla es la misma.
+    onSuccess: () => router.push(CHECK_EMAIL_PATH),
+    apiFields: API_FIELDS,
+  });
+
+  /** Para crear la cuenta con Google hacen falta la fecha de nacimiento y los términos. */
+  function googleRegistrationData() {
+    if (formRef.current === null) return null;
+    const input = readForm(new FormData(formRef.current));
+    return input.acceptedTerms && input.birthDate
+      ? { birthDate: input.birthDate, termsVersion: TERMS_VERSION }
+      : null;
   }
 
-  const input =
-    "h-12 rounded-control border bg-surface px-3.5 text-base text-ink outline-none placeholder:text-muted focus:border-ink-2";
+  const termsError = form.fieldError("acceptedTerms");
 
   return (
     <div className="flex flex-col gap-4">
-      <button
-        type="button"
-        className="flex h-[52px] items-center justify-center gap-2.5 rounded-2xl border border-line-strong bg-surface text-[15px] font-bold text-ink"
-      >
-        <span
-          aria-hidden="true"
-          className="flex size-6 items-center justify-center rounded-full border-[1.5px] border-ink text-[13px] font-extrabold"
-        >
-          G
-        </span>
-        {t("google")}
-      </button>
+      <GoogleButton
+        registrationData={googleRegistrationData}
+        onSignedIn={({ isNewUser }) => router.push(isNewUser ? ONBOARDING_START_PATH : "/")}
+      />
       <div className="flex items-center gap-2.5 text-[13px] text-muted">
         <span className="h-px flex-1 bg-line" />
-        {t("orEmail")}
+        {tAuth("orEmail")}
         <span className="h-px flex-1 bg-line" />
       </div>
 
-      <form noValidate onSubmit={submit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1.5 text-[13px] font-bold text-ink">
-          {t("email")}
-          <input
-            name="email"
-            type="email"
-            autoComplete="email"
-            placeholder={t("emailPlaceholder")}
-            aria-invalid={Boolean(errors.email)}
-            aria-describedby="email-error"
-            className={`${input} ${errors.email ? "border-danger-ink" : "border-line-strong"}`}
-          />
-          <FieldError id="email-error" code={errors.email} />
-        </label>
-        <label className="flex flex-col gap-1.5 text-[13px] font-bold text-ink">
-          {t("password")}
-          <input
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            placeholder={t("passwordPlaceholder", { min: MIN_PASSWORD_LENGTH })}
-            aria-invalid={Boolean(errors.password)}
-            aria-describedby="password-error"
-            className={`${input} ${errors.password ? "border-danger-ink" : "border-line-strong"}`}
-          />
-          <FieldError id="password-error" code={errors.password} />
-        </label>
+      <form ref={formRef} noValidate onSubmit={form.onSubmit} className="flex flex-col gap-3">
+        <FormAlert message={form.alert} />
+        <TextField
+          name="email"
+          type="email"
+          autoComplete="email"
+          label={t("email")}
+          placeholder={t("emailPlaceholder")}
+          error={form.fieldError("email")}
+        />
+        <TextField
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          label={t("password")}
+          placeholder={t("passwordPlaceholder", { min: PASSWORD_MIN_LENGTH })}
+          error={form.fieldError("password")}
+        />
+        <TextField
+          name="birthDate"
+          type="date"
+          autoComplete="bday"
+          label={t("birthDate")}
+          hint={t("birthDateHint")}
+          error={form.fieldError("birthDate")}
+        />
         <label className="flex items-start gap-2.5 text-[13px] leading-snug text-ink-2">
           <input
             name="terms"
             type="checkbox"
-            aria-invalid={Boolean(errors.acceptedTerms)}
+            aria-invalid={Boolean(termsError)}
             aria-describedby="terms-error"
             className="mt-0.5 size-5 shrink-0 accent-primary"
           />
           <span>
             {t.rich("terms", {
+              minAge: MIN_SIGNUP_AGE,
               terms: (chunks) => (
                 <Link href="#" className="font-semibold text-primary-ink">
                   {chunks}
@@ -119,13 +115,8 @@ export function RegistrationForm() {
             })}
           </span>
         </label>
-        <FieldError id="terms-error" code={errors.acceptedTerms} />
-        <button
-          type="submit"
-          className="h-[52px] rounded-2xl bg-primary text-[15px] font-bold text-white hover:bg-primary-hover"
-        >
-          {t("submit")}
-        </button>
+        <FieldErrorText id="terms-error" error={termsError} />
+        <SubmitButton pending={form.pending} label={t("submit")} pendingLabel={t("submitting")} />
         <p className="text-center text-xs text-muted">{t("verifyNotice")}</p>
       </form>
     </div>

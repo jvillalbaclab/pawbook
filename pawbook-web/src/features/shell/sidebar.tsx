@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { PlusIcon } from "@/design-system/icons";
 import { Logo } from "@/design-system/logo";
 import { ThemeToggle } from "@/design-system/theme-toggle";
+import { SessionMenu } from "@/features/auth/session-menu";
 import { PetSwitcher } from "@/features/pets/pet-switcher";
 import { isActivePath, NAV_ITEMS } from "./nav-items";
 
@@ -68,6 +69,7 @@ function SidebarView({ pathname }: { pathname: string | null }) {
       <div className="mt-auto flex flex-col gap-2">
         <PetSwitcher variant="card" />
         <ThemeToggle withLabel />
+        <SessionMenu withLabel />
         <p className="px-3.5 text-xs text-muted">{t("sampleDataNotice")}</p>
       </div>
     </aside>

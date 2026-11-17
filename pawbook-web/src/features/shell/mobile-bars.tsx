@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { PlusIcon } from "@/design-system/icons";
 import { Logo } from "@/design-system/logo";
 import { ThemeToggle } from "@/design-system/theme-toggle";
+import { SessionMenu } from "@/features/auth/session-menu";
 import { PetSwitcher } from "@/features/pets/pet-switcher";
 import { isActivePath, NAV_ITEMS } from "./nav-items";
 
@@ -17,6 +18,7 @@ export function MobileTopBar() {
       <Logo />
       <div className="flex items-center gap-1">
         <ThemeToggle />
+        <SessionMenu />
         <PetSwitcher variant="chip" />
       </div>
     </header>
