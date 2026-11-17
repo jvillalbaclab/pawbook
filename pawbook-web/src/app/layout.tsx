@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ServiceWorkerRegistration } from "@/features/shell/service-worker";
 import { Providers } from "@/lib/providers";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
@@ -49,6 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {/* Hereda locale y catálogo de src/i18n/request.ts para los componentes cliente. */}
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
+          <ServiceWorkerRegistration />
         </NextIntlClientProvider>
       </body>
     </html>
