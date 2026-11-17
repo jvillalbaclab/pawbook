@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/lib/providers";
 import { themeInitScript } from "@/lib/theme";
@@ -14,6 +14,15 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: { default: "PawBook", template: "%s · PawBook" },
   description: "La red social donde tu mascota es la protagonista.",
+};
+
+/** Color de la barra del navegador y de la PWA según el tema del sistema (UI-006). */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf9f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#151311" },
+  ],
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

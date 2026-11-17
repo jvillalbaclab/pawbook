@@ -194,6 +194,12 @@ export const MoonIcon = (p: IconProps) => (
     <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
   </Stroke>
 );
+export const MonitorIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </Stroke>
+);
 export const CheckIcon = (p: IconProps) => (
   <Stroke strokeWidth={2.4} {...p}>
     <path d="M5 12.5l4.5 4.5L19 7.5" />

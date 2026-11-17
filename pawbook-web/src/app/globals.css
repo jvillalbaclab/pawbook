@@ -3,7 +3,10 @@
 /*
  * Tokens de PawBook. Cada color existe una vez como variable y cambia con el tema:
  * los componentes usan las clases de Tailwind (bg-surface, text-ink...) y nunca un hex.
- * El tema lo fija un script en <head> antes del primer pintado (ver theme-script.ts).
+ * El tema lo fija un script en <head> antes del primer pintado (ver src/lib/theme.ts).
+ * Los valores oscuros se repiten dos veces: con data-theme (lo normal, con JS) y con la
+ * media query del sistema cuando el script no pudo fijar el atributo. tokens.test.ts
+ * comprueba que ambas copias coinciden y que los dos temas cumplen WCAG 2.2 AA.
  */
 
 :root {
