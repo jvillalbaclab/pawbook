@@ -41,7 +41,7 @@ function SidebarView({ pathname }: { pathname: string | null }) {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`flex h-[46px] items-center gap-3 rounded-[14px] px-3.5 text-[15px] ${
+              className={`flex h-[46px] items-center gap-3 rounded-control px-3.5 text-[15px] ${
                 active
                   ? "bg-inverse font-bold text-on-inverse"
                   : "font-semibold text-ink-2 hover:bg-surface-2"
@@ -60,7 +60,7 @@ function SidebarView({ pathname }: { pathname: string | null }) {
       </nav>
       <Link
         href="/#publicar"
-        className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary text-[15px] font-bold text-white shadow-md shadow-primary/25 hover:bg-primary-hover"
+        className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary text-[15px] font-bold text-white shadow-brand hover:bg-primary-hover"
       >
         <PlusIcon size={20} />
         {t("publish")}

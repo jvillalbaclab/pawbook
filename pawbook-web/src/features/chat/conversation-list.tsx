@@ -125,7 +125,7 @@ export function ConversationList({ selectedId }: { selectedId: string | null }) 
         })}
       </ul>
 
-      <p className="mx-4 mt-3 rounded-[14px] bg-canvas p-3 text-xs leading-relaxed text-muted lg:mx-5">
+      <p className="mx-4 mt-3 rounded-control bg-canvas p-3 text-xs leading-relaxed text-muted lg:mx-5">
         Solo puedes chatear con mascotas con las que tienes match. Puedes bloquear o denunciar desde
         cada conversación.
       </p>

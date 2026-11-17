@@ -29,7 +29,7 @@ function MessagesFrame({
   children: ReactNode;
 }) {
   return (
-    <div className="-mx-4 flex overflow-hidden border-line bg-surface lg:mx-0 lg:h-[calc(100dvh-48px)] lg:rounded-[24px] lg:border">
+    <div className="-mx-4 flex overflow-hidden border-line bg-surface lg:mx-0 lg:h-[calc(100dvh-48px)] lg:rounded-sheet lg:border">
       <section
         aria-label="Conversaciones"
         className={`w-full shrink-0 overflow-y-auto border-line lg:block lg:w-[320px] lg:border-r ${

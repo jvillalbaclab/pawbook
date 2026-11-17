@@ -10,7 +10,7 @@ export default async function FollowStepPage() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col gap-4 px-5 pt-4">
       <OnboardingHeader step={3} backHref="/registro/mascota" />
-      <div className="flex items-center gap-2.5 rounded-[14px] border border-warn-line bg-warn-tint px-3 py-2.5 text-[13px] text-warn-ink">
+      <div className="flex items-center gap-2.5 rounded-control border border-warn-line bg-warn-tint px-3 py-2.5 text-[13px] text-warn-ink">
         <span className="flex-1">Verifica tu correo para poder publicar.</span>
         <button type="button" className="font-bold underline">
           Reenviar

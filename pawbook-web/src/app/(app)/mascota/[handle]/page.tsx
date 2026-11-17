@@ -88,7 +88,7 @@ async function PetProfile({ params }: { params: Promise<{ handle: string }> }) {
               (chip) => (
                 <li
                   key={chip}
-                  className="rounded-[10px] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2"
+                  className="rounded-chip bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2"
                 >
                   {chip}
                 </li>
@@ -104,21 +104,21 @@ async function PetProfile({ params }: { params: Promise<{ handle: string }> }) {
           {isMine ? (
             <button
               type="button"
-              className="h-11 flex-1 rounded-[14px] bg-inverse text-sm font-bold text-on-inverse"
+              className="h-11 flex-1 rounded-control bg-inverse text-sm font-bold text-on-inverse"
             >
               Editar perfil
             </button>
           ) : (
             <button
               type="button"
-              className="h-11 flex-1 rounded-[14px] bg-inverse text-sm font-bold text-on-inverse"
+              className="h-11 flex-1 rounded-control bg-inverse text-sm font-bold text-on-inverse"
             >
               Seguir
             </button>
           )}
           <button
             type="button"
-            className="h-11 flex-1 rounded-[14px] border border-line bg-surface text-sm font-bold text-ink"
+            className="h-11 flex-1 rounded-control border border-line bg-surface text-sm font-bold text-ink"
           >
             Compartir
           </button>

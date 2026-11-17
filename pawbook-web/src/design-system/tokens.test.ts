@@ -76,3 +76,22 @@ describe("tokens de color", () => {
     });
   }
 });
+
+describe("tokens de forma y tipografía", () => {
+  const theme = block("@theme inline");
+
+  test.each([
+    "--radius-chip",
+    "--radius-control",
+    "--radius-panel",
+    "--radius-card",
+    "--radius-sheet",
+    "--shadow-brand",
+    "--shadow-card",
+    "--shadow-popover",
+    "--font-sans",
+    "--font-display",
+  ])("%s está definido en @theme", (token) => {
+    expect(theme).toContain(`${token}:`);
+  });
+});

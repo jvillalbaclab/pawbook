@@ -33,7 +33,7 @@ export function PostCard({ post, activePet, onReact, onToggleSave }: PostCardPro
   const t = useTranslations("post");
   const { author } = post;
   return (
-    <article className="overflow-hidden rounded-[22px] border border-line bg-surface">
+    <article className="overflow-hidden rounded-card border border-line bg-surface">
       <header className="flex items-center gap-2.5 py-3 pr-2 pl-3.5">
         <Link href={`/@${author.handle}`} className="shrink-0">
           <Avatar name={author.name} tone={author.tone} size={42} />

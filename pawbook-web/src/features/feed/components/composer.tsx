@@ -22,7 +22,7 @@ export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> 
     <section
       id="publicar"
       aria-label={t("label")}
-      className="scroll-mt-24 rounded-[22px] border border-line bg-surface p-4"
+      className="scroll-mt-24 rounded-card border border-line bg-surface p-4"
     >
       <div className="flex gap-3">
         <Avatar name={activePet.name} tone={activePet.tone} size={44} />
@@ -71,7 +71,7 @@ export function Composer({ activePet }: { activePet: Pick<Pet, "name" | "tone"> 
           type="button"
           disabled={text.trim().length === 0 || error !== null}
           onClick={() => setNotice(t("notAvailable"))}
-          className="h-10 rounded-[14px] bg-primary px-5 text-sm font-bold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 rounded-control bg-primary px-5 text-sm font-bold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t("publish")}
         </button>

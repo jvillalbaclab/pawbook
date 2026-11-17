@@ -10,7 +10,7 @@ export function OnboardingHeader({ step, backHref }: { step: number; backHref: s
       <Link
         href={backHref}
         aria-label="Volver"
-        className="flex size-11 shrink-0 items-center justify-center rounded-[14px] text-ink"
+        className="flex size-11 shrink-0 items-center justify-center rounded-control text-ink"
       >
         <ChevronLeftIcon size={22} />
       </Link>

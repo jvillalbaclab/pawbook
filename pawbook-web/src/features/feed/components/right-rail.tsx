@@ -27,7 +27,7 @@ export function RightRail() {
 
   return (
     <aside className="sticky top-6 hidden w-[300px] shrink-0 flex-col gap-4 self-start xl:flex">
-      <section className="flex flex-col gap-3 rounded-[22px] border border-line bg-surface p-4">
+      <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-base font-extrabold text-ink">PawMates cerca</h2>
           <Link href="/pawmates" className="text-[13px] font-bold text-primary-ink">
@@ -48,7 +48,7 @@ export function RightRail() {
       </section>
 
       {featured && (
-        <section className="flex flex-col gap-3 rounded-[22px] border border-line bg-surface p-4">
+        <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-base font-extrabold text-ink">En adopción</h2>
             <Link href="/adopcion" className="text-[13px] font-bold text-primary-ink">
@@ -75,7 +75,7 @@ export function RightRail() {
           </div>
           <Link
             href={`/adopcion/${featured.id}`}
-            className="flex h-[42px] items-center justify-center rounded-[14px] bg-success text-sm font-bold text-white"
+            className="flex h-[42px] items-center justify-center rounded-control bg-success text-sm font-bold text-white"
           >
             Ver ficha
           </Link>
@@ -83,7 +83,7 @@ export function RightRail() {
       )}
 
       {suggested.data && suggested.data.length > 0 && (
-        <section className="flex flex-col gap-3 rounded-[22px] border border-line bg-surface p-4">
+        <section className="flex flex-col gap-3 rounded-card border border-line bg-surface p-4">
           <h2 className="font-display text-base font-extrabold text-ink">
             Sugeridas para {activePet.name}
           </h2>

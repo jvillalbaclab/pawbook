@@ -74,7 +74,7 @@ function BottomNavView({ pathname }: { pathname: string | null }) {
       <Link
         href="/#publicar"
         aria-label={t("publish")}
-        className="-mt-5 flex size-[54px] items-center justify-center justify-self-center rounded-[18px] bg-primary text-white shadow-lg shadow-primary/30"
+        className="-mt-5 flex size-[54px] items-center justify-center justify-self-center rounded-panel bg-primary text-white shadow-brand"
       >
         <PlusIcon size={26} />
       </Link>

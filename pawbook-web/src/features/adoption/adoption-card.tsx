@@ -18,7 +18,7 @@ export function AdoptionCard({ listing }: { listing: AdoptionListing }) {
   return (
     <Link
       href={`/adopcion/${listing.id}`}
-      className="overflow-hidden rounded-[20px] border border-line bg-surface transition-shadow hover:shadow-md"
+      className="overflow-hidden rounded-[20px] border border-line bg-surface transition-shadow hover:shadow-card"
     >
       <Photo
         tone={listing.tone}

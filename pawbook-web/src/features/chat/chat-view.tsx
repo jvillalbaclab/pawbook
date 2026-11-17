@@ -123,7 +123,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-canvas p-4 lg:p-6">
         {chat.kind === "pawmates" && (
-          <p className="self-center rounded-[14px] border border-primary-line bg-primary-tint px-4 py-2 text-center text-[13px] font-semibold text-primary-ink">
+          <p className="self-center rounded-control border border-primary-line bg-primary-tint px-4 py-2 text-center text-[13px] font-semibold text-primary-ink">
             {chat.myPetName} y {chat.pet.name} hicieron match · Quedad en sitios públicos
           </p>
         )}
@@ -159,7 +159,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
           <div
             role="status"
             aria-label={`${chat.pet.name} está escribiendo`}
-            className="flex gap-1 self-start rounded-[18px] border border-line bg-surface px-3.5 py-3"
+            className="flex gap-1 self-start rounded-panel border border-line bg-surface px-3.5 py-3"
           >
             {[0, 1, 2].map((dot) => (
               <span
@@ -180,7 +180,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         <button
           type="button"
           aria-label="Enviar imagen"
-          className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-surface-2 text-ink-2"
+          className="flex size-11 shrink-0 items-center justify-center rounded-control bg-surface-2 text-ink-2"
         >
           <ImageIcon size={20} />
         </button>

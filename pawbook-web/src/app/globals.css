@@ -140,6 +140,16 @@
   --color-danger-ink: var(--danger-ink);
   --color-danger-tint: var(--danger-tint);
   --color-danger-line: var(--danger-line);
+  /* Radios del demo con nombre semántico (rounded-chip, rounded-control...). */
+  --radius-chip: 10px;
+  --radius-control: 14px;
+  --radius-panel: 18px;
+  --radius-card: 22px;
+  --radius-sheet: 24px;
+  /* Sombras del demo: botón de marca, tarjeta en reposo y menú flotante. */
+  --shadow-brand: 0 6px 16px rgb(214 58 26 / 0.32);
+  --shadow-card: 0 4px 12px rgb(28 25 23 / 0.06);
+  --shadow-popover: 0 10px 24px rgb(28 25 23 / 0.25);
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
   --font-display: var(--font-jakarta), system-ui, sans-serif;
 }

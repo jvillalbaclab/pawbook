@@ -51,7 +51,7 @@ export function PawMatesView() {
       {deck.match && (
         <div
           role="status"
-          className="flex items-center gap-3 rounded-[18px] border border-primary-line bg-primary-tint p-3.5"
+          className="flex items-center gap-3 rounded-panel border border-primary-line bg-primary-tint p-3.5"
         >
           <PawIcon size={24} className="text-brand" />
           <p className="flex-1 text-sm text-ink">
@@ -75,11 +75,11 @@ export function PawMatesView() {
               className="h-[330px]"
             >
               {current.highlyCompatible && (
-                <span className="absolute top-3.5 left-3.5 rounded-[14px] bg-success px-3 py-1.5 text-xs font-bold text-white">
+                <span className="absolute top-3.5 left-3.5 rounded-control bg-success px-3 py-1.5 text-xs font-bold text-white">
                   Muy compatible
                 </span>
               )}
-              <span className="absolute top-3.5 right-3.5 rounded-[14px] bg-white px-3 py-1.5 text-xs font-bold text-stone-900">
+              <span className="absolute top-3.5 right-3.5 rounded-control bg-white px-3 py-1.5 text-xs font-bold text-stone-900">
                 {fmt.distanceKm(current.distanceKm)}
               </span>
             </Photo>
@@ -93,16 +93,16 @@ export function PawMatesView() {
                 </span>
               </div>
               <ul className="flex flex-wrap gap-1.5">
-                <li className="rounded-[10px] bg-success-tint px-2.5 py-1 text-xs font-bold text-success-ink">
+                <li className="rounded-chip bg-success-tint px-2.5 py-1 text-xs font-bold text-success-ink">
                   {ENERGY_LABEL[current.energy]}
                 </li>
-                <li className="rounded-[10px] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">
+                <li className="rounded-chip bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">
                   {SIZE_LABEL[current.size]}
                 </li>
                 {current.tags.map((tag) => (
                   <li
                     key={tag}
-                    className="rounded-[10px] bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2"
+                    className="rounded-chip bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2"
                   >
                     {tag}
                   </li>
@@ -122,7 +122,7 @@ export function PawMatesView() {
             <button
               type="button"
               onClick={() => choose("interested")}
-              className="flex h-[60px] items-center gap-2 rounded-full bg-primary px-7 text-base font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary-hover"
+              className="flex h-[60px] items-center gap-2 rounded-full bg-primary px-7 text-base font-bold text-white shadow-brand hover:bg-primary-hover"
             >
               <PawIcon size={22} />
               Me interesa

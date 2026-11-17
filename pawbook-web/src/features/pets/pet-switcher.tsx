@@ -38,7 +38,7 @@ export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
   const menu = open && (
     <div
       role="menu"
-      className={`absolute z-30 w-56 rounded-2xl border border-line bg-surface p-1.5 shadow-lg ${
+      className={`absolute z-30 w-56 rounded-2xl border border-line bg-surface p-1.5 shadow-popover ${
         variant === "chip" ? "top-12 right-0" : "bottom-full left-0 mb-2"
       }`}
     >
@@ -86,7 +86,7 @@ export function PetSwitcher({ variant }: { variant: "chip" | "card" }) {
   }
 
   return (
-    <div ref={rootRef} className="relative rounded-[18px] border border-line bg-surface p-3.5">
+    <div ref={rootRef} className="relative rounded-panel border border-line bg-surface p-3.5">
       <p className="mb-2.5 text-xs font-bold text-muted">{t("publishingAs")}</p>
       <button
         type="button"

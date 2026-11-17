@@ -37,7 +37,7 @@ export function PetForm() {
   const segment = (active: boolean) =>
     `h-14 rounded-2xl text-[15px] ${active ? "border-2 border-ink font-extrabold text-ink" : "border border-line-strong font-semibold text-ink-2"} bg-surface`;
   const field =
-    "h-12 rounded-[14px] border border-line-strong bg-surface px-3.5 text-base text-ink outline-none focus:border-ink-2";
+    "h-12 rounded-control border border-line-strong bg-surface px-3.5 text-base text-ink outline-none focus:border-ink-2";
 
   return (
     <form noValidate onSubmit={submit} className="flex flex-1 flex-col gap-4">
@@ -83,7 +83,7 @@ export function PetForm() {
 
       <label className="flex flex-col gap-1.5 text-[13px] font-bold text-ink">
         Usuario
-        <span className="flex h-12 items-center rounded-[14px] border border-line-strong bg-surface px-3.5 focus-within:border-ink-2">
+        <span className="flex h-12 items-center rounded-control border border-line-strong bg-surface px-3.5 focus-within:border-ink-2">
           <span className="text-base font-medium text-muted">@</span>
           <input
             value={shownHandle}
@@ -113,7 +113,7 @@ export function PetForm() {
         </label>
         <fieldset className="flex flex-col">
           <legend className="mb-1.5 text-[13px] font-bold text-ink">Sexo</legend>
-          <div className="grid h-12 grid-cols-2 rounded-[14px] bg-surface-2 p-[3px]">
+          <div className="grid h-12 grid-cols-2 rounded-control bg-surface-2 p-[3px]">
             {(["female", "male"] as const).map((value) => (
               <button
                 key={value}

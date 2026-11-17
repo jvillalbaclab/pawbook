@@ -128,7 +128,7 @@ export function Skeleton({ className }: { className: string }) {
 /** Esqueleto de una tarjeta de publicación mientras carga. */
 export function PostSkeleton() {
   return (
-    <div className="overflow-hidden rounded-[22px] border border-line bg-surface">
+    <div className="overflow-hidden rounded-card border border-line bg-surface">
       <div className="flex items-center gap-2.5 p-3.5">
         <Skeleton className="size-10 rounded-full" />
         <div className="flex flex-col gap-1.5">

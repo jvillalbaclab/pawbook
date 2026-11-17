@@ -32,7 +32,7 @@ export function RegistrationForm() {
   }
 
   const input =
-    "h-12 rounded-[14px] border bg-surface px-3.5 text-base text-ink outline-none placeholder:text-muted focus:border-ink-2";
+    "h-12 rounded-control border bg-surface px-3.5 text-base text-ink outline-none placeholder:text-muted focus:border-ink-2";
 
   return (
     <div className="flex flex-col gap-4">

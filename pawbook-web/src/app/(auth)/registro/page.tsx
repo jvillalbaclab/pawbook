@@ -41,7 +41,7 @@ export default function RegistrationPage() {
         <ul className="flex max-w-[480px] flex-col gap-4">
           {PILLARS.map(({ icon: Icon, title, text }) => (
             <li key={title} className="flex items-start gap-3.5">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-[#3a2620] text-[#ff8a6b]">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-control bg-[#3a2620] text-[#ff8a6b]">
                 <Icon size={22} />
               </span>
               <span>

@@ -38,7 +38,7 @@ export default function AdoptionDetailPage(props: PageProps<"/adopcion/[id]">) {
     <Suspense
       fallback={
         <LoadingState label="Cargando ficha" className="mx-auto max-w-[960px]">
-          <Skeleton className="h-[440px] rounded-[24px]" />
+          <Skeleton className="h-[440px] rounded-sheet" />
         </LoadingState>
       }
     >
@@ -73,14 +73,14 @@ async function AdoptionDetail({ params }: { params: Promise<{ id: string }> }) {
         <Photo
           tone={listing.tone}
           alt={`Foto principal de ${listing.name}`}
-          className="h-[300px] rounded-[24px] md:h-[440px]"
+          className="h-[300px] rounded-sheet md:h-[440px]"
         />
 
-        <section className="flex flex-col gap-4 rounded-[24px] border border-line bg-surface p-5">
+        <section className="flex flex-col gap-4 rounded-sheet border border-line bg-surface p-5">
           <div className="flex items-center justify-between gap-2">
             <h1 className="font-display text-2xl font-extrabold text-ink">{listing.name}</h1>
             {listing.urgent && (
-              <span className="rounded-[10px] bg-primary-tint px-2.5 py-1 text-xs font-bold text-primary-ink">
+              <span className="rounded-chip bg-primary-tint px-2.5 py-1 text-xs font-bold text-primary-ink">
                 Urgente
               </span>
             )}
@@ -104,7 +104,7 @@ async function AdoptionDetail({ params }: { params: Promise<{ id: string }> }) {
                 <li
                   key={step.status}
                   aria-current={step.status === listing.status ? "step" : undefined}
-                  className={`rounded-[10px] px-1.5 py-2 text-center text-xs ${
+                  className={`rounded-chip px-1.5 py-2 text-center text-xs ${
                     step.status === listing.status
                       ? "bg-success font-bold text-white"
                       : "bg-surface-2 font-semibold text-muted"
@@ -116,7 +116,7 @@ async function AdoptionDetail({ params }: { params: Promise<{ id: string }> }) {
             </ol>
           </div>
 
-          <div className="flex items-center gap-2.5 rounded-[14px] border border-line p-3">
+          <div className="flex items-center gap-2.5 rounded-control border border-line p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success-tint text-success-ink">
               <AdoptionIcon size={20} />
             </span>
