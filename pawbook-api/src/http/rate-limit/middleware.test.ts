@@ -60,6 +60,7 @@ describe("rate limit en /v1", () => {
       trustedProxyHops: 0,
       rateLimitStore: new MemoryRateLimitStore(),
       idempotencyStore: new MemoryIdempotencyStore(),
+      accessTokenVerifier: { verify: async () => null },
       globalRateLimit: { name: "default", limit: 2, windowMs: 60_000 },
     });
     app.get("/v1/test/ping", (c) => c.text("pong"));

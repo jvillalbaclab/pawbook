@@ -4,6 +4,7 @@
  * se define dos veces (principio 4 de la arquitectura).
  */
 export * from "./idempotency";
+export * from "./identity";
 export * from "./pagination";
 export * from "./problem";
 export * from "./system";

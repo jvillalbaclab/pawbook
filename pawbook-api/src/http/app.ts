@@ -7,6 +7,7 @@ import { AppError } from "../shared/errors";
 import { uuidv7 } from "../shared/ids";
 import { REPLAYED_HEADER } from "./idempotency/middleware";
 import type { IdempotencyStore } from "./idempotency/store";
+import { type AccessTokenVerifier, authenticate, rejectInvalidToken } from "./middleware/auth";
 import { clientIp } from "./middleware/client-ip";
 import { handleError, handleNotFound } from "./middleware/errors";
 import { requestLogger } from "./middleware/request-logger";
@@ -33,6 +34,10 @@ export type AppDependencies = {
   idempotencyStore: IdempotencyStore;
   /** Límite global de /v1. Por defecto, 120 solicitudes/min (NFR-SEC-004). */
   globalRateLimit?: RateLimitPolicy;
+  /** Verifica el Bearer de cada solicitud (lo implementa el módulo identity). */
+  accessTokenVerifier: AccessTokenVerifier;
+  /** Rutas de los módulos, montadas bajo /v1 (p. ej. identity: /auth/*, /me). */
+  moduleRoutes?: readonly OpenAPIHono<AppEnv>[];
 };
 
 /** Cabeceras que los clientes envían además de las simples (§4.4, NFR-REL-001). */
@@ -82,8 +87,9 @@ export function createApp(deps: AppDependencies) {
       maxAge: 600,
     }),
   );
+  // Auth antes del rate limit: con sesión, el límite cuenta por usuario y no por IP.
+  app.use("/v1/*", authenticate(deps.accessTokenVerifier));
   // Va después de CORS para que un 429 lleve sus cabeceras y el navegador pueda leerlo.
-  // El middleware de auth, cuando exista, debe ir antes para que la clave sea el usuario.
   app.use(
     "/v1/*",
     rateLimit({
@@ -92,8 +98,11 @@ export function createApp(deps: AppDependencies) {
       skip: (c) => RATE_LIMIT_EXEMPT_PATHS.has(c.req.path),
     }),
   );
+  // Un Bearer inválido se rechaza después de contar contra el límite de la IP.
+  app.use("/v1/*", rejectInvalidToken);
 
   app.route("/v1", systemRoutes({ version: deps.version, checks: deps.readinessChecks }));
+  for (const routes of deps.moduleRoutes ?? []) app.route("/v1", routes);
 
   registerSharedComponents(app);
   app.doc31("/v1/openapi.json", {

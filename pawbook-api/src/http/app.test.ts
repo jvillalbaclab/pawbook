@@ -21,6 +21,7 @@ function buildApp(readinessChecks: ReadinessCheck[] = []) {
     trustedProxyHops: 0,
     rateLimitStore: new MemoryRateLimitStore(),
     idempotencyStore: new MemoryIdempotencyStore(),
+    accessTokenVerifier: { verify: async () => null },
   });
 }
 

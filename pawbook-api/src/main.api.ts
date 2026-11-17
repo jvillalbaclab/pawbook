@@ -1,6 +1,7 @@
 import packageJson from "../package.json" with { type: "json" };
 import { loadConfig } from "./composition/config";
 import { createContainer } from "./composition/container";
+import { createIdentityModule } from "./composition/identity";
 import { createApp } from "./http/app";
 import { ValkeyIdempotencyStore } from "./http/idempotency/valkey-store";
 import { ValkeyRateLimitStore } from "./http/rate-limit/valkey-store";
@@ -12,14 +13,27 @@ import { ValkeyRateLimitStore } from "./http/rate-limit/valkey-store";
 const container = createContainer(loadConfig(process.env));
 const { config, logger } = container;
 
+const rateLimitStore = new ValkeyRateLimitStore(container.valkey);
+const idempotencyStore = new ValkeyIdempotencyStore(container.valkey);
+const identity = createIdentityModule({
+  config,
+  logger,
+  unitOfWork: container.unitOfWork,
+  outbox: container.outbox,
+  rateLimitStore,
+  idempotencyStore,
+});
+
 const app = createApp({
   logger,
   version: packageJson.version,
   corsOrigins: config.CORS_ORIGINS,
   readinessChecks: container.readinessChecks,
   trustedProxyHops: config.TRUSTED_PROXY_HOPS,
-  rateLimitStore: new ValkeyRateLimitStore(container.valkey),
-  idempotencyStore: new ValkeyIdempotencyStore(container.valkey),
+  rateLimitStore,
+  idempotencyStore,
+  accessTokenVerifier: identity.accessTokenVerifier,
+  moduleRoutes: [identity.routes],
 });
 
 type Stoppable = { stop(): Promise<void> };

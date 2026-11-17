@@ -50,6 +50,26 @@ export function registerSharedComponents(app: OpenAPIHono<AppEnv>) {
     },
   });
 
+  // COM-002: access token JWT en `Authorization: Bearer` (web y móvil).
+  registry.registerComponent("securitySchemes", "bearerAuth", {
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT",
+    description: "Access token de `POST /v1/auth/sign-in`, `/google` o `/refresh` (15 min).",
+  });
+
+  registry.registerComponent("responses", "Unauthorized", {
+    description: "Falta el access token, no es válido o ha caducado.",
+    headers: {
+      "WWW-Authenticate": {
+        schema: { type: "string" as const, example: 'Bearer realm="pawbook"' },
+      },
+    },
+    content: {
+      "application/problem+json": { schema: { $ref: "#/components/schemas/Problem" } },
+    },
+  });
+
   registry.registerParameter(
     "IdempotencyKey",
     IdempotencyKeySchema.openapi({

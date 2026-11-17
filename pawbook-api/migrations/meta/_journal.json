@@ -8,6 +8,13 @@
       "when": 1794943994470,
       "tag": "0000_platform_outbox_inbox",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794946439017,
+      "tag": "0001_identity",
+      "breakpoints": true
     }
   ]
 }
