@@ -319,13 +319,16 @@ describe("flujo completo de mascotas", () => {
     }
   });
 
-  test("crear o editar exige correo verificado; leer un perfil no exige sesión", async () => {
+  test("gestionar la mascota propia no exige correo verificado (onboarding); sí exige sesión", async () => {
     const pending = await registeredUser("pendiente@example.com", { verified: false });
     const res = await call("POST", "/v1/pets", { token: pending.token, body: petBody("luna") });
-    expect(res.status).toBe(403);
-    expect(ProblemSchema.parse(await res.json()).type).toBe(
-      "https://pawbook.app/problems/email-not-verified",
-    );
+    expect(res.status).toBe(201);
+    const pet = PetSchema.parse(await res.json());
+    const edit = await call("PATCH", `/v1/pets/${pet.id}`, {
+      token: pending.token,
+      body: { bio: "Recién llegada" },
+    });
+    expect(edit.status).toBe(200);
     expect((await call("POST", "/v1/pets", { body: petBody("luna") })).status).toBe(401);
     expect((await call("GET", "/v1/pets/nadie")).status).toBe(404);
   });

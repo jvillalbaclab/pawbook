@@ -15,11 +15,7 @@ import {
 } from "@pawbook/contracts";
 import { idempotency } from "../../../http/idempotency/middleware";
 import type { IdempotencyStore } from "../../../http/idempotency/store";
-import {
-  authenticatedUser,
-  requireAuth,
-  requireVerifiedEmail,
-} from "../../../http/middleware/auth";
+import { authenticatedUser, requireAuth } from "../../../http/middleware/auth";
 import type { AppEnv } from "../../../http/types";
 import { AppError } from "../../../shared/errors";
 import type { Uuid } from "../../../shared/ids";
@@ -40,8 +36,9 @@ import { HANDLE_MAX_LENGTH, HANDLE_MIN_LENGTH, nextHandleChangeAt } from "../dom
 import { type Pet, petStatus } from "../domain/pet";
 
 /*
- * Rutas de pets bajo /v1 (arquitectura §4.5). Crear y editar exige el correo verificado
- * (FR-AUTH-006); el perfil público se sirve sin sesión (FR-FEED-010).
+ * Rutas de pets bajo /v1 (arquitectura §4.5). Gestionar las mascotas propias solo exige sesión:
+ * el onboarding crea la primera mascota antes de verificar el correo (decisión de producto,
+ * 2026-11-17). FR-AUTH-006 se aplica a las acciones sociales. El perfil público no exige sesión.
  */
 
 export type PetsRoutesOptions = {
@@ -60,7 +57,6 @@ const problem = (description: string) => ({
 const tooManyRequests = { $ref: "#/components/responses/TooManyRequests" };
 const unauthorizedRef = { $ref: "#/components/responses/Unauthorized" };
 const bearer = [{ bearerAuth: [] }];
-const emailNotVerified = problem("Correo sin verificar (`email-not-verified`, FR-AUTH-006)");
 
 // ---------------------------------------------------------------------------- serialización
 
@@ -176,8 +172,8 @@ export function petsRoutes(options: PetsRoutesOptions) {
     tags,
     summary: "Crea una mascota",
     description:
-      "FR-PET-001 y FR-PET-002. Máximo 10 mascotas activas por usuario. Exige el correo verificado. Admite `Idempotency-Key`.",
-    middleware: [requireVerifiedEmail, idempotency({ store: options.idempotencyStore })],
+      "FR-PET-001 y FR-PET-002. Máximo 10 mascotas activas por usuario. No exige correo verificado. Admite `Idempotency-Key`.",
+    middleware: [requireAuth, idempotency({ store: options.idempotencyStore })],
     security: bearer,
     request: {
       headers: IdempotencyHeadersSchema,
@@ -186,7 +182,6 @@ export function petsRoutes(options: PetsRoutesOptions) {
     responses: {
       201: json(PetSchema, "Mascota creada"),
       401: unauthorizedRef,
-      403: emailNotVerified,
       409: problem("Handle ocupado o límite de 10 mascotas alcanzado"),
       422: problem("Datos no válidos o handle reservado"),
       429: tooManyRequests,
@@ -232,7 +227,7 @@ export function petsRoutes(options: PetsRoutesOptions) {
     summary: "Edita una mascota propia",
     description:
       "FR-PET-004 y FR-PET-002. Solo el responsable; para cualquier otro usuario responde 404. El handle se puede cambiar una vez cada 30 días.",
-    middleware: [requireVerifiedEmail],
+    middleware: [requireAuth],
     security: bearer,
     request: {
       params: PetIdParamSchema,
@@ -241,7 +236,6 @@ export function petsRoutes(options: PetsRoutesOptions) {
     responses: {
       200: json(PetSchema, "Mascota actualizada"),
       401: unauthorizedRef,
-      403: emailNotVerified,
       404: problem("No existe, está archivada o no es tuya"),
       409: problem("Handle ocupado o cambiado hace menos de 30 días"),
       422: problem("Datos no válidos o handle reservado"),
@@ -256,13 +250,12 @@ export function petsRoutes(options: PetsRoutesOptions) {
     summary: "Archiva una mascota propia",
     description:
       "FR-PET-006: el perfil y su contenido dejan de verse para terceros y ya no puede ser la mascota activa. Es idempotente. El handle sigue reservado.",
-    middleware: [requireVerifiedEmail],
+    middleware: [requireAuth],
     security: bearer,
     request: { params: PetIdParamSchema },
     responses: {
       204: { description: "Mascota archivada" },
       401: unauthorizedRef,
-      403: emailNotVerified,
       404: problem("No existe o no es tuya"),
       429: tooManyRequests,
     },
