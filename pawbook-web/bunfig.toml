@@ -1,0 +1,3 @@
+[test]
+# Alias de @pawbook/contracts para los tests (ver test/contracts-alias.ts).
+preload = ["./test/contracts-alias.ts"]

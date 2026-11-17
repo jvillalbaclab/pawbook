@@ -19,7 +19,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@pawbook/contracts": ["../pawbook-api/contracts/src/index.ts"],
+      "@pawbook/contracts/openapi": ["../pawbook-api/contracts/src/generated/openapi.ts"],
+      "@hono/zod-openapi": ["./src/lib/contracts/zod-openapi-shim.ts"]
     }
   },
   "include": [

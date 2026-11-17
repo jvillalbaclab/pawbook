@@ -1,13 +1,28 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // Conecta next-intl con su configuración por petición (catálogo y locale).
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+/*
+ * Monorepo: el contrato (`@pawbook/contracts`) vive en ../pawbook-api/contracts y se consume
+ * como código fuente, sin paquete publicado ni copia en node_modules. Turbopack solo resuelve
+ * archivos dentro de su raíz, así que la raíz es la carpeta del monorepo.
+ */
+const MONOREPO_ROOT = path.join(__dirname, "..");
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  outputFileTracingRoot: MONOREPO_ROOT,
   turbopack: {
+    root: MONOREPO_ROOT,
+    resolveAlias: {
+      "@pawbook/contracts": "../pawbook-api/contracts/src/index.ts",
+      // En el navegador, `.openapi()` no hace nada: evita Hono y el generador de OpenAPI.
+      "@hono/zod-openapi": "./src/lib/contracts/zod-openapi-shim.ts",
+    },
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
