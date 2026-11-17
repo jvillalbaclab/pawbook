@@ -15,5 +15,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "contracts/src", "test"]
+  "include": ["src", "contracts/src", "test", "drizzle.config.ts"]
 }

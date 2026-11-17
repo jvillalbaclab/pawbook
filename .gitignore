@@ -14,3 +14,4 @@ coverage/
 
 # Handoffs locales de las skills del agente
 .agent/
+.claude/worktrees/
