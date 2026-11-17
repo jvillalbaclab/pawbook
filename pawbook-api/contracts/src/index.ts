@@ -6,5 +6,7 @@
 export * from "./idempotency";
 export * from "./identity";
 export * from "./pagination";
+export * from "./pets";
 export * from "./problem";
+export * from "./stream";
 export * from "./system";

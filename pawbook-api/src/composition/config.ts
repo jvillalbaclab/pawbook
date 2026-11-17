@@ -48,12 +48,28 @@ const ConfigSchema = z.object({
   GOOGLE_CLIENT_IDS: commaList,
   /** `hibp`: comprueba contraseñas filtradas con k-anonimato. `off`: sin comprobación (sin red). */
   PASSWORD_BREACH_CHECK: z.enum(["hibp", "off"]).default("hibp"),
+
+  // --- social / GetStream (T-M0.35, T-M0.36)
+  /*
+   * Credenciales de la app de Stream. Con ambas, `POST /v1/stream/token` firma tokens reales
+   * (sin red). Sin ellas: tokens falsos en desarrollo y test, y 503 en producción. La
+   * sincronización de usuarios con Stream sigue en memoria hasta el spike (T-SP.*).
+   */
+  STREAM_API_KEY: z.string().default(""),
+  /** Secreto de la app de Stream. */
+  STREAM_API_SECRET: z.string().default(""),
 });
+
+/** Una sola de las credenciales de Stream es casi seguro un despliegue mal configurado. */
+const ValidatedConfigSchema = ConfigSchema.refine(
+  (config) => (config.STREAM_API_KEY === "") === (config.STREAM_API_SECRET === ""),
+  { path: ["STREAM_API_SECRET"], message: "STREAM_API_KEY y STREAM_API_SECRET van juntas" },
+);
 
 export type Config = z.infer<typeof ConfigSchema>;
 
 export function loadConfig(env: Record<string, string | undefined>): Config {
-  const parsed = ConfigSchema.safeParse(env);
+  const parsed = ValidatedConfigSchema.safeParse(env);
   if (!parsed.success) {
     // Solo nombres de variables, nunca sus valores: pueden ser secretos.
     const fields = parsed.error.issues.map((issue) => issue.path.join(".")).join(", ");

@@ -42,4 +42,13 @@ describe("loadConfig", () => {
   test("rechaza un puerto fuera de rango", () => {
     expect(() => loadConfig({ ...base, PORT: "70000" })).toThrow(/PORT/);
   });
+
+  test("social: Stream sin credenciales por defecto y las dos variables van juntas", () => {
+    const config = loadConfig(base);
+    expect(config.STREAM_API_KEY).toBe("");
+    expect(config.STREAM_API_SECRET).toBe("");
+    expect(() => loadConfig({ ...base, STREAM_API_KEY: "clave" })).toThrow(/STREAM_API_SECRET/);
+    const configured = loadConfig({ ...base, STREAM_API_KEY: "k", STREAM_API_SECRET: "s" });
+    expect(configured.STREAM_API_KEY).toBe("k");
+  });
 });

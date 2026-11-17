@@ -1,5 +1,6 @@
 import { loadConfig } from "./composition/config";
 import { createContainer } from "./composition/container";
+import { registerModuleEventHandlers } from "./composition/event-handlers";
 import { createWorker } from "./composition/worker";
 
 /*
@@ -8,6 +9,7 @@ import { createWorker } from "./composition/worker";
  */
 const container = createContainer(loadConfig(process.env));
 const { logger } = container;
+registerModuleEventHandlers(container);
 const worker = createWorker(container);
 
 await worker.start();

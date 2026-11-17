@@ -18,6 +18,11 @@ export type AppEnv = {
     emailVerified?: boolean;
     /** Había un Bearer pero no es válido; `rejectInvalidToken` responde 401 tras el rate limit. */
     authError?: "invalid-token";
+    /**
+     * Mascota activa de la cabecera `X-Pet-Id`, ya verificada (pertenece al usuario y no está
+     * archivada). La rellena el middleware `activePet` (middleware/active-pet.ts).
+     */
+    activePetId?: string;
   };
 };
 

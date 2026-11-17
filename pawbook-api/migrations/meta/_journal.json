@@ -15,6 +15,13 @@
       "when": 1794946439017,
       "tag": "0001_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794948191172,
+      "tag": "0002_pets",
+      "breakpoints": true
     }
   ]
 }
